@@ -6,8 +6,10 @@
 | ------------------- | ---------- |
 | Maksat Abrayev      | 22201182   |
 | Abdulaleem ALtarsha | 22201438   |
-| Efe                 |            |
-| Timo                |            |
+| Mehmet Efe Sak | 22202977   
+|
+| Timo            |            
+|
 
 ---
 
