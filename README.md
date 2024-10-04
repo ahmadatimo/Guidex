@@ -2,12 +2,12 @@
 
 ## 2. Team Members
 
-| Name           | Student ID |
-| -------------- | ---------- |
-| Maksat Abrayev | 22201182   |
-| Abdulaleem     |            |
-| Efe            |            |
-| Timo           |            |
+| Name                   | Student ID |
+| ---------------------- | ---------- |
+| Maksat Abrayev         | 22201182   |
+| Abdulaleem ALtarsha    | 22201438   |
+| Efe                    |            |
+| Timo                   |            |
 
 ---
 
