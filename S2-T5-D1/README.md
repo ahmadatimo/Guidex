@@ -64,16 +64,13 @@ For more information, reach out to the development team or consult the provided 
 
 ## Frontend:
 
-### React (TypeScript): We will use React for building an interactive and responsive user interface, ensuring scalability and maintainability. 
-### TypeScript will add type safety to our code, reducing bugs and improving development efficiency.
+### React (TypeScript): We will use React for building an interactive and responsive user interface, ensuring scalability and maintainability. TypeScript will add type safety to our code, reducing bugs and improving development efficiency.
 
 
 ### Tailwind CSS: A utility-first CSS framework that will allow us to create responsive, custom-styled components quickly without writing much custom CSS, enhancing development speed and design flexibility.
 
 ## Backend:
 
-### Django (Python): Django will serve as the backbone for our backend development. Known for its simplicity and powerful features, it will handle server-side logic, user authentication, and form management. 
-### Django's robust ecosystem provides various libraries and modules, ensuring fast, reliable development.
+### Django (Python): Django will serve as the backbone for our backend development. Known for its simplicity and powerful features, it will handle server-side logic, user authentication, and form management. Django's robust ecosystem provides various libraries and modules, ensuring fast, reliable development.
 
-### PostgreSQL: PostgreSQL will be used as our primary database due to its reliability, scalability, and advanced features like support for complex queries, concurrency control, and extensive data types.
-### It integrates well with Django, providing seamless database management.
+### PostgreSQL: PostgreSQL will be used as our primary database due to its reliability, scalability, and advanced features like support for complex queries, concurrency control, and extensive data types. It integrates well with Django, providing seamless database management.
