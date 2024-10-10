@@ -106,10 +106,3 @@ These features will ensure a seamless experience for both visitors and Bilkent s
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-# Diagrams
-
-## Level-0 Diagram
-![Level-0 Diagram](S2-T5-D1/Level-0.PNG)
-
-## Level-1 Diagram
-![Level-1 Diagram](S2-T5-D1/Level-1.PNG)
