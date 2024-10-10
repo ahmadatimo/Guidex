@@ -1,10 +1,10 @@
 # Use Case Diagrams
 
 ## Level-0 Diagram
-![Level-0 Diagram](S2-T5-D1/Level-0.PNG)
+![Level-0 Diagram](Level-0.PNG)
 
 ## Level-1 Diagram
-![Level-1 Diagram](S2-T5-D1/Level-1.PNG)
+![Level-1 Diagram](Level-1.PNG)
 
 ---
 
