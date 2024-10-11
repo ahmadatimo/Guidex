@@ -60,7 +60,7 @@
 For more information, reach out to the development team or consult the provided documentation.
 
 
-# Tech Tree
+# Tech Stack
 
 ## Frontend:
 
