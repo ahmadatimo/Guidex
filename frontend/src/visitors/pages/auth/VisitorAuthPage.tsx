@@ -11,18 +11,15 @@ const VisitorAuthPage: React.FC = () => {
     setSchool(event.target.value);
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-6 text-center">{isLogin ? 'Visitor Login' : 'Visitor Signup'}</h1>
-
-        {/* High School Dropdown */}
-        <label className="block mb-2 text-sm font-medium">Select Your School</label>
+  function SchoolAndName()
+  {
+    return(<>
+    {/* High School Dropdown */}
+    <label className="block mb-2 text-sm font-medium">Select Your School</label>
         <select
           className="w-full p-2 mb-4 bg-gray-200 text-black rounded-md"
           value={school}
-          onChange={handleSchoolChange}
-        >
+          onChange={handleSchoolChange}>
           <option value="" disabled>Select your school</option>
           {highSchools.map((schoolName) => (
             <option key={schoolName} value={schoolName}>
@@ -30,6 +27,23 @@ const VisitorAuthPage: React.FC = () => {
             </option>
           ))}
         </select>
+
+
+        {/* Name Field */}
+        <label className="block mb-2 text-sm font-medium">Name</label>
+        <input
+          type="Name"
+          className="w-full p-2 mb-4 bg-gray-200 text-black rounded-md"
+          placeholder="Enter your Name"
+        />
+  </>)}
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold mb-6 text-center">{isLogin ? 'Visitor Login' : 'Visitor Signup'}</h1>
+
+        {isLogin ? "" : <SchoolAndName/>}
 
         {/* Email Field */}
         <label className="block mb-2 text-sm font-medium">Email</label>
