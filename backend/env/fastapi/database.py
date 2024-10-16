@@ -4,9 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# Define the PostgreSQL database URL
-DATABASE_URL = "postgresql://postgres:altref@localhost/guidexdb"
-
+# Define the PostgreSQL database URL (SupaBase)
+DATABASE_URL = "https://wlkrsebopdkdkkxpokao.supabase.co"               
 # Create the SQLAlchemy engine and session
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
