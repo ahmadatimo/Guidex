@@ -3,10 +3,25 @@ import React, { useState } from 'react';
 const StaffAuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
 
+  function Name()
+  {
+    return (<>
+    {/* Name Field */}
+    <label className="block mb-2 text-sm font-medium">Name</label>
+        <input
+          type="Name"
+          className="w-full p-2 mb-4 bg-gray-200 text-black rounded-md"
+          placeholder="Enter your Name"
+        />
+    </>)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-6 text-center">{isLogin ? 'Staff Login' : 'Staff Signup'}</h1>
+        
+        {!isLogin? <Name /> : "" }
 
         {/* Email Field */}
         <label className="block mb-2 text-sm font-medium">Email</label>
