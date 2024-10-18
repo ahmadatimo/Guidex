@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const VisitorAuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
   const [school, setSchool] = useState(''); // State for high school dropdown
+
+  const navigate = useNavigate();
 
   // Dummy data for high school dropdown
   const highSchools = ['High School A', 'High School B', 'High School C'];
@@ -62,7 +65,7 @@ const VisitorAuthPage: React.FC = () => {
         />
 
         {/* Submit Button */}
-        <button className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mb-4">
+        <button onClick={ () => navigate("/visitor/Home")} className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mb-4">
           {isLogin ? 'Login' : 'Signup'}
         </button>
 

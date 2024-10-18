@@ -1,7 +1,12 @@
-const Home = () => {
+
+
+
+export default function Home() {
   return (
-    <div>Home</div>
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold mb-6 text-center">Select Role</h1>
+      </div>
+    </div>
   )
 }
-
-export default Home
