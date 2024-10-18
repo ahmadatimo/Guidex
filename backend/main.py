@@ -1,53 +1,43 @@
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from models import User, Base
+from supabase import create_client
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
 from schemas import UserCreate, UserResponse
-from db import engine, get_db
-from sqlalchemy.future import select
-from sqlalchemy.exc import IntegrityError
-import hashlib
-from contextlib import asynccontextmanager
+import os
 
-# Create a lifespan context for your FastAPI app
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Perform startup tasks here (e.g., create database tables)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield  # This yield allows the app to run while keeping resources open
+# Load environment variables from .env
+load_dotenv()
 
-    # Perform any shutdown tasks (optional)
-    await engine.dispose()
+# Get Supabase credentials
+url = os.environ.get("SUPABASE_URL")
+key = os.environ.get("SUPABASE_KEY")
 
-# Initialize FastAPI with the lifespan handler
-app = FastAPI(lifespan=lifespan)
+if not url or not key:
+    raise ValueError("SUPABASE_URL or SUPABASE_KEY is not set")
 
-def hash_password(password: str) -> str:
-    """Simple hash function for passwords."""
-    return hashlib.sha256(password.encode()).hexdigest()
+# Initialize Supabase client
+supabase = create_client(url, key)
+
+# Initialize FastAPI app
+app = FastAPI()
 
 @app.post("/register", response_model=UserResponse)
-async def register_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    hashed_pw = hash_password(user.password)
-    new_user = User(
-        username=user.username,
-        email=user.email,
-        hashed_password=hashed_pw
-    )
-
-    db.add(new_user)
+async def register_user(user: UserCreate):
     try:
-        await db.commit()
-        await db.refresh(new_user)
-    except IntegrityError:
-        raise HTTPException(status_code=400, detail="Username or email already exists.")
-    
-    return new_user
+        # Insert user into the Supabase 'users' table
+        response = supabase.table("users").insert({
+            "username": user.username,
+            "email": user.email,
+            "hashed_password": user.password  # Add hashing if needed
+        }).execute()
 
-@app.get("/user/{username}", response_model=UserResponse)
-async def get_user(username: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User).where(User.username == username))
-    user = result.scalars().first()
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found.")
-    return user
+        if response == None:
+            raise HTTPException(status_code=400, detail=f"Error: {response.json()}")
+
+        new_user = response.data[0]
+        return UserResponse(**new_user)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+
+
