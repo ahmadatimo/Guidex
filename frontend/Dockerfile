@@ -1,5 +1,5 @@
-# Use the official Node.js image for building the frontend
-FROM node:18-alpine AS builder
+# Use the official Node.js image
+FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
@@ -8,18 +8,11 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
 
-# Copy the rest of the frontend code and build it
+# Expose port 5173 (default Vite dev server port)
+EXPOSE 3000
+
+# Copy the source code
 COPY . .
-RUN npm run build
 
-# Use a lightweight Nginx image to serve the built files
-FROM nginx:alpine
-
-# Copy built files to Nginx web directory
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Expose port 80 for the frontend
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the development server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

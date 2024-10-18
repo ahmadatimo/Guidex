@@ -20,7 +20,7 @@ const AuthPage: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-6 text-center">Select Role</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">Fuck you twice Timo</h1>
 
         {/* Role Selector */}
         <label className="block mb-2 text-sm font-medium">Role</label>
