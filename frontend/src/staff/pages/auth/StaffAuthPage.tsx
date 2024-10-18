@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const StaffAuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
-
+  const navigate = useNavigate();
   function Name()
   {
     return (<>
@@ -40,7 +41,7 @@ const StaffAuthPage: React.FC = () => {
         />
 
         {/* Submit Button */}
-        <button className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mb-4">
+        <button onClick={() => navigate("/staff/Home")} className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mb-4">
           {isLogin ? 'Login' : 'Signup'}
         </button>
 
