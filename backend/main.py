@@ -1,4 +1,5 @@
 from supabase import create_client
+from gotrue.errors import AuthApiError
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from schemas import UserCreate, UserResponse
@@ -20,24 +21,57 @@ supabase = create_client(url, key)
 # Initialize FastAPI app
 app = FastAPI()
 
-@app.post("/register", response_model=UserResponse)
+# Register user endpoint
+@app.post(
+    "/register",
+    response_model=UserResponse,
+    summary="Register a new user",
+    description="Registers a new user with email and password using Supabase Auth.",
+    responses={
+        400: {
+            "description": "Invalid input data.",
+            "content": {"application/json": {"example": {"detail": "Invalid input."}}},
+        },
+        409: {
+            "description": "User already registered.",
+            "content": {"application/json": {"example": {"detail": "User already registered. Please log in or enter another email."}}},
+        },
+        429: {
+            "description": "Rate limit exceeded.",
+            "content": {"application/json": {"example": {"detail": "Rate limit exceeded. Try again later."}}},
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {"application/json": {"example": {"detail": "Internal Server Error: <error_message>"}}},
+        },
+    },
+)
 async def register_user(user: UserCreate):
+    """
+    Register a new user with Supabase authentication.
+    """
     try:
-        # Insert user into the Supabase 'users' table
-        response = supabase.table("users").insert({
-            "username": user.username,
-            "email": user.email,
-            "hashed_password": user.password  # Add hashing if needed
-        }).execute()
+        # Call Supabase sign-up method
+        response = supabase.auth.sign_up(
+            {"email": user.email, "password": user.password}
+        )
 
-        if response == None:
-            raise HTTPException(status_code=400, detail=f"Error: {response.json()}")
+        # Access the user object from the response
+        new_user = response.user
 
-        new_user = response.data[0]
-        return UserResponse(**new_user)
+        # Return the UserResponse schema
+        return UserResponse(id=new_user.id, email=new_user.email)
 
-    except Exception as e:
+    except AuthApiError as e:
+        # Handle 'User already registered' error
+        if "User already registered" in str(e):
+            raise HTTPException(
+                status_code=409,
+                detail="User already registered. Please log in or enter another email.",
+            )
+        elif "rate limit" in str(e).lower():
+            raise HTTPException(
+                status_code=429, detail="Rate limit exceeded. Try again later."
+            )
+        # Handle other internal errors
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
-
-
-
