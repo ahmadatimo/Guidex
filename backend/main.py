@@ -54,7 +54,12 @@ async def register_user(user: UserCreate):
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}") # TODO: Handle if user already exists
 
 
-@app.post("/login", response_model=UserResponse)
+@app.post(
+    "/login", 
+    response_model=UserResponse,
+    summary = "user logs in", description = "logs in the user with email and password using supabase Auth."
+)
+
 async def login_user(user: LoginUser):
     try:
         response = supabase.auth.sign_in_with_password(
