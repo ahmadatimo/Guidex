@@ -37,8 +37,8 @@ const VisitorAuthPage: React.FC = () => {
     const endpoint = isLogin ? "http://localhost:8000/login" : "http://localhost:8000/register";
     
     const body = isLogin
-      ? JSON.stringify({ email, password }) // For login, only email and password are needed
-      : JSON.stringify({ username: name, email, password, school }); // For signup, include all fields
+      ? JSON.stringify({ email, password })
+      : JSON.stringify({ username: name, email, password, school });
   
     const res = await fetch(endpoint, {
       method: "POST",
@@ -51,11 +51,10 @@ const VisitorAuthPage: React.FC = () => {
     const data = await res.json();
   
     if (res.ok) {
-      setUser(data); // Save user data, could be a token or user info
+      setUser(data); 
       console.log(`Request successful with status code: ${res.status}`);
   
-      // Optionally navigate to another page after successful login/signup
-      navigate('/visitor/home'); // Adjust the path as needed
+      navigate('/visitor/home');
     } else {
       console.error(`Failed to fetch data: ${res.status}`);
     }

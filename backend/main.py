@@ -75,6 +75,7 @@ async def login_user(user: LoginUser):
             {"email": user.email, "password": user.password}
         )
         logged_in_user = response.user
+        
         return UserResponse(id=logged_in_user.id, email=logged_in_user.email)
     
     except AuthApiError as e:
