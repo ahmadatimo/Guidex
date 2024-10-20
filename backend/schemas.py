@@ -12,3 +12,12 @@ class LoginUser(BaseModel):
     email: EmailStr
     password: str
 
+class ResetPasswordRequest(BaseModel):
+    email: str
+
+class UpdatePasswordRequest(BaseModel):
+    email: EmailStr
+    new_password: str
+
+class DeleteUserResponse(BaseModel):
+    message: str

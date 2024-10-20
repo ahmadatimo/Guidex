@@ -54,7 +54,7 @@ const VisitorAuthPage: React.FC = () => {
       setUser(data); 
       console.log(`Request successful with status code: ${res.status}`);
   
-      navigate('/visitor/home');
+      navigate('/visitor/home'); //problem
     } else {
       console.error(`Failed to fetch data: ${res.status}`);
     }
@@ -90,6 +90,7 @@ const VisitorAuthPage: React.FC = () => {
       </>
     );
   }
+  
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -135,6 +136,15 @@ const VisitorAuthPage: React.FC = () => {
             {isLogin ? 'Signup' : 'Login'}
           </span>
         </p>
+        {/* Toggle between Login and Signup */}
+        <p className="text-center">
+            <span
+              className="text-blue-500 cursor-pointer"
+              onClick={() => navigate('/visitor/UpdatePass')}
+            >
+              {isLogin ? "Frogot your password?" : ''}{' '}
+            </span>
+          </p>
       </div>
     </div>
   );
