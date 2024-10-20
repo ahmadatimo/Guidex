@@ -1,12 +1,15 @@
+from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client
 from gotrue.errors import AuthApiError
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from schemas import UserCreate, UserResponse
+from schemas import UserCreate, UserResponse, LoginUser
 import os
 
 # Load environment variables from .env
 load_dotenv()
+
+
 
 # Get Supabase credentials
 url = os.environ.get("SUPABASE_URL")
@@ -20,6 +23,14 @@ supabase = create_client(url, key)
 
 # Initialize FastAPI app
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You can specify domains here instead of "*"
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Register user endpoint
 @app.post(
@@ -47,31 +58,28 @@ app = FastAPI()
     },
 )
 async def register_user(user: UserCreate):
-    """
-    Register a new user with Supabase authentication.
-    """
     try:
-        # Call Supabase sign-up method
         response = supabase.auth.sign_up(
             {"email": user.email, "password": user.password}
         )
-
-        # Access the user object from the response
         new_user = response.user
-
-        # Return the UserResponse schema
         return UserResponse(id=new_user.id, email=new_user.email)
-
     except AuthApiError as e:
-        # Handle 'User already registered' error
-        if "User already registered" in str(e):
-            raise HTTPException(
-                status_code=409,
-                detail="User already registered. Please log in or enter another email.",
-            )
-        elif "rate limit" in str(e).lower():
-            raise HTTPException(
-                status_code=429, detail="Rate limit exceeded. Try again later."
-            )
-        # Handle other internal errors
-        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@app.post("/login", response_model=UserResponse)
+async def login_user(user: LoginUser):
+    try:
+        response = supabase.auth.sign_in_with_password(
+            {"email": user.email, "password": user.password}
+        )
+        logged_in_user = response.user
+        return UserResponse(id=logged_in_user.id, email=logged_in_user.email)
+    
+    except AuthApiError as e:
+        if "Invalid login credentials" in str(e):
+            raise HTTPException(status_code=401, detail="Invalid email or password.")
+        else:
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+

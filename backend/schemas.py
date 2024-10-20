@@ -7,3 +7,8 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: EmailStr
+
+class LoginUser(BaseModel):
+    email: EmailStr
+    password: str
+

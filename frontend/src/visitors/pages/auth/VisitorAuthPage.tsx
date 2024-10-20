@@ -13,6 +13,8 @@ const VisitorAuthPage: React.FC = () => {
   // Dummy data for high school dropdown
   const highSchools = ['High School A', 'High School B', 'High School C'];
 
+  
+  // bullshit functions
   const handleSchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSchool(event.target.value);
   };
@@ -31,31 +33,34 @@ const VisitorAuthPage: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the default form submission behavior
-
-    const res = await fetch("http://localhost:8000/register", {
+  
+    const endpoint = isLogin ? "http://localhost:8000/login" : "http://localhost:8000/register";
+    
+    const body = isLogin
+      ? JSON.stringify({ email, password }) // For login, only email and password are needed
+      : JSON.stringify({ username: name, email, password, school }); // For signup, include all fields
+  
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        username: name, // Use dynamic data from input fields
-        email: email,
-        password: password,
-        school: school, // Include school if necessary
-      }),
+      body,
     });
-
-    console.log(`Request successful with status code: ${res.status}`); // 200-299
+  
     const data = await res.json();
-    setUser(data);
-
+  
     if (res.ok) {
-      // Optionally navigate to another page after successful registration
-      navigate('/visitor/home'); // Replace '/success' with the appropriate path
+      setUser(data); // Save user data, could be a token or user info
+      console.log(`Request successful with status code: ${res.status}`);
+  
+      // Optionally navigate to another page after successful login/signup
+      navigate('/visitor/home'); // Adjust the path as needed
     } else {
       console.error(`Failed to fetch data: ${res.status}`);
     }
   };
+  
 
   function SchoolAndName() {
     return (
