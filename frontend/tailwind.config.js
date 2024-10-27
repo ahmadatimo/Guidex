@@ -5,8 +5,15 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    fontFamily : {
-     sans : ['Roboto', 'sans-serif']
+    extend : {
+      fontFamily : {
+      sans : ['Roboto', 'sans-serif']
+      },
+      colors : {
+        "light-blue" : "#37AFE1",
+        "orange-juice" : "#ffb703",
+        "ayran" : "#ffff",
+      },
     },
   },
   plugins: [],
