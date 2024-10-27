@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 //import { useNavigate } from 'react-router-dom';
 
-
 const RecoverEmail: React.FC = () => {
-    const [email, setEmail] = useState('');
-    //const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  //const navigate = useNavigate();
 
-    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value);
-    };
-    
-    
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault(); // Prevent the default form submission behavior
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent the default form submission behavior
 
         const endpoint = "http://localhost:8000/auth/send_forget_password_link";
         console.log("Passed email is ", email)

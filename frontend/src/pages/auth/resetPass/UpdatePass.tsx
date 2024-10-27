@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const UpdatePass: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [new_password, setNewPassword] = useState('');
-    const [new_password_again, setNewPasswordAgain] = useState('');
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [new_password, setNewPassword] = useState("");
+  const [new_password_again, setNewPasswordAgain] = useState("");
+  const navigate = useNavigate();
 
-    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewPassword(event.target.value);
-    };
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPassword(event.target.value);
+  };
 
-    const handlePasswordAgainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewPasswordAgain(event.target.value);
-    };
+  const handlePasswordAgainChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setNewPasswordAgain(event.target.value);
+  };
 
-    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setEmail(event.target.value);
-    };
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault(); // Prevent the default form submission behavior
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent the default form submission behavior
 
         if(new_password != new_password_again) {
             alert("Passwords do not match. Please try again!");
@@ -55,6 +57,7 @@ const UpdatePass: React.FC = () => {
             console.error('An error occurred:', error);
           }
     }
+
 
 
   
@@ -109,6 +112,5 @@ const UpdatePass: React.FC = () => {
           </div>
         </div>
       );
-};
-
+    };
 export default UpdatePass;
