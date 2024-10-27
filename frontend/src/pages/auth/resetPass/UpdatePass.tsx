@@ -27,15 +27,15 @@ const UpdatePass: React.FC = () => {
             return;
         }
         
-        const endpoint = "http://localhost:8000/update-password";
+        const endpoint = "http://localhost:8000/auth/reset-password";
         const body = JSON.stringify({
             email: email,
-            new_password: new_password 
+            password: new_password 
            });
            console.log(endpoint)
            try {
             const res = await fetch(endpoint, {
-              method: "POST",
+              method: "PUT",
               headers: {
                 "Content-Type": "application/json",
               },
@@ -56,9 +56,17 @@ const UpdatePass: React.FC = () => {
           }
     }
 
-    function Email () {
-      return (
-          <>
+
+  
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
+            <h1 className="text-2xl font-bold mb-6 text-center">Reset Password</h1>
+
+            <form onSubmit={handleSubmit}>
+
+            
               {/* Email Field */}
               <label className="block mb-2 text-sm font-medium">Email</label> 
               <input
@@ -68,13 +76,8 @@ const UpdatePass: React.FC = () => {
               value={email}
               onChange={handleEmailChange}
               />
-          </>
-      )
-  }
-
-    function Password () {
-        return (
-            <>
+          
+              
                 {/* Password Field */}
               <label className="block mb-2 text-sm font-medium">New Password</label>
               <input
@@ -94,19 +97,7 @@ const UpdatePass: React.FC = () => {
                 value={new_password_again}
                 onChange={handlePasswordAgainChange}
               />
-            </>
-        )
-    }
-
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-white">
-          <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
-            <h1 className="text-2xl font-bold mb-6 text-center">Reset Password</h1>
-
-            <form onSubmit={handleSubmit}>
-
-                <Email />
-                <Password />
+          
             
               {/* Submit Button */}
               <button 

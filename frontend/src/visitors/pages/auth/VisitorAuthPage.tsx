@@ -34,7 +34,7 @@ const VisitorAuthPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the default form submission behavior
   
-    const endpoint = isLogin ? "http://localhost:8000/login" : "http://localhost:8000/register";
+    const endpoint = isLogin ? "http://localhost:8000/auth/login" : "http://localhost:8000/auth/register";
     
     const body = isLogin
       ? JSON.stringify({ email, password })
@@ -140,7 +140,7 @@ const VisitorAuthPage: React.FC = () => {
         <p className="text-center">
             <span
               className="text-blue-500 cursor-pointer"
-              onClick={() => navigate('/visitor/UpdatePass')}
+              onClick={() => navigate('/auth/RecoverEmail')}
             >
               {isLogin ? "Frogot your password?" : ''}{' '}
             </span>

@@ -14,7 +14,7 @@ const RecoverEmail: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault(); // Prevent the default form submission behavior
 
-        const endpoint = "http://localhost:8000/reset-password"  ;
+        const endpoint = "http://localhost:8000/auth/send_forget_password_link";
         console.log("Passed email is ", email)
         const body = JSON.stringify({email: email});
         try {
@@ -31,7 +31,7 @@ const RecoverEmail: React.FC = () => {
           alert("Succesfully reset password")
           console.log(`Request successful with status code: ${res.status}`);
           console.log(data);
-          //navigate('/visitor/UpdatePass');
+         // navigate('/visitor/UpdatePass');
           
         } else {
           const errorData = await res.json();
@@ -42,8 +42,15 @@ const RecoverEmail: React.FC = () => {
       }
     }
 
-    function Email () {
-        return (
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
+            <h1 className="text-2xl font-bold mb-6 text-center">Reset Password</h1>
+
+            
+            <form onSubmit={handleSubmit}>
+    
             <>
                 {/* Email Field */}
                 <label className="block mb-2 text-sm font-medium">Recovery Email</label> 
@@ -55,18 +62,6 @@ const RecoverEmail: React.FC = () => {
                 onChange={handleEmailChange}
                 />
             </>
-        )
-    }
-
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-white">
-          <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
-            <h1 className="text-2xl font-bold mb-6 text-center">Reset Password</h1>
-
-            
-            <form onSubmit={handleSubmit}>
-    
-              <Email />
             
               {/* Submit Button */}
               <button 
