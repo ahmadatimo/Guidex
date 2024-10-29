@@ -1,16 +1,16 @@
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/ReactToastify.css";
-import SideBar from '../components/SideBar';
+import Sidebar from '../components/SideBar';
 
-const MainLayout = () => {
+const VisitorLayout = () => {
     return (
         <>
-            <SideBar /> 
+            <Sidebar />
             <Outlet />
             <ToastContainer/>
         </>
     )
 }
 
-export default MainLayout
+export default VisitorLayout

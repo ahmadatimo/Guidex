@@ -8,6 +8,7 @@ import StaffHomePage from './staff/pages/home/Home';
 import RecoverEmail from './pages/auth/resetPass/RecoverEmail';
 import UpdatePass from './pages/auth/resetPass/UpdatePass';
 import DeleteUser from './visitors/pages/DeleteUser/DeleteUser';
+import VisitorLayout from './layouts/VisitorLayout';
 
 const App = () => {
   const router = createBrowserRouter(
@@ -16,7 +17,11 @@ const App = () => {
         <Route index={true} element={<AuthPage />} />
         <Route path='/visitor/auth' element={<VisitorAuthPage />} />
         <Route path='/staff/auth' element={<StaffAuthPage />} />
-        <Route path='/visitor/home' element={<VisitorHomePage />} />
+        
+        <Route path='/visitor' element={<VisitorLayout />} >
+          <Route path='/visitor/home' element={<VisitorHomePage />} />
+        </Route>
+        
         <Route path='/staff/home' element={<StaffHomePage />} />
         <Route path='/auth/RecoverEmail' element={<RecoverEmail />} />
         <Route path='/auth/UpdatePass' element={<UpdatePass />} />
