@@ -1,50 +1,90 @@
 import { useState } from 'react';
-import { TiChevronRight } from "react-icons/ti";
-import { TiChevronLeft } from "react-icons/ti";
+import {
+  AiOutlineHome,
+  AiOutlineUser,
+  AiOutlineSetting,
+  AiOutlineLogout,
+} from 'react-icons/ai';
+import { FiChevronLeft } from 'react-icons/fi';
+import { useUserContext } from '../ Constext/context';
+
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
-
+  const user = useUserContext();
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   return (
     <>
-      {/* Toggle button placed outside the sidebar */}
-      <button
-        onClick={toggleSidebar}
-        className={`fixed top-4 left-4 p-2 bg-gray-700 text-orange-juice font-bold rounded-2xl hover:bg-gray-600 focus:outline-none transition-transform duration-300 ${
-          isOpen ? 'translate-x-60' : 'translate-x-0'
-        }`}
-      >
-        {isOpen ? <TiChevronLeft/> : <TiChevronRight/> }
-      </button>
-
       {/* Sidebar */}
       <div
-        className={`absolute h-[95vh] w-60 transition-transform duration-300 transform ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } bg-light-blue`}
+        className={`bg-white shadow-lg transition-all duration-300 ease-in-out ${
+          isOpen ? 'w-60' : 'w-16'
+        } flex flex-col h-full`}
       >
-        <nav>
-          <ul className="flex flex-col p-0 mt-4 space-y-4">
-            <li className="list-none">
-              <a href="#home" className="text-ayran no-underline text-2xl block hover:bg-orange-juice px-4 py-2">
-                Home
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between px-4 py-3 bg-blue-600">
+          {isOpen && (
+            <h2 className="text-lg font-semibold text-white">Welcome {user?.id}</h2>
+          ) }
+          <button
+            onClick={toggleSidebar}
+            className="text-white focus:outline-none"
+          >
+            <FiChevronLeft
+              size={24}
+              className={`transform transition-transform duration-300 ${
+                isOpen ? '' : 'rotate-180'
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Navigation Items */}
+        <nav className="mt-4 flex-1 overflow-hidden">
+          <ul className="flex flex-col space-y-1">
+            <li>
+              <a
+                href="#home"
+                className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
+                  !isOpen ? 'justify-center' : ''
+                }`}
+              >
+                <AiOutlineHome size={24} className="flex-shrink-0" />
+                {isOpen && <span className="ml-3">Home</span>}
               </a>
             </li>
-            <li className="list-none">
-              <a href="#profile" className="text-ayran no-underline text-2xl block hover:bg-orange-juice px-4 py-2">
-                Profile
+            <li>
+              <a
+                href="#profile"
+                className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
+                  !isOpen ? 'justify-center' : ''
+                }`}
+              >
+                <AiOutlineUser size={24} className="flex-shrink-0" />
+                {isOpen && <span className="ml-3">Profile</span>}
               </a>
             </li>
-            <li className="list-none">
-              <a href="#settings" className="text-ayran no-underline text-2xl block hover:bg-orange-juice px-4 py-2">
-                Settings
+            <li>
+              <a
+                href="#settings"
+                className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
+                  !isOpen ? 'justify-center' : ''
+                }`}
+              >
+                <AiOutlineSetting size={24} className="flex-shrink-0" />
+                {isOpen && <span className="ml-3">Settings</span>}
               </a>
             </li>
-            <li className="list-none">
-              <a href="#logout" className="text-ayran no-underline text-2xl block hover:bg-orange-juice px-4 py-2">
-                Logout
+            <li>
+              <a
+                href="#home"
+                className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
+                  !isOpen ? 'justify-center' : ''
+                }`}
+              >
+                <AiOutlineLogout size={24} className="flex-shrink-0" />
+                {isOpen && <span className="ml-3">Logout</span>}
               </a>
             </li>
           </ul>
