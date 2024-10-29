@@ -1,12 +1,10 @@
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/ReactToastify.css";
-import SideBar from '../components/SideBar';
 
 const MainLayout = () => {
     return (
         <>
-            <SideBar /> 
             <Outlet />
             <ToastContainer/>
         </>
