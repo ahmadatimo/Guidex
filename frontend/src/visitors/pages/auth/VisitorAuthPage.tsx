@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User } from '@supabase/supabase-js';
+import { useUserContext } from "../../../ Constext/context";
 
 
-interface VisitorAuthPageProps {
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-}
-
-
-const VisitorAuthPage: React.FC<VisitorAuthPageProps> = ({ setUser }) => {
+const VisitorAuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
   const [school, setSchool] = useState(""); // State for high school dropdown
   const [name, setName] = useState(""); // State for name input
   const [email, setEmail] = useState(""); // State for email input
   const [password, setPassword] = useState(""); // State for password input
   const navigate = useNavigate(); // Initialize useNavigate for redirection if needed
+  
+  const { setUser } = useUserContext();
 
   // Dummy data for high school dropdown
   const highSchools = ["High School A", "High School B", "High School C"];
@@ -59,7 +56,7 @@ const VisitorAuthPage: React.FC<VisitorAuthPageProps> = ({ setUser }) => {
       setUser(data);
       console.log(`Request successful with status code: ${res.status}`);
 
-      //navigate("/visitor/home"); //problem
+      navigate("/visitor/home"); //problem
     } else {
       console.error(`Failed to fetch data: ${res.status}`);
     }

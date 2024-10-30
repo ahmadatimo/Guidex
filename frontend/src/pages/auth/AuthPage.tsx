@@ -11,7 +11,7 @@ const AuthPage: React.FC = () => {
 
   const handleContinue = () => {
     if (role === 'highschool') {
-      navigate('/visitor/pages');
+      navigate('/visitor/auth');
     } else if (role === 'university') {
       navigate('/staff/auth');
     }

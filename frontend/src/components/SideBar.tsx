@@ -7,12 +7,18 @@ import {
 } from 'react-icons/ai';
 import { FiChevronLeft } from 'react-icons/fi';
 import { useUserContext } from '../ Constext/context';
-
+import { Link, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const user = useUserContext();
   const toggleSidebar = () => setIsOpen(!isOpen);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    user.setUser(null)
+    navigate('/visitor/auth')
+  }
 
   return (
     <>
@@ -25,7 +31,7 @@ const Sidebar = () => {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-blue-600">
           {isOpen && (
-            <h2 className="text-lg font-semibold text-white">Welcome {user?.id}</h2>
+            <h2 className="text-lg font-semibold text-white">Welcome {user?.user?.id}</h2>
           ) }
           <button
             onClick={toggleSidebar}
@@ -44,48 +50,51 @@ const Sidebar = () => {
         <nav className="mt-4 flex-1 overflow-hidden">
           <ul className="flex flex-col space-y-1">
             <li>
-              <a
-                href="#home"
+              <Link
+                to='/visitor/home'
+                relative='path'
                 className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
                   !isOpen ? 'justify-center' : ''
                 }`}
               >
                 <AiOutlineHome size={24} className="flex-shrink-0" />
                 {isOpen && <span className="ml-3">Home</span>}
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#profile"
+            <Link
+                to='/visitor/profile'
+                relative='path'
                 className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
                   !isOpen ? 'justify-center' : ''
                 }`}
               >
                 <AiOutlineUser size={24} className="flex-shrink-0" />
                 {isOpen && <span className="ml-3">Profile</span>}
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#settings"
+            <Link
+                to='/visitor/settings'
+                relative='path'
                 className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
                   !isOpen ? 'justify-center' : ''
                 }`}
               >
                 <AiOutlineSetting size={24} className="flex-shrink-0" />
                 {isOpen && <span className="ml-3">Settings</span>}
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#home"
+            <div
+                onClick={handleLogout}
                 className={`flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 transition-colors ${
                   !isOpen ? 'justify-center' : ''
                 }`}
               >
                 <AiOutlineLogout size={24} className="flex-shrink-0" />
                 {isOpen && <span className="ml-3">Logout</span>}
-              </a>
+              </div>
             </li>
           </ul>
         </nav>
