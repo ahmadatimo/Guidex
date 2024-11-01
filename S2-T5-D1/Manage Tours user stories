@@ -1,0 +1,36 @@
+<Actor> 	as a student
+<Action>	I want to book an appointment to visit Bilkent university 
+<Value>  	to see if it suitable for me.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as a school
+<Action>	I want to book an appointment to visit Bilkent university 
+<Value>  	to inform my students about how good the university is.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as a coordinator
+<Action>	I have to manage the schedules  
+<Value>  	to respond to the upcoming requests.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as a coordinator
+<Action>	I must respond to the customers
+<Value>  	to inform them if we can serve them at the date & time they chose.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as a coordinator
+<Action>	I want to assign a guide
+<Value>  	to serve the visitors.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as a guide
+<Action>	I want to receive the assigning request
+<Value>  	to be able to approve it or decline it.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as a coordinator
+<Action>	I want to have access to the data chart
+<Value>  	to see which schools are our loyal customers.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as an admin
+<Action>	I want to have access to the data chart
+<Value>  	to see which school I can visit and make it loyal to Bilkent.
+--------------------------------------------------------------------------------------------------
+<Actor> 	as an advisor
+<Action>	I want to have access to the data chart
+<Value>  	to help giving the visitors better experiences by giving updates to the guiding team.
+
