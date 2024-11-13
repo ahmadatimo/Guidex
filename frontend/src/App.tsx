@@ -6,7 +6,7 @@ import StaffHomePage from './staff/pages/home/Home';
 import RecoverEmail from './pages/auth/resetPass/RecoverEmail';
 import UpdatePass from './pages/auth/resetPass/UpdatePass';
 import DeleteUser from './visitors/pages/DeleteUser/DeleteUser';
-import { DashboardContextProvider} from './ Constext/context';
+import { DashboardContextProvider} from './ Constexts/context';
 import VisitorAuthPage from './visitors/pages/auth/VisitorAuthPage';
 import Home from './visitors/pages/home/Home';
 import VisitorLayout from './layouts/VisitorLayout';

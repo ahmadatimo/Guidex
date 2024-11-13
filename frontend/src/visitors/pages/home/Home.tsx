@@ -1,5 +1,5 @@
 import React from 'react';
-import { useUserContext } from '../../../ Constext/context';
+import { useUserContext } from '../../../ Constexts/context';
 
 const Home: React.FC = () => {
   const user = useUserContext();

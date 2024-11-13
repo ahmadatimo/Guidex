@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../../../ Constext/context";
+import { useUserContext } from "../../../ Constexts/context";
 
 
 const VisitorAuthPage: React.FC = () => {
