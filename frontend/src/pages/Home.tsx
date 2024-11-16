@@ -1,11 +1,20 @@
-export default function Home() {
+import React from 'react';
+import HeroSection from '../components/HeroSection';
+import WhyVisitSection from '../components/WhyVisitSection';
+import Testimonials from '../components/Testimonials';
+import HowItWorks from '../components/HowItWorks';
+import CallToAction from '../components/CallToAction';
+
+const Home: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Hello this is the Home
-        </h1>
-      </div>
-    </div>
+    <>
+      <HeroSection />
+      <WhyVisitSection />
+      <Testimonials />
+      <HowItWorks />
+      <CallToAction />
+    </>   
   );
-}
+};
+
+export default Home;
