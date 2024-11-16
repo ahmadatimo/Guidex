@@ -6,8 +6,9 @@ import {
   AiOutlineLogout,
 } from 'react-icons/ai';
 import { FiChevronLeft } from 'react-icons/fi';
-import { useUserContext } from '../ Constexts/context';
+
 import { Link, useNavigate } from 'react-router-dom';
+import { useUserContext } from '../context/context';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
