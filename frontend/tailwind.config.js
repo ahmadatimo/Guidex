@@ -13,6 +13,7 @@ export default {
         "light-blue" : "#37AFE1",
         "orange-juice" : "#ffb703",
         "ayran" : "#ffff",
+        "primary" : "#5f6FFF"
       },
     },
   },
