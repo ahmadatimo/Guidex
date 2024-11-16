@@ -6,7 +6,7 @@ import {
   AiOutlineLogout,
 } from 'react-icons/ai';
 import { FiChevronLeft } from 'react-icons/fi';
-import { useUserContext } from '../ Constext/context';
+import { useUserContext } from '../ Constexts/context';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
