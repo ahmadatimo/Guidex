@@ -3,7 +3,7 @@ import HeroSection from '../components/HeroSection';
 import WhyVisitSection from '../components/WhyVisitSection';
 import Testimonials from '../components/Testimonials';
 import HowItWorks from '../components/HowItWorks';
-import CallToAction from '../components/CallToAction';
+
 
 const Home: React.FC = () => {
   return (
@@ -12,7 +12,6 @@ const Home: React.FC = () => {
       <WhyVisitSection />
       <Testimonials />
       <HowItWorks />
-      <CallToAction />
     </>   
   );
 };
