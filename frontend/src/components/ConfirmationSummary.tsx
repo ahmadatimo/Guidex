@@ -13,7 +13,7 @@ interface ConfirmationSummaryProps {
   const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ user, data, onEdit }) => {
     const navigate = useNavigate();
     const clicked = () => {
-        toast('Your appointment will be processed shortly'); // Show the toast
+        toast.success('Your appointment will be processed shortly');
         navigate('/')
     }
     return (

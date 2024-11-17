@@ -5,8 +5,8 @@ import { toast } from 'react-toastify';
 const Contact: React.FC = () => {
   const navigate = useNavigate();
   const clicked = () => {
-    //navigate('/');
-    toast('Message sent.\nThanks for your question.');
+    navigate('/');
+    toast.success('Message sent.\nThanks for your question.');
   }
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
