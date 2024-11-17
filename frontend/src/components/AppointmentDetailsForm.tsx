@@ -32,6 +32,7 @@ interface AppointmentDetailsFormProps {
                 onUpdateData('groupSize', Number(e.target.value))}
             min={5}
             className="w-full p-2 border rounded"
+            required
           />
           {/* <select
             value={data.visitType}
