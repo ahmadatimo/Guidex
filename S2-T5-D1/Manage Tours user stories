@@ -22,14 +22,6 @@
 <Action>	I want to receive the assigning request
 <Value>  	to be able to approve it or decline it.
 --------------------------------------------------------------------------------------------------
-<Actor> 	as a coordinator
-<Action>	I want to have access to the data chart
-<Value>  	to see which schools are our loyal customers.
---------------------------------------------------------------------------------------------------
-<Actor> 	as an admin
-<Action>	I want to have access to the data chart
-<Value>  	to see which school I can visit and make it loyal to Bilkent.
---------------------------------------------------------------------------------------------------
 <Actor> 	as an advisor
 <Action>	I want to have access to the data chart
 <Value>  	to help giving the visitors better experiences by giving updates to the guiding team.
