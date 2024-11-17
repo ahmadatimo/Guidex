@@ -7,6 +7,9 @@ import MyProfile from "./pages/MyProfile"
 import MyAppointments from "./pages/MyAppointments"
 import NavBar from "./components/NavBar"
 import Appointment from "./pages/Appointment"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const App = () => {
   return (
     <div className="mx-4 sm:mx-[10%]">
@@ -19,9 +22,8 @@ const App = () => {
         <Route path='/my-profile' element={<MyProfile/>}/>
         <Route path='/my-appointments' element={<MyAppointments/>}/>
         <Route path='/appointment' element={<Appointment />} />
-
       </Routes>
-      
+      <ToastContainer />
     </div>
   )
 }
