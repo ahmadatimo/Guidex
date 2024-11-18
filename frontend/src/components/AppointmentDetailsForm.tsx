@@ -32,6 +32,7 @@ interface AppointmentDetailsFormProps {
                 onUpdateData('groupSize', Number(e.target.value))}
             min={5}
             className="w-full p-2 border rounded"
+            required
           />
           {/* <select
             value={data.visitType}
@@ -52,7 +53,9 @@ interface AppointmentDetailsFormProps {
           />
         <button
             type="button"
-            onClick={() => data.groupSize < 5 ? toast('Group size must be at least 5!'): onNext()}
+            onClick={() => data.groupSize < 5 ? toast.error('Group size must be at least 5!', {
+              pauseOnHover: true 
+            }): onNext()}
             className="bg-blue-600 text-white py-2 px-4 rounded"
         >
             Next

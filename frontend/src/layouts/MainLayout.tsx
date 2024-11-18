@@ -4,10 +4,10 @@ import "react-toastify/ReactToastify.css";
 
 const MainLayout = () => {
     return (
-        <>
-            <Outlet />
-            <ToastContainer/>
-        </>
+      <>
+        <Outlet />
+        <ToastContainer/>
+      </>
     )
 }
 
