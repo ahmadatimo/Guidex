@@ -1,6 +1,6 @@
 import React from 'react'
 
-const MyAppointments = () => {
+const MyAppointments: React.FC = () => {
   return (
     <div>MyAppointments</div>
   )
