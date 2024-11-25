@@ -4,12 +4,20 @@ services:
   backend:
     build:
       context: ./backend
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: root
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: guidex
+
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
     networks:
       - app-network
+    depends_on:
+      - db
 
   frontend:
     build:
@@ -23,6 +31,18 @@ services:
       - app-network
     depends_on:
       - backend
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: guidex
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - app-network
 
 networks:
   app-network:

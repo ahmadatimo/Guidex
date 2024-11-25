@@ -1,0 +1,35 @@
+<Actor> as a visitor
+<Action> I want to be able to authorize and authenticate myself
+<Value> and access all of my personal data such as my previous feedbacks and appointments.
+
+---
+
+<Actor> as a guide
+<Action> I want to authenticate and authorze myself
+<Value> to see all of my incoming appointments and assigments and to respond for them
+
+---
+
+<Actor> as a coordinator
+<Action> I want to authorize and authenticate myself
+<Value> to assign incoming appointments to guides and review all of the feedbacks
+
+---
+
+<Actor> as a visitor
+<Action> I want to create my own account
+<Value> to be my data persistent
+
+---
+
+<Actor> as a guide
+<Action> I want to be able to create my own account
+<Value> to view my personal data and edit them like profile pictures, appointments etc
+
+---
+
+<Actor> as a coordinator
+<Action> I want to create my own account
+<Value> to see the me personal data and see other guides and visitors data as well such as pictures appointments and etc.
+
+---
