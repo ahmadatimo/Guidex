@@ -1,6 +1,7 @@
 import React from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import ScrollToTop from "../components/TopScroll";
 import { Outlet } from "react-router-dom";
 
 const VisitorLayout: React.FC = () => {
@@ -10,6 +11,7 @@ const VisitorLayout: React.FC = () => {
         <NavBar />
       </div>
       <Outlet /> 
+      <ScrollToTop />
       <Footer />
     </div>
   );

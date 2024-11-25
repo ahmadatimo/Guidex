@@ -1,58 +1,96 @@
-// import { useNavigate } from "react-router-dom";
-// const CallToAction: React.FC = () => {
-//   const navigate = useNavigate();
-//     return (
-//       <section className="py-12 bg-blue-600 text-white text-center">
-//         <h2 className="text-3xl font-bold mb-4">Ready to Explore?</h2>
-//         <p className="mb-6">Schedule your campus tour today and start your journey with us.</p>
-//         <button onClick={() => {navigate('/appointment')}} className="bg-white text-blue-600 font-bold py-3 px-6 rounded hover:bg-gray-200">Schedule Your Tour</button>
-//       </section>
-//     );
-//   };
-  
-//   export default CallToAction;
-  
+import { useNavigate } from "react-router-dom";
+
 const Footer = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="md:mx-10">
-        <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-40 text-sm" >
-            {/* Left Section*/}
-            <div>
-                <img className=" mb-5 w-64" src="/assets/bilkent_logo_with_label.jpg" alt="Bilkeent Logo With Label" />
-                <p className="w-full md:w-2/3 text-gray-600 leading-6"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse</p>
-            </div>
-
-            {/* Center Section */}
-            <div>
-                <p className="text-xl font-medium mb-5 "> GUIDEX</p>
-                <ul className="flex flex-col gap-2 text-gray-600">
-                    <li>Home</li>
-                    <li>About Us</li>
-                    <li>Contact Us</li>
-                    <li>Privacy Policy</li>
-                </ul>
-            </div>
-            
-            {/* Right Section*/}
-            <div>
-                <p className="text-xl font-medium mb-5 "> GET IN TOUCH</p>
-                <ul className="flex flex-col gap-2 text-gray-600">
-                    <li>+90 506 909 38 05</li>
-                    <li> 
-                        guidexdev@gmail.com
-                    </li>
-                </ul>
-            </div>
-            
+    <footer className="bg-gray-800 text-gray-300">
+      <div className="container mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-[2fr_1fr_1fr] gap-8">
+        {/* Left Section */}
+        <div className="space-y-4">
+          <img
+            className="w-32"
+            src="/assets/bilkent_logo_with_label.jpg"
+            alt="Bilkent Logo With Label"
+          />
+          <p className="text-gray-400 text-sm leading-6">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
         </div>
 
+        {/* Center Section */}
         <div>
-             {/* Copyright Text */}
-             <hr />
-             <p className="py-5 text-sm text-center">Copyright 2024@ Guidex All Rights Reserved</p>
+          <p className="text-lg font-semibold mb-4">Quick Links</p>
+          <ul className="grid grid-cols-2 gap-4 text-sm">
+            <li>
+              <button
+                onClick={() => navigate("/")}
+                className="hover:text-blue-400 transition-all"
+              >
+                Home
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => navigate("/About")}
+                className="hover:text-blue-400 transition-all"
+              >
+                About Us
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => navigate("/Contact")}
+                className="hover:text-blue-400 transition-all"
+              >
+                Contact Us
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => navigate("/")}
+                className="hover:text-blue-400 transition-all"
+              >
+                Privacy Policy
+              </button>
+            </li>
+          </ul>
         </div>
-    </div>
-  )
-}
 
-export default Footer
+        {/* Right Section */}
+        <div>
+          <p className="text-lg font-semibold mb-4">Get In Touch</p>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <a
+                href="tel:+90 506 909 38 05"
+                className="hover:text-blue-400 transition-all"
+              >
+                +90 506 909 38 05
+              </a>
+            </li>
+            <li>
+              <a
+                href="mailto:guidexdev@gmail.com"
+                className="hover:text-blue-400 transition-all"
+              >
+                guidexdev@gmail.com
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Footer Bottom Section */}
+      <div className="bg-gray-900 py-3">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-xs text-gray-400">
+            &copy; 2024 Guidex. All Rights Reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
