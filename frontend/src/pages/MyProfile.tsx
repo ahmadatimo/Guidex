@@ -7,7 +7,7 @@ const MyProfile: React.FC = () => {
     image:"public/assets/Maksat_Abrayev.jpg",
     email: "MaksatAbrayev@gmail.com",
     phone: "+90 506 909 38 05",
-    address: "Bilkent üniversiteler mahallesi, Ankara, Turkey",
+    address: "Bilkent University 06800 Bilkent, Ankara, Türkiye",
     gender: "Male",
     BirthDate: "02-06-2004",
     
@@ -68,8 +68,10 @@ const MyProfile: React.FC = () => {
         <div className='mt-10'>
             {
               isEdit? 
-              <button className='border border-primary px-8 py-2 rounded-full' onClick={() => setIsEdit(false)}>Save Changes</button>:
-              <button className='border border-primary px-8 py-2 rounded-full' onClick={() => setIsEdit(true)}>Edit</button>
+              <button className = 'border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all' 
+              onClick={() => setIsEdit(false)}>Save Changes</button>:
+              <button className = 'border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all' 
+              onClick={() => setIsEdit(true)}>Edit</button>
             }
         </div>
     </div>

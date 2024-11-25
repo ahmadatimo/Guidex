@@ -10,7 +10,6 @@ export const DashboardContext = createContext<DashboardContextType | null>(null)
 
 export const DashboardContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-
   return (
     <DashboardContext.Provider value={{ user, setUser }}>
       {children}
@@ -26,3 +25,4 @@ export function useUserContext() {
   }
   return context;
 }
+
