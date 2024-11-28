@@ -14,7 +14,7 @@ const MyProfile: React.FC = () => {
   const [isEdit, setIsEdit] = useState(false);
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg space-y-6 my-25">
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg space-y-6 mt-16 mb-8">
       {/* Profile Picture */}
       <div className="flex flex-col items-center">
         <img
