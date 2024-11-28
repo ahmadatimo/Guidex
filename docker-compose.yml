@@ -5,10 +5,10 @@ services:
     build:
       context: ./backend
     environment:
-      DATABASE_HOST: db
-      DATABASE_USER: root
-      DATABASE_PASSWORD: password
-      DATABASE_NAME: guidex
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_NAME: guidex
 
     ports:
       - "8000:8000"
@@ -17,7 +17,8 @@ services:
     networks:
       - app-network
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -33,17 +34,22 @@ services:
       - backend
 
   db:
-    image: mysql:5.7
+    image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: guidex
+      MYSQL_PASSWORD: password
+    
     ports:
       - "3307:3306"
-    volumes:
-      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
 
 networks:
   app-network:
     driver: bridge
+
