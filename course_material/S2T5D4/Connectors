@@ -1,0 +1,18 @@
+Connectors in Our System
+In our software system, connectors are the mechanisms that enable communication between different components, ensuring smooth interaction and data flow. For our project, we used the following connectors:
+
+HTTP API for Frontend-Backend Communication
+We employed FastAPI to serve as the connector between the React TypeScript frontend and the Python backend. The frontend communicates with the backend through RESTful API calls over HTTP. This connector was chosen for its simplicity, scalability, and the clear separation of concerns it provides. FastAPI was specifically selected due to its high performance & speed (Fast), automatic generation of API documentation (using Swagger), and ease of integration with modern frontend frameworks like React.
+
+Database Connector (SQLAlchemy)
+We used SQLAlchemy To bridge the backend logic with the PostgreSQL database as an Object Relational Mapper (ORM). This connector provides a clean interface for database operations. SQLAlchemy was chosen because of its mature ecosystem, flexibility in handling complex queries, and seamless compatibility with FastAPI.
+
+Asynchronous Communication in the Backend
+FastAPI's support for asynchronous programming allows for efficient handling of multiple requests concurrently. This internal connector mechanism ensures non-blocking I/O operations, which is particularly beneficial when interacting with the database or serving multiple API requests.
+
+Why We Chose These Connectors
+Each connector was selected based on careful consideration of tradeoffs such as performance, maintainability, and ease of use:
+
+FastAPI and SQLAlchemy enable rapid development without sacrificing performance.
+Asynchronous communication in FastAPI was crucial for optimizing response times in a web application.
+Overall, these connectors align with our design goals of scalability, performance, and developer productivity.
