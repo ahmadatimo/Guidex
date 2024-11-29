@@ -1,0 +1,64 @@
+Architectural Style: Layered Architecture
+Overview
+Layered architecture divides the application into distinct layers, each responsible for a specific concern. The layers interact only with their adjacent layers, promoting separation of concerns and modular design. A typical layered architecture consists of:
+
+Presentation Layer: Handles user interactions and displays data.
+Application Layer: Implements business logic and processes user inputs.
+Domain Layer: Manages the core functionality and rules of the system.
+Data Access Layer: Handles interactions with the database or external data sources.
+Why Layered Architecture?
+1. Modularity and Separation of Concerns
+Each layer addresses a specific responsibility:
+
+The presentation layer focuses on user interaction and UI/UX design.
+The business logic layer ensures the functionality meets the project’s goals.
+The data access layer isolates database-related tasks, simplifying changes to the database schema.
+This separation makes the system easier to understand, test, and maintain.
+
+2. Scalability
+With a growing number of users (students, counselors, Bilkent staff), the layered architecture allows scaling individual components without affecting others. For instance, you could replace the presentation layer to support mobile platforms without altering the backend logic.
+
+3. Maintainability
+The modular design ensures that updates to one layer (e.g., changing authentication logic) don’t cascade into others. This reduces development time and risks when introducing new features.
+
+4. Testability
+Each layer can be tested independently. For instance:
+
+The presentation layer can be tested using UI testing tools.
+The business logic can undergo unit testing.
+The data access layer can be tested with mock databases.
+5. Reusability
+Code in one layer (e.g., business rules for handling appointment scheduling) can be reused across different interfaces (web, mobile, etc.), reducing development effort.
+
+6. Alignment with Project Needs
+The tour registration system requires well-defined user interactions for high school students and university staff. The layered architecture ensures clear boundaries between the UI (for different stakeholders) and backend logic.
+It supports multiple authentication levels (students, counselors, staff) effectively by segregating the responsibilities of the layers.
+Feedback collection and analysis, as mentioned in your use case, require distinct processing flows that fit well in separate layers.
+Comparison to Alternatives
+1. Microservices Architecture
+While microservices offer scalability and independent deployment of components, they add complexity in terms of orchestration and inter-service communication. For a relatively small-scale system like this, the complexity of microservices would outweigh the benefits.
+
+2. Event-Driven Architecture
+Event-driven systems are great for asynchronous operations, but your system’s main focus—appointment scheduling, feedback management, and visualization—benefits more from synchronous operations and predictable workflows.
+
+3. Monolithic Architecture
+A monolithic approach might simplify initial development but lacks the modularity, scalability, and maintainability required for future system extensions.
+
+Layered Architecture in the Context of This System
+Presentation Layer
+
+Tools: React/Next.js
+Purpose: Provides a user-friendly interface for students, counselors, and Bilkent staff to register for tours, manage appointments, and give feedback.
+Business Logic Layer
+
+Tools: FastAPI (Python)
+Purpose: Implements the core functionality of the system, such as user authentication, appointment scheduling, and feedback analysis.
+Data Access Layer
+
+Tools: Supabase/PostgreSQL
+Purpose: Interacts with the database to store user data, appointments, and feedback securely.
+Database Layer
+
+The database layer stores all system data, ensuring it is properly indexed and accessible for the application.
+Conclusion
+The Layered Architecture style was chosen for its ability to balance simplicity with scalability and maintainability. It aligns well with the project’s requirements, ensuring a robust, testable, and modular system design. Future enhancements, such as mobile app integration or advanced data analysis features, can be easily incorporated into this architecture.
