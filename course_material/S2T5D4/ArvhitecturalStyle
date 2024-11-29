@@ -1,41 +1,37 @@
-Layered Architecture 
-Layered architecture structures the system into distinct layers, ensuring separation of concerns, modularity, and maintainability. Each layer interacts only with its adjacent layers, offering a streamlined and scalable design.  
-Typical Layers:  
-1. Presentation Layer:  
+ 3-Tier Architecture  
+The system follows a Client-Server architectural style with a 3-tier model. This structure ensures separation of concerns, modularity, and maintainability by dividing responsibilities across three layers: Client (frontend), Application Logic (backend), and Data Access (database). Each layer has distinct roles and communicates with adjacent layers, providing a scalable and efficient design.  
+ Typical Layers  
+1. Client (Frontend):  
    - Tools: React + Vite  
-   - Purpose: Provides interfaces for end users (students, counselors, and staff) to interact with the system. Focuses on intuitive UI/UX for managing tours, appointments, and feedback.  
-2. Application Layer:  
+   - Purpose: Provides an intuitive interface for end users (students, counselors, and staff) to interact with the system. Focuses on intuitive UI/UX for managing tours, appointments, and feedback.  
+2. Application Logic (Backend):  
    - Tools: Python (FastAPI)  
-   - Purpose: Implements core business logic, such as authentication, appointment management, and feedback analysis. Serves as the bridge between the frontend and backend.  
-3. Data Access Layer:  
-   - Tools: SQLAlchemy (for MySQL)  
-   - Purpose: Abstracts database interactions, allowing for clean and maintainable queries. Manages user, appointment, and feedback data storage and retrieval.  
-4. Database Layer:  
-   - Tools: MySQL  
-   - Purpose: Physically stores and indexes system data, ensuring reliability and optimized querying.  
+   - Purpose: Handles core business logic, such as authentication, appointment scheduling, and feedback processing. Acts as the intermediary between the client and database layers. 
+3. Data Access (Database):  
+   - Tools: MySQL with SQLAlchemy ORM  
+   - Purpose: Manages the storage and retrieval of system data, including users, appointments, and feedback. Abstracts low-level database interactions to ensure maintainability and performance.  
 ---
- Benefits  
+ Benefits of 3-Tier Architecture  
 1. Modularity:  
-   - Clear division of responsibilities simplifies debugging, updates, and collaboration.  
+   - Clear separation of responsibilities across tiers simplifies debugging, updates, and collaboration.  
 2. Scalability:  
-   - Easily extendable for new features, e.g., adding analytics or mobile interfaces.  
+   - Allows easy extension for new features, e.g., adding a mobile client or analytics dashboards.  
 3. Maintainability:  
-   - Updates to one layer (e.g., backend logic) do not require changes in others.  
+   - Changes to one tier, such as the backend logic, do not directly impact other tiers.  
 4. Testability:  
-   - Enables independent testing of UI, logic, and data components.  
+   - Enables independent testing of UI components, business logic, and database queries.  
 5. Reusability:  
-   - Backend logic and database models can be reused across different frontend interfaces or platforms.  
+   - Backend services and database models can be reused across different client interfaces (e.g., mobile apps or web).  
 6. Alignment with Project Needs:  
-   - Supports the structured workflows of multi-role users (students, counselors, and staff).  
-   - Effectively handles complex requirements like authentication and feedback management.  
+   - Effectively supports multi-role workflows for students, counselors, and staff.  
+   - Simplifies handling of complex requirements like authentication and feedback.  
 ---
  Comparison to Alternatives  
 1. Microservices:  
-   - Overkill for the current scope and team size. Layered architecture is simpler to implement and manage.  
+   - Overkill for the current project scope and team size. The 3-tier model is simpler to implement and manage.  
 2. Event-Driven:  
-   - Not suitable as synchronous workflows dominate project requirements.  
+   - Unsuitable for this project as synchronous workflows dominate, such as booking appointments and immediate feedback submission.  
 3. Monolithic:  
-   - While simpler to start, it lacks the scalability and flexibility required for potential future growth, such as incorporating mobile apps or additional services.  
----
+   - While easier to start, it lacks the modularity and scalability offered by the 3-tier architecture, especially for potential growth like integrating a mobile client or adding advanced analytics.  
  Conclusion  
-The chosen layered architecture, updated with React + Vite, Python (FastAPI), and MySQL with SQLAlchemy, offers a balanced approach. It provides a clean, scalable, and maintainable structure that fits the project’s requirements while being flexible enough to adapt to future enhancements. This architecture ensures a robust system that aligns with current development tools and methodologies.  
+The chosen 3-tier architecture—with React + Vite for the client, Python (FastAPI) for application logic, and MySQL with SQLAlchemy for data access—offers a robust and flexible structure. It aligns with project needs and ensures scalability, maintainability, and testability. This architecture is well-suited to the current development team and project scope while being adaptable to future enhancements.  
