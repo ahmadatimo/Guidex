@@ -1,31 +1,41 @@
-### Layered Architecture Overview  
-Layered architecture structures an application into distinct layers, each handling a specific responsibility. Layers interact only with adjacent ones, promoting separation of concerns, modularity, and ease of maintenance.  
-**Typical Layers:**  
-1. **Presentation Layer**: Manages user interactions and displays data.  
-   - Tools: React/Next.js.  
-   - Purpose: Provides interfaces for students, counselors, and staff to manage tours, appointments, and feedback.  
-2. **Application Layer**: Implements business logic.  
-   - Tools: FastAPI (Python).  
-   - Purpose: Handles authentication, appointment scheduling, and feedback analysis.  
-3. **Data Access Layer**: Interacts with databases or external data.  
-   - Tools: Supabase/PostgreSQL.  
-   - Purpose: Manages data storage for users, appointments, and feedback.  
-4. **Database Layer**: Stores and indexes all system data.  
+Layered Architecture 
+Layered architecture structures the system into distinct layers, ensuring separation of concerns, modularity, and maintainability. Each layer interacts only with its adjacent layers, offering a streamlined and scalable design.  
+Typical Layers:  
+1. Presentation Layer:  
+   - Tools: React + Vite  
+   - Purpose: Provides interfaces for end users (students, counselors, and staff) to interact with the system. Focuses on intuitive UI/UX for managing tours, appointments, and feedback.  
+2. Application Layer:  
+   - Tools: Python (FastAPI)  
+   - Purpose: Implements core business logic, such as authentication, appointment management, and feedback analysis. Serves as the bridge between the frontend and backend.  
+3. Data Access Layer:  
+   - Tools: SQLAlchemy (for MySQL)  
+   - Purpose: Abstracts database interactions, allowing for clean and maintainable queries. Manages user, appointment, and feedback data storage and retrieval.  
+4. Database Layer:  
+   - Tools: MySQL  
+   - Purpose: Physically stores and indexes system data, ensuring reliability and optimized querying.  
 ---
-### Benefits  
-1. **Modularity**: Separation of concerns simplifies maintenance and understanding.  
-2. **Scalability**: Allows scaling individual components without affecting others, e.g., adding mobile support without backend changes.  
-3. **Maintainability**: Updates in one layer don’t cascade into others.  
-4. **Testability**: Each layer is independently testable.  
-5. **Reusability**: Business rules can be reused across interfaces (web, mobile).  
-6. **Alignment with Project Needs**:  
-   - Supports distinct UI flows for students, counselors, and staff.  
-   - Handles multi-level authentication and feedback processing effectively.  
+ Benefits  
+1. Modularity:  
+   - Clear division of responsibilities simplifies debugging, updates, and collaboration.  
+2. Scalability:  
+   - Easily extendable for new features, e.g., adding analytics or mobile interfaces.  
+3. Maintainability:  
+   - Updates to one layer (e.g., backend logic) do not require changes in others.  
+4. Testability:  
+   - Enables independent testing of UI, logic, and data components.  
+5. Reusability:  
+   - Backend logic and database models can be reused across different frontend interfaces or platforms.  
+6. Alignment with Project Needs:  
+   - Supports the structured workflows of multi-role users (students, counselors, and staff).  
+   - Effectively handles complex requirements like authentication and feedback management.  
 ---
-### Comparison to Alternatives  
-1. **Microservices**: Too complex for this small-scale project.  
-2. **Event-Driven**: Less suitable due to the need for synchronous workflows.  
-3. **Monolithic**: Easier to start but lacks scalability and maintainability for future needs.  
+ Comparison to Alternatives  
+1. Microservices:  
+   - Overkill for the current scope and team size. Layered architecture is simpler to implement and manage.  
+2. Event-Driven:  
+   - Not suitable as synchronous workflows dominate project requirements.  
+3. Monolithic:  
+   - While simpler to start, it lacks the scalability and flexibility required for potential future growth, such as incorporating mobile apps or additional services.  
 ---
-### Conclusion  
-Layered architecture offers a balance of simplicity, scalability, and maintainability, fitting the project’s requirements. It ensures a robust, modular system that can evolve, supporting future enhancements like mobile apps or advanced analytics.  
+ Conclusion  
+The chosen layered architecture, updated with React + Vite, Python (FastAPI), and MySQL with SQLAlchemy, offers a balanced approach. It provides a clean, scalable, and maintainable structure that fits the project’s requirements while being flexible enough to adapt to future enhancements. This architecture ensures a robust system that aligns with current development tools and methodologies.  
