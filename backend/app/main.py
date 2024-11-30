@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from pydantic import BaseModel, EmailStr
 from typing import Annotated
-import models
-from database import engine, SessionLocal
+import app.models as models
+from app.database import engine, SessionLocal
 from sqlalchemy.orm import Session
 
 app = FastAPI()
@@ -13,7 +13,7 @@ class AppointmentBase(BaseModel):
 
 
 class UserBase(BaseModel):
-    user_email: EmailStr
+    user_email: EmailStr 
     password: str
     role:     str
 
