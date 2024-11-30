@@ -1,46 +1,13 @@
-from fastapi import FastAPI, HTTPException, Depends, status
-from pydantic import BaseModel, EmailStr
-from typing import Annotated
+from fastapi import FastAPI
 import app.models as models
-from app.database import engine, SessionLocal
-from sqlalchemy.orm import Session
-from passlib.context import CryptContext
+from app.database import engine
+from app.routers import auth, appointments
 
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
 
-class AppointmentBase(BaseModel):
-    user_id: int
-
-
-class UserBase(BaseModel):
-    user_email: EmailStr 
-    password: str
-    role:     str
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-db_dependency = Annotated[Session, Depends(get_db)]
-
-# Imported hashing function
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-@app.post("/users/", status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserBase, db: db_dependency):
-    db_user = models.User(**user.model_dump())
-    
-    # Password hashed before storing
-    db_user.password = hash_password(user.password)
-    db.add(db_user)
-    db.commit()
+app.include_router(auth.router)
+app.include_router(appointments.router)
 
 
 # Appointments func
