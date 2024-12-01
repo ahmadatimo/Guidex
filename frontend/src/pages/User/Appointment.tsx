@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import DateSelector from '../components/DateSelector';
-import TimeSelector from '../components/TimeSelector';
-import AppointmentDetailsForm from '../components/AppointmentDetailsForm';
-import ConfirmationSummary from '../components/ConfirmationSummary';
+import DateSelector from '../../components/DateSelector';
+import TimeSelector from '../../components/TimeSelector';
+import AppointmentDetailsForm from '../../components/AppointmentDetailsForm';
+import ConfirmationSummary from '../../components/ConfirmationSummary';
 
 // Mock user data
 const mockUser = {
