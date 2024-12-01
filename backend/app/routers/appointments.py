@@ -1,13 +1,10 @@
-from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-import app.models as models
-from datetime import date, time
-from typing import Optional
-from app.models import AppointmentStatus
+from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus
+
 # Create the APIRouter instance
 router = APIRouter()
 
@@ -21,19 +18,10 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-class AppointmentBase(BaseModel):
-    date: date  # Appointment date
-    time: time  # Appointment time
-    city: str = Field(..., max_length=50)  # City of the appointment
-    visitors_number: int = Field(..., ge=1)  # Minimum 1 visitor
-    note: Optional[str] = None  # Optional note
-    status: AppointmentStatus = AppointmentStatus.CREATED  # Default status
-
-    class Config:
-        orm_mode = True
 
 
-    
+
+#CRUD functions
 # Get all appointments (for the current user)
 @router.get("/", response_model=List[AppointmentBase])
 async def get_appointments(
@@ -43,8 +31,8 @@ async def get_appointments(
     limit: int = 10
 ):
     user_id = current_user['user_id']
-    appointments = db.query(models.Appointment).filter(
-        models.Appointment.user_id == user_id
+    appointments = db.query(Appointment).filter(
+        Appointment.user_id == user_id
     ).offset(skip).limit(limit).all()
     return appointments
 
@@ -56,9 +44,9 @@ async def get_appointment(
     current_user: dict = Depends(get_current_user)
 ):
     user_id = current_user['user_id']
-    appointment = db.query(models.Appointment).filter(
-        models.Appointment.id == appointment_id,
-        models.Appointment.user_id == user_id
+    appointment = db.query(Appointment).filter(
+        Appointment.id == appointment_id,
+        Appointment.user_id == user_id
     ).first()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
@@ -72,7 +60,7 @@ async def create_appointment(
     current_user: dict = Depends(get_current_user)
 ):
     user_id = current_user['user_id']
-    db_appointment = models.Appointment(
+    db_appointment = Appointment(
         **appointment.dict(), user_id=user_id
     )
     db.add(db_appointment)
@@ -90,9 +78,9 @@ async def update_appointment(
     current_user: dict = Depends(get_current_user)
 ):
     user_id = current_user['user_id']
-    appointment = db.query(models.Appointment).filter(
-        models.Appointment.id == appointment_id,
-        models.Appointment.user_id == user_id
+    appointment = db.query(Appointment).filter(
+        Appointment.id == appointment_id,
+        Appointment.user_id == user_id
     ).first()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
@@ -110,12 +98,151 @@ async def delete_appointment(
     current_user: dict = Depends(get_current_user)
 ):
     user_id = current_user['user_id']
-    appointment = db.query(models.Appointment).filter(
-        models.Appointment.id == appointment_id,
-        models.Appointment.user_id == user_id
+    appointment = db.query(Appointment).filter(
+        Appointment.id == appointment_id,
+        Appointment.user_id == user_id
     ).first()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
     db.delete(appointment)
     db.commit()
     return {"detail": "Appointment deleted successfully"}
+
+
+
+# Managing Status
+
+
+# Utils
+@router.get("/user/{user_id}/appointments", response_model=List[AppointmentResponse])
+async def get_appointments_for_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)  # Use JWT to get current user
+):
+    """
+    Fetch all appointments created by a user (user_id).
+    """
+    if current_user["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this user's appointments.")
+    
+    appointments = db.query(Appointment).filter(Appointment.user_id == user_id).all()
+    if not appointments:
+        raise HTTPException(status_code=404, detail="No appointments found for this user.")
+    return appointments
+
+
+@router.get("/guides/available-appointments", response_model=List[AppointmentResponse])
+async def get_available_appointments_for_guides(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Fetch all appointments available for guides to accept.
+    """
+
+    appointments = (
+        db.query(Appointment)
+        .filter(Appointment.status == "APPROVED", Appointment.guide_id == None)
+        .all()
+    )
+    if not appointments:
+        raise HTTPException(status_code=404, detail="No available appointments for guides.")
+    return appointments
+
+
+@router.get("/guide/{guide_id}/appointments", response_model=List[AppointmentResponse])
+async def get_assigned_appointments_for_guide(
+    guide_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Fetch all appointments assigned to a specific guide.
+    """
+    if current_user["user_id"] != guide_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this guide's appointments.")
+    
+    appointments = db.query(Appointment).filter(Appointment.guide_id == guide_id).all()
+    if not appointments:
+        raise HTTPException(status_code=404, detail="No appointments found for this guide.")
+    return appointments
+
+# Getters and Setters for Appointments
+
+@router.get("/appointments/{appointment_id}", response_model=AppointmentResponse)
+async def get_appointment_by_id(
+    appointment_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Fetch an appointment by its ID.
+    """
+    appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found.")
+    return appointment
+
+@router.get("/appointments/status/{status}", response_model=List[AppointmentResponse])
+def get_appointments_by_status(status: str, db: Session = Depends(get_db)):
+    """
+    Fetch appointments with a specific status.
+    """
+    appointments = db.query(Appointment).filter(Appointment.status == status).all()
+    return appointments
+
+@router.put("/appointments/{appointment_id}/status")
+async def set_appointment_status(appointment_id: int, status: str, db: Session = Depends(get_db)):
+    """
+    Update the status of an appointment.
+    """
+    appointment = await get_appointment_by_id(appointment_id, db)
+    appointment.status = status
+    db.commit()
+    db.refresh(appointment)
+    return appointment
+
+@router.put("/appointments/{appointment_id}/assign-guide")
+async def assign_guide_to_appointment(appointment_id: int, guide_id: int, db: Session = Depends(get_db)):
+    """
+    Assign a guide to an appointment.
+    """
+    appointment = await get_appointment_by_id(appointment_id, db)
+    
+    if appointment.status != "APPROVED":
+        raise HTTPException(status_code=400, detail="Only approved appointments can be assigned.")
+    if appointment.guide_id is not None:
+        raise HTTPException(status_code=400, detail="Appointment already assigned to a guide.")
+    appointment.guide_id = guide_id
+    appointment.status = "ACCEPTED"  # Update status to accepted
+    db.commit()
+    db.refresh(appointment)
+    return appointment
+
+@router.put("/appointments/{appointment_id}/unassign-guide")
+async def unassign_guide_from_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    """
+    Remove a guide from an appointment.
+    """
+    appointment = await get_appointment_by_id(appointment_id, db)
+    if appointment.guide_id is None:
+        raise HTTPException(status_code=400, detail="No guide is assigned to this appointment.")
+    appointment.guide_id = None
+    appointment.status = "APPROVED"  # Revert status to approved
+    db.commit()
+    db.refresh(appointment)
+    return appointment
+
+@router.put("/appointments/{appointment_id}")
+def update_appointment_details(appointment_id: int, updates: dict, db: Session = Depends(get_db)):
+    """
+    Update specific details of an appointment.
+    :param updates: Dictionary of fields to update and their new values.
+    """
+    appointment = get_appointment_by_id(appointment_id, db)
+    for key, value in updates.items():
+        if hasattr(appointment, key):
+            setattr(appointment, key, value)
+    db.commit()
+    db.refresh(appointment)
+    return appointment

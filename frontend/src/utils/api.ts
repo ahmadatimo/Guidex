@@ -7,6 +7,7 @@ const API_BASE_URL = "http://localhost:8000";
 export interface Appointment {
   id: number;
   user_id: number;
+  guide_id?: number; // Guides can be assigned later
   date: string;
   time: string;
   city: string;
@@ -15,6 +16,7 @@ export interface Appointment {
   GM_phone: string;
   GM_email: string;
   note: string;
+  status: string; // Includes the new `status` field
 }
 
 export interface CreateAppointmentRequest {
@@ -27,6 +29,10 @@ export interface CreateAppointmentRequest {
   GM_phone: string;
   GM_email: string;
   note: string;
+}
+
+export interface UpdateAppointmentRequest {
+  [key: string]: any; // Flexible type for partial updates
 }
 
 // Add a utility function to get the token
@@ -76,4 +82,52 @@ export const fetchAppointmentById = async (id: number): Promise<Appointment> => 
 // Delete an appointment
 export const deleteAppointment = async (id: number): Promise<void> => {
   await axiosInstance.delete(`/appointments/${id}`);
+};
+
+// Fetch appointments by status
+export const fetchAppointmentsByStatus = async (status: string): Promise<Appointment[]> => {
+  const response = await axiosInstance.get(`/appointments/status/${status}`);
+  return response.data;
+};
+
+// Update appointment status
+export const updateAppointmentStatus = async (id: number, status: string): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/status`, { status });
+  return response.data;
+};
+
+// Assign a guide to an appointment
+export const assignGuideToAppointment = async (id: number, guide_id: number): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/assign-guide`, { guide_id });
+  return response.data;
+};
+
+// Unassign a guide from an appointment
+export const unassignGuideFromAppointment = async (id: number): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/unassign-guide`);
+  return response.data;
+};
+
+// Update appointment details
+export const updateAppointmentDetails = async (id: number, updates: UpdateAppointmentRequest): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}`, updates);
+  return response.data;
+};
+
+// Fetch appointments for a specific user
+export const fetchAppointmentsForUser = async (user_id: number): Promise<Appointment[]> => {
+  const response = await axiosInstance.get(`/user/${user_id}/appointments`);
+  return response.data;
+};
+
+// Fetch available appointments for guides
+export const fetchAvailableAppointmentsForGuides = async (): Promise<Appointment[]> => {
+  const response = await axiosInstance.get("/guides/available-appointments");
+  return response.data;
+};
+
+// Fetch appointments assigned to a specific guide
+export const fetchAssignedAppointmentsForGuide = async (guide_id: number): Promise<Appointment[]> => {
+  const response = await axiosInstance.get(`/guide/${guide_id}/appointments`);
+  return response.data;
 };

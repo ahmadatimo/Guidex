@@ -1,7 +1,11 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Text, DateTime, Enum
 from app.database import Base
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import date, time, datetime
+from typing import Optional
+from pydantic import BaseModel, Field
+
+
 import enum
 
 
@@ -29,6 +33,25 @@ class AppointmentStatus(enum.Enum):
     COMPLETED = "completed"   # Completed
     CANCELED = "canceled"     # Canceled (if applicable)
 
+class AppointmentBase(BaseModel):
+    date: date  # Appointment date
+    time: time  # Appointment time
+    city: str = Field(..., max_length=50)  # City of the appointment
+    visitors_number: int = Field(..., ge=1)  # Minimum 1 visitor
+    note: Optional[str] = None  # Optional note
+    status: AppointmentStatus = AppointmentStatus.CREATED  # Default status
+
+class AppointmentResponse(BaseModel):
+    id: int
+    user_id: int
+    guide_id: Optional[int] = None
+    date: date
+    time: time
+    city: str
+    visitors_number: int
+    note: Optional[str] = None
+    status: AppointmentStatus
+    created_at: datetime
 
 class Appointment(Base):
     __tablename__ = "appointment"
