@@ -11,7 +11,6 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 
 
-
 router = APIRouter(
     prefix='/auth',
     tags=['auth']
@@ -68,6 +67,7 @@ async def create_user(db: db_dependency, create_user: CreateUserRequest):
 
     db.add(db_user)
     db.commit()
+    return{"User Added with email " + db_user.user_email + " and password " + create_user.password}
 
 
 def authenticate_user(username: str, password: str, db):
@@ -87,7 +87,7 @@ def authenticate_user(username: str, password: str, db):
 def create_access_token(username: str, user_id: int, expires_delta: timedelta):
     
     expires = datetime.now(timezone.utc) + expires_delta
-    encode  = {'sub' : username, 'id': user_id, 'exp' : expires}
+    encode  = {'sub' : username, 'user_id': user_id, 'exp' : expires}
     return jwt.encode(encode, SECRET_KEY , algorithm=ALGORRITHM)
 
 
@@ -99,13 +99,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         user_id = payload.get('user_id')
         #in case if the user does not exist in the given jwt
         if username is None or user_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="JWT malformed")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="JWT malformed1")
         
         return {"username" : username, "user_id": user_id}
     
     except JWTError:
-        if username is None or user_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="JWT malformed")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="JWT malformed2")
     
 
 
