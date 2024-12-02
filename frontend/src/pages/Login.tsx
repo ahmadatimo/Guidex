@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../context/context";
+import { loginUser, registerUser } from "../utils/api";
 
 
 const Login: React.FC = () => {
@@ -35,32 +35,9 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the default form submission behavior
-  
-    // const endpoint = isLogin ? "http://localhost:8000/auth/login" : "http://localhost:8000/auth/register";
-    
-    // const body = isLogin
-    //   ? JSON.stringify({ email, password })
-    //   : JSON.stringify({ username: name, email, password, school });
-
-    // const res = await fetch(endpoint, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body,
-    // });
-
-    // const data = await res.json();
-
-    // if (res.ok) {
-    //   setUser(data);
-    //   console.log(`Request successful with status code: ${res.status}`);
-
-    //   // navigate("/visitor/home"); //problem
-    // } else {
-    //   console.error(`Failed to fetch data: ${res.status}`);
-    // }
-
+    // data fetching goes here 
+    console.log(email, password)
+    isLogin ?  loginUser(email, password) : registerUser(email, "boss", name, school, password);
     navigate("/")
   };
 

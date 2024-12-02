@@ -4,6 +4,15 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8000";
 
 // Define types
+
+
+
+export interface LoginResponse {
+  access_token: string;
+  role : string;
+  refresh_token?: string; // Optional, depending on your backend
+}
+
 export interface Appointment {
   id: number;
   user_id: number;
@@ -54,6 +63,69 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// To register a user
+export const registerUser = async (
+  user_email: string,
+  role: string,
+  name: string,
+  school_name: string,
+  password: string
+): Promise<void> => {
+  try {
+    // Prepare the request payload
+    const requestBody = {
+      user_email,
+      role,
+      name,
+      school_name,
+      password
+    };
+
+    // Make the POST request
+    const response = await axiosInstance.post("/auth/register", requestBody, {
+      headers: {
+        "Content-Type": "application/json" // Specify JSON content type
+      }
+    });
+
+    console.log("User registered successfully:", response.data);
+  } catch (error: any) {
+    console.error("Error during user registration:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Registration failed. Please try again.");
+  }
+};
+
+// Function to log in a user
+export const loginUser = async (email: string, password: string): Promise<void> => {
+  try {
+    // Make the POST request with OAuth2 fields
+    const response = await axiosInstance.post("/auth/login", {
+      grant_type: "password", // Required field for password grant
+      username: email, 
+      password: password, // User's password
+      scope: "", 
+      client_id: "", 
+      client_secret: ""
+    }, 
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
+
+    // Extract the access token from the response
+    const { access_token } = response.data;
+
+    // Store the token in localStorage
+    localStorage.setItem("access_token", access_token);
+
+    console.log("Login successful, token stored in localStorage.");
+  } catch (error: any) {
+    console.error("Error during login:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Login failed. Please try again.");
+  }
+};
 
 // Fetch all appointments with optional pagination
 export const fetchAppointments = async (skip = 0, limit = 10): Promise<Appointment[]> => {

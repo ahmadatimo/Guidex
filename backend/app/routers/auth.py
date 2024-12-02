@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone
 from typing import Annotated
 from fastapi import APIRouter
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr
 from app.database import  SessionLocal
 from sqlalchemy.orm import Session
@@ -67,11 +67,11 @@ async def create_user(db: db_dependency, create_user: CreateUserRequest):
 
     db.add(db_user)
     db.commit()
-    return{"User Added with email " + db_user.user_email + " and password " + create_user.password}
+    return{"User Succesfully Registered"}
 
 
-def authenticate_user(username: str, password: str, db):
-    user = db.query(User).filter(User.name == username).first()
+def authenticate_user(user_email: str, password: str, db):
+    user = db.query(User).filter(User.user_email == user_email).first()
     #if there is no user return false
     if not user:
         return False
