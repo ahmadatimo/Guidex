@@ -12,9 +12,6 @@ export interface Appointment {
   time: string;
   city: string;
   visitors: number;
-  GM: string;
-  GM_phone: string;
-  GM_email: string;
   note: string;
   status: string; // Includes the new `status` field
 }
@@ -23,15 +20,14 @@ export interface CreateAppointmentRequest {
   user_id: number;
   date: string;
   time: string;
-  city: string;
+  city?: string;
   visitors: number;
-  GM: string;
-  GM_phone: string;
-  GM_email: string;
-  note: string;
+  guide_id?: number
+  note?: string;
 }
 
 export interface UpdateAppointmentRequest {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Flexible type for partial updates
 }
 

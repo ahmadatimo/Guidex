@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 interface AppointmentDetailsFormProps {
     user: { name: string; school: string; email: string };
-    data: { groupSize: number; visitType: string; specialRequests: string };
+    data: { groupSize: number; note: string };
     onUpdateData: (field: string, value: string | number) => void;
     onNext: () => void;
   }
@@ -47,7 +47,7 @@ interface AppointmentDetailsFormProps {
           </select> */}
           <textarea
             placeholder="Special Requests (optional)"
-            value={data.specialRequests}
+            value={data.note}
             onChange={(e) => onUpdateData('specialRequests', e.target.value)}
             className="w-full p-2 border rounded"
           />
