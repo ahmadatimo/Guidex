@@ -16,6 +16,7 @@ import Notifications from "./pages/Staff/Notifications"
 import Analytics from "./pages/Staff/Analytics"
 import AddStaff from "./pages/Staff/AddStaff"
 import StaffSettings from "./pages/Staff/StaffSettings"
+import GuideAppointments from "./pages/Staff/GuideAppointments"
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
             <Route path='/staff/analytics' element={<Analytics />} />
             <Route path='/staff/add-staff' element={<AddStaff />} />
             <Route path='/staff/settings' element={<StaffSettings />} />
+            <Route path='/staff/appointments' element={<GuideAppointments />} />
           </Route> {/*StaffLayout */}
 
           <Route path='/login' element={<Login/>}/>
