@@ -188,7 +188,7 @@ async def get_appointments_by_status(status: str, db: Session = Depends(get_db))
     """
     Fetch appointments with a specific status.
     """
-    appointments = await db.query(Appointment).filter(Appointment.status == status).all()
+    appointments = db.query(Appointment).filter(Appointment.status == status).all()
     return appointments
 
 @router.put("/appointments/{appointment_id}/status")
