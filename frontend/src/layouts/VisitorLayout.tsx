@@ -6,12 +6,21 @@ import { Outlet } from "react-router-dom";
 
 const VisitorLayout: React.FC = () => {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
+      {/* Navbar */}
       <div className="px-5">
         <NavBar />
       </div>
-      <Outlet /> 
+
+      {/* Main Content */}
+      <div className="flex-grow">
+        <Outlet />
+      </div>
+
+      {/* Scroll to Top Button */}
       <ScrollToTop />
+
+      {/* Footer */}
       <Footer />
     </div>
   );
