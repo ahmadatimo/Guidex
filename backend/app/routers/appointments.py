@@ -184,11 +184,11 @@ async def get_appointment_by_id(
     return appointment
 
 @router.get("/appointments/status/{status}", response_model=List[AppointmentResponse])
-def get_appointments_by_status(status: str, db: Session = Depends(get_db)):
+async def get_appointments_by_status(status: str, db: Session = Depends(get_db)):
     """
     Fetch appointments with a specific status.
     """
-    appointments = db.query(Appointment).filter(Appointment.status == status).all()
+    appointments = await db.query(Appointment).filter(Appointment.status == status).all()
     return appointments
 
 @router.put("/appointments/{appointment_id}/status")
@@ -234,12 +234,12 @@ async def unassign_guide_from_appointment(appointment_id: int, db: Session = Dep
     return appointment
 
 @router.put("/appointments/{appointment_id}")
-def update_appointment_details(appointment_id: int, updates: dict, db: Session = Depends(get_db)):
+async def update_appointment_details(appointment_id: int, updates: dict, db: Session = Depends(get_db)):
     """
     Update specific details of an appointment.
     :param updates: Dictionary of fields to update and their new values.
     """
-    appointment = get_appointment_by_id(appointment_id, db)
+    appointment = await get_appointment_by_id(appointment_id, db)
     for key, value in updates.items():
         if hasattr(appointment, key):
             setattr(appointment, key, value)
