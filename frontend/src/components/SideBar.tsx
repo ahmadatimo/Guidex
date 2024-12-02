@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AiOutlineSetting, AiOutlineLogout, AiOutlineDashboard, AiOutlineFileDone, AiOutlineCalendar, AiOutlineBell, AiOutlineBarChart, AiOutlineUserAdd } from 'react-icons/ai';
+import { AiOutlineSetting, AiOutlineForm, AiOutlineLogout, AiOutlineDashboard, AiOutlineFileDone, AiOutlineCalendar, AiOutlineBell, AiOutlineBarChart, AiOutlineUserAdd } from 'react-icons/ai';
 import { FiChevronLeft } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
@@ -50,7 +50,7 @@ const Sidebar = () => {
                 } transition-colors ${!isOpen ? 'justify-center' : ''}`}
               >
                 <AiOutlineDashboard size={24} />
-                {isOpen && <span className="ml-3">Home</span>}
+                {isOpen && <span className="ml-3">Dashboard</span>}
               </Link>
             </li>
             <li>
@@ -63,7 +63,20 @@ const Sidebar = () => {
                 } transition-colors ${!isOpen ? 'justify-center' : ''}`}
               >
                 <AiOutlineFileDone size={24} />
-                {isOpen && <span className="ml-3">Profile</span>}
+                {isOpen && <span className="ml-3">Pending Approvals</span>}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/staff/appointments"
+                className={`flex items-center px-4 py-2 ${
+                  isActive('/staff/appointments')
+                    ? 'bg-blue-200 text-blue-700'
+                    : 'text-gray-700 hover:bg-blue-100'
+                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
+              >
+                <AiOutlineForm size={24} />
+                {isOpen && <span className="ml-3">Appointments</span>}
               </Link>
             </li>
             <li>
@@ -76,7 +89,7 @@ const Sidebar = () => {
                 } transition-colors ${!isOpen ? 'justify-center' : ''}`}
               >
                 <AiOutlineCalendar size={24} />
-                {isOpen && <span className="ml-3">Profile</span>}
+                {isOpen && <span className="ml-3">Calendar</span>}
               </Link>
             </li>
             <li>
@@ -89,7 +102,7 @@ const Sidebar = () => {
                 } transition-colors ${!isOpen ? 'justify-center' : ''}`}
               >
                 <AiOutlineBell size={24} />
-                {isOpen && <span className="ml-3">Profile</span>}
+                {isOpen && <span className="ml-3">Notifications</span>}
               </Link>
             </li> 
             <li>
@@ -102,7 +115,7 @@ const Sidebar = () => {
                 } transition-colors ${!isOpen ? 'justify-center' : ''}`}
               >
                 <AiOutlineBarChart size={24} />
-                {isOpen && <span className="ml-3">Profile</span>}
+                {isOpen && <span className="ml-3">Statistics</span>}
               </Link>
             </li>
             <li>
