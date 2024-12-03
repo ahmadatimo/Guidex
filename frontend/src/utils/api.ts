@@ -26,13 +26,11 @@ export interface Appointment {
 }
 
 export interface CreateAppointmentRequest {
-  user_id: number;
-  date: string;
-  time: string;
-  city?: string;
-  visitors: number;
-  guide_id?: number
-  note?: string;
+  date: string; // Appointment date
+  time: string; // Appointment time
+  city: string; // City of the appointment
+  visitors_number: number; // Matches backend field
+  note?: string; // Optional note
 }
 
 export interface UpdateAppointmentRequest {
@@ -137,7 +135,7 @@ export const fetchAppointments = async (skip = 0, limit = 10): Promise<Appointme
 
 // Create a new appointment
 export const createAppointment = async (data: CreateAppointmentRequest): Promise<Appointment> => {
-  const response = await axiosInstance.post("/appointments/", data);
+  const response = await axiosInstance.post("/appointment", data);
   return response.data;
 };
 

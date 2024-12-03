@@ -53,7 +53,7 @@ async def get_appointment(
     return appointment
 
 # Create a new appointment
-@router.post("/", status_code=201)
+@router.post("/appointment", status_code=201)
 async def create_appointment(
     appointment: AppointmentBase, 
     db: db_dependency, 

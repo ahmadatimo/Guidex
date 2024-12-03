@@ -56,8 +56,8 @@ class Appointment(Base):
 class AppointmentBase(BaseModel):
     date: date  # Appointment date
     time: time  # Appointment time
-    city: str = Field(..., max_length=50)  # City of the appointment
-    visitors_number: int = Field(..., ge=1)  # Minimum 1 visitor
+    city: str 
+    visitors_number: int
     note: Optional[str] = None  # Optional note
     status: AppointmentStatus = AppointmentStatus.CREATED  # Default status
 

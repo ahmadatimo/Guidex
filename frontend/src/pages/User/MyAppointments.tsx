@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const mockUser = {
-  id: 1,
+  id: 2,
   name: "John Doe",
 };
 
@@ -66,7 +66,7 @@ const MyAppointments: React.FC = () => {
               key={appointment.id}
               className="grid grid-cols-2 gap-4 py-4 border-b last:border-none"
             >
-              {/* Appointment Details */}
+            {/* Appointment Details */ }
               <div className="text-sm text-zinc-600">
                 <p className="text-xs mt-1">
                   <span className="text-sm text-neutral-700 font-medium">
@@ -81,7 +81,7 @@ const MyAppointments: React.FC = () => {
               <div className="flex flex-col items-center justify-center gap-2">
                 <div className="flex items-center gap-2">
                   <p className="text-xs text-gray-500">Status:</p>
-                  {appointment.status === "APPROVED" ? (
+                  {appointment.status === "CREATED" ? (
                     <p className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
                       Approved
                     </p>
