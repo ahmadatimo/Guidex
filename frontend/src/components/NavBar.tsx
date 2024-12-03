@@ -10,7 +10,7 @@ const NavBar = () => {
   return (
     <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-400">
       <img
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/visitor")}
         className="h-12 cursor-pointer"
         src="/assets/bilkent_logo.jpg"
         alt="Bilkent Logo"
@@ -18,7 +18,7 @@ const NavBar = () => {
       <ul className="hidden md:flex items-start gap-5 font-medium">
         <li className="py-1">
           <NavLink
-            to="/"
+            to="/visitor"
             className={({ isActive }) => (isActive ? "text-primary" : "text-gray-700")}>
             {({ isActive }) => (
               <>

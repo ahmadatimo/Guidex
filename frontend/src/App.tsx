@@ -25,7 +25,7 @@ const App = () => {
         {/*Visitors */}
         <Route element={<MainLayout />} >
           <Route element={<VisitorLayout />} >
-            <Route path='/' element={<Home/>}/>
+            <Route path='/visitor' element={<Home/>}/>
             <Route path='/about' element={<About/>}/>
             <Route path='/contact' element={<Contact/>}/>
             <Route path='/my-profile' element={<MyProfile/>}/>

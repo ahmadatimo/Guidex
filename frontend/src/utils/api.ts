@@ -70,8 +70,7 @@ export const registerUser = async (
   school_name: string,
   password: string
 ): Promise<void> => {
-  try {
-    // Prepare the request payload
+    // the body of the register request
     const requestBody = {
       user_email,
       role,
@@ -88,15 +87,12 @@ export const registerUser = async (
     });
 
     console.log("User registered successfully:", response.data);
-  } catch (error: any) {
-    console.error("Error during user registration:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "Registration failed. Please try again.");
-  }
+
 };
 
 // Function to log in a user
 export const loginUser = async (email: string, password: string): Promise<void> => {
-  try {
+  // try {
     // Make the POST request with OAuth2 fields
     const response = await axiosInstance.post("/auth/login", {
       grant_type: "password", // Required field for password grant
@@ -113,16 +109,15 @@ export const loginUser = async (email: string, password: string): Promise<void> 
     });
 
     // Extract the access token from the response
-    const { access_token } = response.data;
+    const { access_token, role } = response.data;
 
     // Store the token in localStorage
     localStorage.setItem("access_token", access_token);
 
     console.log("Login successful, token stored in localStorage.");
-  } catch (error: any) {
-    console.error("Error during login:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "Login failed. Please try again.");
-  }
+    // return it to the LoginPage
+    return role;
+
 };
 
 // Fetch all appointments with optional pagination

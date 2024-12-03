@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../utils/api";
+import { toast } from "react-toastify";
 
 
 const Login: React.FC = () => {
@@ -37,8 +38,24 @@ const Login: React.FC = () => {
     event.preventDefault(); // Prevent the default form submission behavior
     // data fetching goes here 
     console.log(email, password)
-    isLogin ?  loginUser(email, password) : registerUser(email, "boss", name, school, password);
-    navigate("/")
+    try{
+      // Handle the login
+      if(isLogin == true){
+      let role = await loginUser(email, password);
+      navigate(`/${role}`);
+
+      // handle the signup
+      }else{
+        registerUser(email, "visitor", name, school, password);
+        toast.success("Succesfully created account");
+        navigate(0);
+      }
+    }
+   catch (error: any) {
+    console.error("Error during login:", error.response?.data || error.message);
+    toast.error("Error during login:", error.response?.data || error.message);
+  }
+    
   };
 
   return (

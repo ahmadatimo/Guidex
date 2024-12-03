@@ -40,9 +40,10 @@ class CreateUserRequest(BaseModel):
     password: str
 
 
-class Token(BaseModel):
+class LoginResponse(BaseModel):
     access_token: str
     token_type: str
+    role: str
 
 
 
@@ -108,7 +109,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     
 
 
-@router.post("/login", status_code=status.HTTP_200_OK, response_model=Token)
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=LoginResponse)
 async def sign_in_for_access_token(db: db_dependency, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     
     valid_user = authenticate_user(form_data.username, form_data.password, db)
@@ -117,7 +118,7 @@ async def sign_in_for_access_token(db: db_dependency, form_data: Annotated[OAuth
         raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED)
     
     token = create_access_token(valid_user.name, valid_user.id, timedelta(minutes=30))
-    return {'access_token': token, 'token_type' : 'bearer'}
+    return {'access_token': token, 'token_type' : 'bearer', 'role': valid_user.role}
         
 
 @router.get("/auth/get_user")
