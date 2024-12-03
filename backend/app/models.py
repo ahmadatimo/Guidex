@@ -73,3 +73,5 @@ class AppointmentResponse(BaseModel):
     status: AppointmentStatus
     created_at: datetime
 
+class AppointmentStatusUpdate(BaseModel):
+    status: str

@@ -24,6 +24,7 @@ const App = () => {
       <Routes>
         {/*Visitors */}
         <Route element={<MainLayout />} >
+          <Route path='/' element={<Login/>}/>
           <Route element={<VisitorLayout />} >
             <Route path='/visitor' element={<Home/>}/>
             <Route path='/about' element={<About/>}/>
@@ -44,9 +45,6 @@ const App = () => {
             <Route path='/staff/settings' element={<StaffSettings />} />
             <Route path='/staff/appointments' element={<GuideAppointments />} />
           </Route> {/*StaffLayout */}
-
-          <Route path='/login' element={<Login/>}/>
-
         </Route> {/*MainLayout */}
       </Routes>
     </div>

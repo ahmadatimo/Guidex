@@ -3,7 +3,7 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus
+from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate
 
 # Create the APIRouter instance
 router = APIRouter()
@@ -192,12 +192,12 @@ async def get_appointments_by_status(status: str, db: Session = Depends(get_db))
     return appointments
 
 @router.put("/appointments/{appointment_id}/status")
-async def set_appointment_status(appointment_id: int, status: str, db: Session = Depends(get_db)):
+async def set_appointment_status(appointment_id: int, update: AppointmentStatusUpdate, db: Session = Depends(get_db)):
     """
     Update the status of an appointment.
     """
     appointment = await get_appointment_by_id(appointment_id, db)
-    appointment.status = status
+    appointment.status = update.status
     db.commit()
     db.refresh(appointment)
     return appointment

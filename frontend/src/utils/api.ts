@@ -152,8 +152,8 @@ export const fetchAppointmentsByStatus = async (status: string): Promise<Appoint
 };
 
 // Update appointment status
-export const updateAppointmentStatus = async (id: number, status: string): Promise<Appointment> => {
-  const response = await axiosInstance.put(`/appointments/${id}/status`, { status });
+export const updateAppointmentStatus = async (id: number, update: { status: string }): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/status`, update); // pass the update object
   return response.data;
 };
 
