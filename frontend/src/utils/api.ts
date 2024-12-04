@@ -20,7 +20,7 @@ export interface Appointment {
   date: string;
   time: string;
   city: string;
-  visitors: number;
+  visitors_number: number;
   note: string;
   status: string; // Includes the new `status` field
 }
@@ -175,8 +175,8 @@ export const updateAppointmentDetails = async (id: number, updates: UpdateAppoin
 };
 
 // Fetch appointments for a specific user
-export const fetchAppointmentsForUser = async (user_id: number): Promise<Appointment[]> => {
-  const response = await axiosInstance.get(`/user/${user_id}/appointments`);
+export const fetchAppointmentsForUser = async (): Promise<Appointment[]> => {
+  const response = await axiosInstance.get(`/user/appointments`);
   return response.data;
 };
 
@@ -189,5 +189,11 @@ export const fetchAvailableAppointmentsForGuides = async (): Promise<Appointment
 // Fetch appointments assigned to a specific guide
 export const fetchAssignedAppointmentsForGuide = async (guide_id: number): Promise<Appointment[]> => {
   const response = await axiosInstance.get(`/guide/${guide_id}/appointments`);
+  return response.data;
+};
+
+
+export const fetchAvailableTimes = async (date: string): Promise<string[]> => {
+  const response = await axiosInstance.get(`/appointments/available-times/${date}`);
   return response.data;
 };

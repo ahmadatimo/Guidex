@@ -45,7 +45,7 @@ const PendingApprovals: React.FC = () => {
       setLoadingId(null);
     }
   };
-
+ 
   const denied = async (id: number) => {
     setLoadingId(id);
     try {

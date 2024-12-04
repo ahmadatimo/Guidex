@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Text, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Text, DateTime, Enum, Boolean
 from app.database import Base
 from sqlalchemy.orm import relationship
 from datetime import date, time, datetime
@@ -10,7 +10,6 @@ class AppointmentStatus(enum.Enum):
     CREATED = "created"       # Appointment created by user
     PENDING_ADMIN = "pending_admin"  # Pending admin approval
     APPROVED = "approved"     # Approved by admin
-    AVAILABLE = "available"   # Available for guides
     ACCEPTED = "accepted"     # Accepted by a guide
     COMPLETED = "completed"   # Completed
     CANCELED = "canceled"     # Canceled (if applicable)
@@ -30,6 +29,7 @@ class User(Base):
     # Relationships
     created_appointments = relationship("Appointment", foreign_keys="Appointment.user_id", back_populates="user")
     assigned_appointments = relationship("Appointment", foreign_keys="Appointment.guide_id", back_populates="guide")
+    notifications = relationship("Notification", back_populates="recipient")
 
 class Appointment(Base):
     __tablename__ = "appointment"
@@ -48,6 +48,7 @@ class Appointment(Base):
     # Relationships
     user = relationship("User", foreign_keys=[user_id])
     guide = relationship("User", foreign_keys=[guide_id], back_populates="assigned_appointments")
+    notifications = relationship("Notification", back_populates="appointment")
 
 
 
@@ -75,3 +76,25 @@ class AppointmentResponse(BaseModel):
 
 class AppointmentStatusUpdate(BaseModel):
     status: str
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)  # Unique notification ID
+    recipient_id = Column(Integer, ForeignKey("user.id"), nullable=False)  # User to whom the notification belongs
+    appointment_id = Column(Integer, ForeignKey("appointment.id"), nullable=True)  # Associated appointment, if any
+    message = Column(Text, nullable=False)  # Notification message
+    type = Column(String(50), nullable=False)  # Notification type (e.g., "admin", "guide", "user")
+    is_read = Column(Boolean, default=False)  # Whether the notification is read
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)  # Creation timestamp
+
+    # Relationships
+    recipient = relationship("User", back_populates="notifications")
+    appointment = relationship("Appointment", back_populates="notifications")
+
+
+class NotificationCreate(BaseModel):
+    recipient_id: int
+    appointment_id: int | None = None
+    message: str
+    type: str

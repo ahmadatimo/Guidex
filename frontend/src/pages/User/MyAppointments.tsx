@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { fetchAppointmentsForUser, Appointment } from "../../utils/api";
+import { fetchAppointmentsForUser, updateAppointmentStatus, Appointment } from "../../utils/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-const mockUser = {
-  id: 2,
-  name: "John Doe",
-};
 
 const MyAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -15,10 +10,10 @@ const MyAppointments: React.FC = () => {
 
   useEffect(() => {
     const loadAppointments = async () => {
-      try {
+      try { 
         setIsLoading(true);
         setError(false); // Reset error state before loading
-        const data = await fetchAppointmentsForUser(mockUser.id);
+        const data = await fetchAppointmentsForUser();
         if (data.length === 0) {
           setError(true); // Show no-appointments message
         } else {
@@ -37,11 +32,21 @@ const MyAppointments: React.FC = () => {
   }, []);
 
   // Placeholder function for canceling an appointment
-  const handleCancel = (id: number) => {
-    console.log(`Canceling appointment with ID: ${id}`);
-    // Add logic to update the appointment status later
+  const handleCancel = async (id: number) => {
+    try {
+      await updateAppointmentStatus(id, { status: "canceled" }); // Update status to "CANCELED"
+      toast.success("Appointment canceled successfully.");
+      setAppointments((prev) =>
+        prev.map((appointment) =>
+          appointment.id === id ? { ...appointment, status: "CANCELED" } : appointment
+        )
+      );
+    } catch (error) {
+      console.error("Error canceling appointment:", error);
+      toast.error("Failed to cancel the appointment. Please try again.");
+    }
   };
-
+  
   return (
     <div className="h-full p-6 flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md">
@@ -70,28 +75,36 @@ const MyAppointments: React.FC = () => {
               <div className="text-sm text-zinc-600">
                 <p className="text-xs mt-1">
                   <span className="text-sm text-neutral-700 font-medium">
-                    Date & Time:
-                  </span>{" "}
-                  {appointment.date} | {appointment.time}
+                    <strong>Date:</strong>
+                  </span>
+                  {" " + appointment.date}
+                  <br />
+                  <span className="text-sm text-neutral-700 font-medium">
+                    <strong>Time:</strong>{" " + appointment.time}
+                  </span>
                 </p>
-                <p className="text-gray-600">Number of people: {appointment.visitors}</p>
+                <p className="text-gray-600"><strong>Visitors:</strong> {appointment.visitors_number}</p>
               </div>
 
               {/* Appointment Status and Actions */}
               <div className="flex flex-col items-center justify-center gap-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                   <p className="text-xs text-gray-500">Status:</p>
-                  {appointment.status === "CREATED" ? (
+                  {(appointment.status === "approved" || appointment.status === "accepted") ? (
                     <p className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
                       Approved
                     </p>
-                  ) : appointment.status === "PENDING" ? (
+                  ) : (appointment.status === "created" || appointment.status === "pending_admin") ? (
                     <p className="text-sm font-medium text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">
                       Pending
                     </p>
+                  ) : appointment.status === "completed" ? (
+                    <p className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
+                      Completed
+                    </p>
                   ) : (
-                    <p className="text-sm font-medium text-red-600 bg-red-100 px-3 py-1 rounded-full">
-                      Declined
+                    <p className="tex-tsm font-medium text-red-600 bg-red-100 px-3 py-1 rounded-full">
+                      Canceled
                     </p>
                   )}
                 </div>
