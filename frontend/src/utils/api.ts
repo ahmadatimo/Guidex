@@ -91,7 +91,7 @@ export const registerUser = async (
 };
 
 // Function to log in a user
-export const loginUser = async (email: string, password: string): Promise<void> => {
+export const loginUser = async (email: string, password: string): Promise<string> => {
   // try {
     // Make the POST request with OAuth2 fields
     const response = await axiosInstance.post("/auth/login", {
@@ -117,7 +117,6 @@ export const loginUser = async (email: string, password: string): Promise<void> 
     console.log("Login successful, token stored in localStorage.");
     // return it to the LoginPage
     return role;
-
 };
 
 // Fetch all appointments with optional pagination

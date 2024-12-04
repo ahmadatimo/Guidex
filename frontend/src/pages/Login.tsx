@@ -42,11 +42,18 @@ const Login: React.FC = () => {
       // Handle the login
       if(isLogin == true){
       let role = await loginUser(email, password);
-      navigate(`/${role}`);
+      console.log(role);
+      console.log(localStorage.getItem("access_token"))
+      if (role){
+        navigate(`/${role}`);
+      }
+      else{
+        toast.error("Login failed. Invalid role returned.");
+      }
 
       // handle the signup
       }else{
-        registerUser(email, "visitor", name, school, password);
+        await registerUser(email, "visitor", name, school, password);
         toast.success("Succesfully created account");
         navigate(0);
       }
@@ -54,7 +61,7 @@ const Login: React.FC = () => {
    catch (error: any) {
     console.error("Error during login:", error.response?.data || error.message);
     toast.error("Error during login:", error.response?.data || error.message);
-  }
+    }
     
   };
 
