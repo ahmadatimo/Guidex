@@ -46,7 +46,7 @@ const Login: React.FC = () => {
 
       // handle the signup
       }else{
-        registerUser(email, "visitor", name, school, password);
+        await registerUser(email, "visitor", name, school, password);
         toast.success("Succesfully created account");
         navigate(0);
       }
