@@ -3,40 +3,58 @@ import axios from "axios";
 // API URL
 const API_BASE_URL = "http://localhost:8000";
 
-// Define types
 
-
-
+// /*-------------------------------- TYPES -------------------------------- */
 export interface LoginResponse {
   access_token: string;
   role : string;
-  refresh_token?: string; // Optional, depending on your backend
+  refresh_token?: string; 
 }
 
 export interface Appointment {
   id: number;
   user_id: number;
-  guide_id?: number; // Guides can be assigned later
+  guide_id?: number; 
   date: string;
   time: string;
   city: string;
   visitors_number: number;
   note: string;
-  status: string; // Includes the new `status` field
+  status: string;
 }
 
 export interface CreateAppointmentRequest {
-  date: string; // Appointment date
-  time: string; // Appointment time
-  city: string; // City of the appointment
-  visitors_number: number; // Matches backend field
-  note?: string; // Optional note
+  date: string; 
+  time: string; 
+  city: string; 
+  visitors_number: number; 
+  note?: string; 
 }
 
 export interface UpdateAppointmentRequest {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Flexible type for partial updates
 }
+
+export interface Notification {
+  id: number;
+  recipient_id: number;
+  appointment_id?: number;
+  message: string;
+  type: string; // e.g., 'admin', 'guide', 'user'
+  is_read: boolean;
+  created_at: string; // Timestamp
+}
+
+export interface NotificationCreate {
+  recipient_id: number;
+  appointment_id?: number;
+  message: string;
+  type: string;
+}
+
+
+/*-------------------------------- AXIOS FUNCTIONS -------------------------------- */
 
 // Add a utility function to get the token
 const getAuthToken = (): string | null => {
@@ -61,6 +79,9 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+
+/*-------------------------------- AUTH FUNCTIONS -------------------------------- */
 
 // To register a user
 export const registerUser = async (
@@ -118,6 +139,8 @@ export const loginUser = async (email: string, password: string): Promise<string
     // return it to the LoginPage
     return role;
 };
+
+/*-------------------------------- APPOINTMENTS FUNCTIONS --------------------------------*/
 
 // Fetch all appointments with optional pagination
 export const fetchAppointments = async (skip = 0, limit = 10): Promise<Appointment[]> => {
@@ -197,3 +220,40 @@ export const fetchAvailableTimes = async (date: string): Promise<string[]> => {
   const response = await axiosInstance.get(`/appointments/available-times/${date}`);
   return response.data;
 };
+
+/*-------------------------------- NOTIFICATIONS FUNCTIONS -------------------------------- */
+
+export const fetchNotifications = async (): Promise<Notification[]> => {
+  const response = await axiosInstance.get("/notifications");
+  return response.data;
+};
+
+export const markAllNotificationsAsRead = async (): Promise<void> => {
+  await axiosInstance.put("/notifications/read-all");
+};
+
+export const createNotification = async (data: NotificationCreate): Promise<Notification> => {
+  const response = await axiosInstance.post("/notifications", data);
+  return response.data;
+};
+
+export const deleteNotification = async (notificationId: number): Promise<void> => {
+  await axiosInstance.delete(`/notifications/${notificationId}`);
+};
+
+export const filterNotifications = async (
+  type?: string,
+  isRead?: boolean
+): Promise<Notification[]> => {
+  const params: { type?: string; is_read?: boolean } = {};
+  if (type) params.type = type;
+  if (isRead !== undefined) params.is_read = isRead;
+
+  const response = await axiosInstance.get("/notifications/filter", { params });
+  return response.data;
+};
+
+export const markNotificationAsRead = async (notificationId: number): Promise<void> => {
+  await axiosInstance.put(`/notifications/${notificationId}/read`);
+};
+

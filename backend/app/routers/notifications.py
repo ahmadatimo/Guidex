@@ -3,7 +3,8 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-from app.models import Notification, NotificationCreate
+from app.models import Notification, NotificationCreate, User
+from app.utils.email import send_email
 
 # Create the APIRouter instance
 router = APIRouter()
@@ -83,11 +84,10 @@ async def create_notification(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Create a notification for a specific user (Admin only).
+    Create a notification for a specific user and send an email.
     """
-    if current_user["role"] != "admin":
-        raise HTTPException(status_code=403, detail="Only admins can create notifications.")
 
+    # Create the notification in the database
     new_notification = Notification(
         recipient_id=notification.recipient_id,
         appointment_id=notification.appointment_id,
@@ -98,6 +98,22 @@ async def create_notification(
     db.add(new_notification)
     db.commit()
     db.refresh(new_notification)
+
+    # Fetch the recipient's email (assuming a User model with an email field)
+    recipient = db.query(User).filter(User.id == notification.recipient_id).first()
+    if not recipient or not recipient.user_email:
+        raise HTTPException(status_code=404, detail="Recipient email not found.")
+
+    # Send the email notification
+    email_subject = "New Notification from Guidex"
+    email_body = f"""
+    <p>Hello {recipient.name},</p>
+    <p>You have a new notification:</p>
+    <p>{notification.message}</p>
+    <p>Thank you,<br>Guidex Team</p>
+    """
+    await send_email(email_subject, [recipient.user_email], email_body)
+
     return new_notification
 
 @router.delete("/notifications/{notification_id}")
