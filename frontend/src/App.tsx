@@ -25,7 +25,7 @@
         <Routes>
           {/*Visitors */}
           <Route element={<MainLayout />} >
-            <Route path='/visitor/auth' element={<Login/>}/>
+            <Route path='/' element={<Login/>}/>
             <Route element={<ProtectedRoutes/>}> 
               <Route element={<VisitorLayout />}>
                 <Route path='/visitor' element={<Home/>}/>
