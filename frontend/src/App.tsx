@@ -17,6 +17,7 @@ import Analytics from "./pages/Staff/Analytics"
 import AddStaff from "./pages/Staff/AddStaff"
 import StaffSettings from "./pages/Staff/StaffSettings"
 import GuideAppointments from "./pages/Staff/GuideAppointments"
+import ProtectedRoutes from "./utils/ProtectedRoutes"
 
 const App = () => {
   return (
@@ -24,27 +25,29 @@ const App = () => {
       <Routes>
         {/*Visitors */}
         <Route element={<MainLayout />} >
-          <Route path='/' element={<Login/>}/>
-          <Route element={<VisitorLayout />} >
-            <Route path='/visitor' element={<Home/>}/>
-            <Route path='/about' element={<About/>}/>
-            <Route path='/contact' element={<Contact/>}/>
-            <Route path='/my-profile' element={<MyProfile/>}/>
-            <Route path='/my-appointments' element={<MyAppointments/>}/>
-            <Route path='/appointment' element={<Appointment />} />
-          </Route> {/*VisitorLayout */}
+          <Route path='/visitor/auth' element={<Login/>}/>
+          <Route element={<ProtectedRoutes/>}> 
+            <Route element={<VisitorLayout />} >
+              <Route path='/visitor' element={<Home/>}/>
+              <Route path='/about' element={<About/>}/>
+              <Route path='/contact' element={<Contact/>}/>
+              <Route path='/my-profile' element={<MyProfile/>}/>
+              <Route path='/my-appointments' element={<MyAppointments/>}/>
+              <Route path='/appointment' element={<Appointment />} />
+            </Route> {/*VisitorLayout */}
 
-          {/*Staff */}
-          <Route element={<StaffLayout />} >
-            <Route path='/staff' element={<StaffHomepage />} />
-            <Route path='/staff/pending-approvals' element={<PendingApprovals />} />
-            <Route path='/staff/calendar' element={<Calendar />} />
-            <Route path='/staff/notifications' element={<Notifications />}/>
-            <Route path='/staff/analytics' element={<Analytics />} />
-            <Route path='/staff/add-staff' element={<AddStaff />} />
-            <Route path='/staff/settings' element={<StaffSettings />} />
-            <Route path='/staff/appointments' element={<GuideAppointments />} />
-          </Route> {/*StaffLayout */}
+            {/*Staff */}
+            <Route element={<StaffLayout />} >
+              <Route path='/staff' element={<StaffHomepage />} />
+              <Route path='/staff/pending-approvals' element={<PendingApprovals />} />
+              <Route path='/staff/calendar' element={<Calendar />} />
+              <Route path='/staff/notifications' element={<Notifications />}/>
+              <Route path='/staff/analytics' element={<Analytics />} />
+              <Route path='/staff/add-staff' element={<AddStaff />} />
+              <Route path='/staff/settings' element={<StaffSettings />} />
+              <Route path='/staff/appointments' element={<GuideAppointments />} />
+            </Route> {/*StaffLayout */}
+          </Route>
         </Route> {/*MainLayout */}
       </Routes>
     </div>
