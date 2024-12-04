@@ -6,7 +6,7 @@ const ProtectedRoutes = () => {
     const token = localStorage.getItem("access_token");
 
     
-    return token? <Outlet /> : <Navigate to='/visitor/auth'/>
+    return token? <Outlet /> : <Navigate to='/auth'/>
 }
 
 export default ProtectedRoutes;

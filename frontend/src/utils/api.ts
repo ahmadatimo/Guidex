@@ -67,8 +67,9 @@ export const registerUser = async (
   user_email: string,
   role: string,
   name: string,
-  school_name: string,
-  password: string
+  password: string,
+  school_name?: string,
+  
 ): Promise<void> => {
     // the body of the register request
     const requestBody = {

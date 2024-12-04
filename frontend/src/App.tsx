@@ -1,6 +1,5 @@
   import { Route, Routes } from "react-router-dom"
   import Home from "./pages/User/Home"
-  import Login from "./pages/Login"
   import About from "./pages/User/About"
   import Contact from "./pages/User/Contact"
   import MyProfile from "./pages/User/MyProfile"
@@ -18,6 +17,7 @@
   import StaffSettings from "./pages/Staff/StaffSettings"
   import GuideAppointments from "./pages/Staff/GuideAppointments"
   import ProtectedRoutes from "./utils/ProtectedRoutes"
+  import AuthPage from "./pages/Auth"
 
   const App = () => {
     return (
@@ -25,20 +25,20 @@
         <Routes>
           {/*Visitors */}
           <Route element={<MainLayout />} >
-            <Route path='/visitor/auth' element={<Login/>}/>
+          <Route path='/auth' element={<AuthPage/>}/>
             <Route element={<ProtectedRoutes/>}> 
               <Route element={<VisitorLayout />}>
-                <Route path='/visitor' element={<Home/>}/>
-                <Route path='/about' element={<About/>}/>
-                <Route path='/contact' element={<Contact/>}/>
-                <Route path='/my-profile' element={<MyProfile/>}/>
-                <Route path='/my-appointments' element={<MyAppointments/>}/>
-                <Route path='/appointment' element={<Appointment/>}/>
+                <Route path='/visitor/home' element={<Home/>}/>
+                <Route path='/visitor/about' element={<About/>}/>
+                <Route path='/visitor/contact' element={<Contact/>}/>
+                <Route path='/visitor/my-profile' element={<MyProfile/>}/>
+                <Route path='/visitor/my-appointments' element={<MyAppointments/>}/>
+                <Route path='/visitor/appointment' element={<Appointment/>}/>
               </Route> {/*VisitorLayout */}
 
               {/*Staff */}
               <Route element={<StaffLayout />} >
-                <Route path='/staff' element={<StaffHomepage />} />
+                <Route path='/staff/home' element={<StaffHomepage />} />
                 <Route path='/staff/pending-approvals' element={<PendingApprovals />} />
                 <Route path='/staff/calendar' element={<Calendar />} />
                 <Route path='/staff/notifications' element={<Notifications />}/>

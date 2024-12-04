@@ -9,7 +9,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-  const handleLogout = () => navigate('/visitor/auth');
+  const handleLogout = () => navigate('/auth');
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -42,7 +42,7 @@ const Sidebar = () => {
           <ul className="flex flex-col space-y-1">
             <li>
               <Link
-                to="/staff"
+                to="/staff/home"
                 className={`flex items-center px-4 py-2 ${
                   isActive('/staff')
                     ? 'bg-blue-200 text-blue-700'

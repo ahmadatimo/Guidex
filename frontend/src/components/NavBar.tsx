@@ -18,7 +18,7 @@ const NavBar = () => {
       <ul className="hidden md:flex items-start gap-5 font-medium">
         <li className="py-1">
           <NavLink
-            to="/visitor"
+            to="/visitor/home"
             className={({ isActive }) => (isActive ? "text-primary" : "text-gray-700")}>
             {({ isActive }) => (
               <>
@@ -32,7 +32,7 @@ const NavBar = () => {
         </li>
         <li className="py-1">
           <NavLink
-            to="/about"
+            to="/visitor/about"
             className={({ isActive }) => (isActive ? "text-primary" : "text-gray-700")}>
             {({ isActive }) => (
               <>
@@ -46,7 +46,7 @@ const NavBar = () => {
         </li>
         <li className="py-1">
           <NavLink
-            to="/contact"
+            to="/visitor/contact"
             className={({ isActive }) => (isActive ? "text-primary" : "text-gray-700")}>
             {({ isActive }) => (
               <>
@@ -66,15 +66,15 @@ const NavBar = () => {
             <FaChevronDown className="ml-2" />
             <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
               <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
-                <p onClick={() => navigate("/my-profile")} className="hover:text-black cursor-pointer">My Profile</p>
-                <p onClick={() => navigate("my-appointments")} className="hover:text-black cursor-pointer">My Appointments</p>
-                <p onClick={() => { setToken(false); navigate("/login") }} className="hover:text-black cursor-pointer">Logout</p>
+                <p onClick={() => navigate("/visitor/my-profile")} className="hover:text-black cursor-pointer">My Profile</p>
+                <p onClick={() => navigate("/visitor/my-appointments")} className="hover:text-black cursor-pointer">My Appointments</p>
+                <p onClick={() => { setToken(false); navigate("/auth") }} className="hover:text-black cursor-pointer">Logout</p>
               </div>
             </div>
           </div>
         ) : (
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/auth")}
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded font-light hidden md:block"
           >
             Create Account

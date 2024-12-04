@@ -4,7 +4,7 @@ import { loginUser, registerUser } from "../utils/api";
 import { toast } from "react-toastify";
 
 
-const Login: React.FC = () => {
+const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
   const [school, setSchool] = useState(""); // State for high school dropdown
   const [name, setName] = useState(""); // State for name input
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       console.log(role);
       console.log(localStorage.getItem("access_token"))
       if (role){
-        navigate(`/${role}`);
+        navigate(`/${role}/home`);
       }
       else{
         toast.error("Login failed. Invalid role returned.");
@@ -53,7 +53,7 @@ const Login: React.FC = () => {
 
       // handle the signup
       }else{
-        await registerUser(email, "visitor", name, school, password);
+        await registerUser(email, "visitor", name, password, school);
         toast.success("Succesfully created account");
         navigate(0);
       }
@@ -69,7 +69,7 @@ const Login: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-6 text-center">
-          {isLogin ? "Visitor Login" : "Visitor Signup"}
+          {isLogin ? "Login" : "Visitor Signup"}
         </h1>
 
         <form onSubmit={handleSubmit}>
@@ -159,4 +159,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default AuthPage;

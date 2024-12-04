@@ -39,8 +39,8 @@ const HeroSection: React.FC = () => {
         <h1 className="text-4xl md:text-6xl font-bold mb-4">Discover Your Future at Bilkent</h1>
         <p className="text-lg md:text-2xl mb-6">Join us for a tour to experience our campus and programs in action!</p>
         <div className="space-x-4">
-          <button onClick={() => {navigate('/appointment')}} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">Schedule a Tour</button>
-          <button onClick={() => {navigate('/about')}}className="bg-white hover:bg-gray-200 text-black font-bold py-3 px-6 rounded">Learn More</button>
+          <button onClick={() => {navigate('/visitor/appointment')}} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">Schedule a Tour</button>
+          <button onClick={() => {navigate('/visitor/about')}}className="bg-white hover:bg-gray-200 text-black font-bold py-3 px-6 rounded">Learn More</button>
         </div>
       </div>
     </section>

@@ -1,10 +1,11 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Text, DateTime, Enum
-from app.database import Base
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Text, DateTime, Enum, event
+from app.database import Base, SessionLocal
+from sqlalchemy.orm import relationship, Session
 from datetime import date, time, datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 import enum
+import bcrypt
 
 class AppointmentStatus(enum.Enum):
     CREATED = "created"       # Appointment created by user
@@ -51,7 +52,6 @@ class Appointment(Base):
 
 
 
-
 #pydantic models
 class AppointmentBase(BaseModel):
     date: date  # Appointment date
@@ -75,3 +75,36 @@ class AppointmentResponse(BaseModel):
 
 class AppointmentStatusUpdate(BaseModel):
     status: str
+
+
+#--------------------------------------------------------------- These code has to  be changed later--------------------------------------- 
+
+
+# Function to create admin user (explicitly passing the DB session)
+def create_admin_user(db: Session):
+    # Check if an admin user already exists
+    admin_user = db.query(User).filter(User.role == "admin").first()
+    if not admin_user:
+        # Create the admin user
+        admin_user = User(
+            name="Admin",
+            user_email="admin@example.com",
+            role="admin",
+            hashed_password="admin1234",
+            school_name=None,
+        )
+        db.add(admin_user)
+        db.commit()
+        print("Admin user created.")
+    else:
+        print("Admin user already exists.")
+
+# Event listener for after creating the table
+def after_create_listener(target, connection, **kwargs):
+    # Create a session from the sessionmaker
+    db = SessionLocal()
+    create_admin_user(db)
+    db.close()
+
+# Attach the event listener
+event.listen(User.__table__, 'after_create', after_create_listener)
