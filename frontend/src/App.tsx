@@ -18,10 +18,12 @@
   import GuideAppointments from "./pages/Staff/GuideAppointments"
   import ProtectedRoutes from "./utils/ProtectedRoutes"
   import AuthPage from "./pages/Auth"
+  import { AuthProvider } from "./context/AuthContext"
 
   const App = () => {
     return (
       <div>
+      <AuthProvider>  
         <Routes>
           {/*Visitors */}
           <Route element={<MainLayout />} >
@@ -50,6 +52,7 @@
             </Route>
           </Route> {/*MainLayout */}
         </Routes>
+      </AuthProvider>
       </div>
     )
   }

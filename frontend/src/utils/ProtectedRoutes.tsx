@@ -1,12 +1,19 @@
-import { Outlet, Navigate } from "react-router-dom";
+// src/components/ProtectedRoutes.tsx
 
-const ProtectedRoutes = () => {
+import { Outlet, Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-    // Check for the token in local storage
-    const token = localStorage.getItem("access_token");
+const ProtectedRoutes: React.FC = () => {
+  const { accessToken } = useAuth(); // Get accessToken from AuthContext
 
-    
-    return token? <Outlet /> : <Navigate to='/auth'/>
-}
+  // Check if the user is authenticated
+  if (!accessToken) {
+    // Redirect to /auth if no accessToken
+    return <Navigate to="/auth" />;
+  }
+
+  // If authenticated, render the Outlet (protected routes)
+  return <Outlet />;
+};
 
 export default ProtectedRoutes;

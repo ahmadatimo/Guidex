@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../utils/api";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 
 const AuthPage: React.FC = () => {
@@ -11,8 +12,8 @@ const AuthPage: React.FC = () => {
   const [email, setEmail] = useState(""); // State for email input
   const [password, setPassword] = useState(""); // State for password input
   const navigate = useNavigate(); // Initialize useNavigate for redirection if needed
-  
-  // const { setUser } = useUserContext();
+  const { setUser } = useAuth(); // Get setUser from AuthContext
+ 
 
   // Dummy data for high school dropdown
   const highSchools = ["High School A", "High School B", "High School C"];
@@ -39,13 +40,22 @@ const AuthPage: React.FC = () => {
     // data fetching goes here 
     console.log(email, password)
     try{
-      // Handle the login
+
       if(isLogin == true){
-      let role = await loginUser(email, password);
-      console.log(role);
-      console.log(localStorage.getItem("access_token"))
-      if (role){
-        navigate(`/${role}/home`);
+      // Call loginUser to authenticate the user
+      const { access_token, role } = await loginUser(email, password);
+
+      // Set the user data in the context
+      setUser(email, role, access_token);
+
+      // After successful login, you can redirect the user or show a message
+      console.log('Logged in with role:', role);
+      if (role == "staff" || role == "admin"){
+        navigate("/staff/home");
+      }
+      else if (role == "visitor"){
+        navigate("/visitor/home");
+        
       }
       else{
         toast.error("Login failed. Invalid role returned.");
@@ -58,9 +68,9 @@ const AuthPage: React.FC = () => {
         navigate(0);
       }
     }
-   catch (error: any) {
-    console.error("Error during login:", error.response?.data || error.message);
-    toast.error("Error during login:", error.response?.data || error.message);
+     catch (error: any) {
+      console.error("Error during login:", error.response?.data || error.message);
+      toast.error("Error during login:", error.response?.data || error.message);
     }
     
   };

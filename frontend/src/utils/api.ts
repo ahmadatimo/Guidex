@@ -113,32 +113,30 @@ export const registerUser = async (
 };
 
 // Function to log in a user
-export const loginUser = async (email: string, password: string): Promise<string> => {
-  // try {
+export const loginUser = async (email: string, password: string): Promise<{ access_token: string; role: string }> => {
     // Make the POST request with OAuth2 fields
-    const response = await axiosInstance.post("/auth/login", {
-      grant_type: "password", // Required field for password grant
-      username: email, 
-      password: password, // User's password
-      scope: "", 
-      client_id: "", 
-      client_secret: ""
-    }, 
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
+    const response = await axiosInstance.post(
+      "/auth/login", 
+      {
+        grant_type: "password", // Required field for password grant
+        username: email,
+        password: password, // User's password
+        scope: "", 
+        client_id: "", 
+        client_secret: ""
+      }, 
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
       }
-    });
+    );
 
-    // Extract the access token from the response
+    // Extract the access token and role from the response
     const { access_token, role } = response.data;
 
-    // Store the token in localStorage
-    localStorage.setItem("access_token", access_token);
-
-    console.log("Login successful, token stored in localStorage.");
-    // return it to the LoginPage
-    return role;
+    // Return the token and role
+    return { access_token, role };
 };
 
 /*-------------------------------- APPOINTMENTS FUNCTIONS --------------------------------*/

@@ -5,10 +5,12 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr
 from app.database import  SessionLocal
 from sqlalchemy.orm import Session
+from sqlalchemy import event
 from app.models import User
 from fastapi import HTTPException, Depends, status
-from passlib.context import CryptContext
 from jose import jwt, JWTError
+from passlib.context import CryptContext
+
 
 
 router = APIRouter(
@@ -16,8 +18,9 @@ router = APIRouter(
     tags=['auth']
 )
 
-bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
+
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login")
+bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
 
 SECRET_KEY = "91ab6d6051805a8a1bf2f65dd1c5bfbcb198cffe492808928c723002a779d2a9"
 ALGORRITHM = "HS256"
@@ -125,3 +128,36 @@ async def sign_in_for_access_token(db: db_dependency, form_data: Annotated[OAuth
 @router.get("/auth/get_user")
 async def get_user():
     return {"current_user" : "Zesty Timo"}
+
+
+#--------------------------------------------------------------- Below code is for admin initialization--------------------------------------- 
+
+
+# Function to create admin user (explicitly passing the DB session)
+def create_admin_user(db: Session):
+    # Check if an admin user already exists
+    admin_user = db.query(User).filter(User.role == "admin").first()
+    if not admin_user:
+        # Create the admin user
+        admin_user = User(
+            name="Admin",
+            user_email="admin@example.com",
+            role="admin",
+            hashed_password=bcrypt_context.hash("admin1234"),
+            school_name=None,
+        )
+        db.add(admin_user)
+        db.commit()
+        print("Admin user created.")
+    else:
+        print("Admin user already exists.")
+
+# Event listener for after creating the table
+def after_create_listener(target, connection, **kwargs):
+    # Create a session from the sessionmaker
+    db = SessionLocal()
+    create_admin_user(db)
+    db.close()
+
+# Attach the event listener
+event.listen(User.__table__, 'after_create', after_create_listener)
