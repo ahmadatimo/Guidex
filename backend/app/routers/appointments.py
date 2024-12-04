@@ -114,18 +114,15 @@ async def delete_appointment(
 
 
 # Utils
-@router.get("/user/{user_id}/appointments", response_model=List[AppointmentResponse])
+@router.get("/user/appointments", response_model=List[AppointmentResponse])
 async def get_appointments_for_user(
-    user_id: int,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)  # Use JWT to get current user
 ):
     """
     Fetch all appointments created by a user (user_id).
     """
-    if current_user["user_id"] != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to access this user's appointments.")
-    
+    user_id = current_user['user_id']
     appointments = db.query(Appointment).filter(Appointment.user_id == user_id).all()
     if not appointments:
         raise HTTPException(status_code=404, detail="No appointments found for this user.")
@@ -246,3 +243,23 @@ async def update_appointment_details(appointment_id: int, updates: dict, db: Ses
     db.commit()
     db.refresh(appointment)
     return appointment
+
+
+@router.get("/appointments/available-times/{date}", response_model=List[str])
+async def get_available_times_for_date(
+    date: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Get a list of available times for a specific date.
+    """
+    # Query booked times for the date
+    appointments = db.query(Appointment).filter(Appointment.date == date).all()
+    booked_times = [appointment.time.strftime("%H:%M:%S") for appointment in appointments]
+
+    # Define all possible time slots in HH:mm:ss format
+    all_times = ["10:00:00", "13:00:00", "15:00:00"]
+    
+    # Find available times
+    available_times = [time for time in all_times if time not in booked_times]
+    return available_times

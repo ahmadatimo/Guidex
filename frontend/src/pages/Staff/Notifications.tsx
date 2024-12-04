@@ -1,91 +1,124 @@
-import React, { useState } from "react";
-
-interface Notification {
-  id: number;
-  title: string;
-  description?: string;
-  timestamp: string;
-  read: boolean;
-}
+import React, { useState, useEffect } from "react";
+import { fetchNotifications, markNotificationAsRead, Notification as NotificationType } from "../../utils/api";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Notifications: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      title: "Visitor Tour Approval Pending",
-      description: "You have a pending approval for XYZ High School.",
-      timestamp: "2024-11-18 10:30 AM",
-      read: false,
-    },
-    {
-      id: 2,
-      title: "Reminder: Staff Meeting",
-      description: "Don't forget the staff meeting scheduled at 1:00 PM.",
-      timestamp: "2024-11-17 9:00 AM",
-      read: true,
-    },
-    {
-      id: 3,
-      title: "Feedback Due",
-      description: "Submit feedback for ABC Academy's visitor tour.",
-      timestamp: "2024-11-16 2:45 PM",
-      read: false,
-    },
-  ]);
+  const [newNotifications, setNewNotifications] = useState<NotificationType[]>([]);
+  const [readNotifications, setReadNotifications] = useState<NotificationType[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Fetch notifications from the backend
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchNotifications();
+
+        // Split notifications into "new" and "read"
+        const unread = data.filter((notification) => !notification.is_read);
+        const read = data.filter((notification) => notification.is_read);
+
+        setNewNotifications(unread);
+        setReadNotifications(read);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+        toast.error("Failed to load notifications. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadNotifications();
+  }, []);
 
   // Mark a notification as read
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
-      )
-    );
-  };
+  const markAsRead = async (id: number) => {
+    try {
+      await markNotificationAsRead(id);
 
-  // Delete a notification
-  const deleteNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+      // Move the notification to the "read" section
+      setNewNotifications((prev) =>
+        prev.filter((notification) => {
+          if (notification.id === id) {
+            setReadNotifications((prevRead) => [...prevRead, { ...notification, is_read: true }]);
+            return false;
+          }
+          return true;
+        })
+      );
+
+      toast.success("Notification marked as read.");
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      toast.error("Failed to mark notification as read. Please try again.");
+    }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-bold mb-6 text-blue-700">Notifications</h1>
       <div className="bg-white p-6 rounded-lg shadow">
-        {notifications.length === 0 ? (
-          <p className="text-gray-700">No new notifications.</p>
+        {isLoading ? (
+          <p className="text-gray-700">Loading notifications...</p>
         ) : (
-          <ul className="space-y-4">
-            {notifications.map((notification) => (
-              <li
-                key={notification.id}
-                className={`p-4 border rounded flex justify-between items-start ${
-                  notification.read ? "bg-gray-100" : "bg-blue-50"
-                }`}
-              >
-                <div>
-                  <h3 className="font-bold text-lg text-gray-800">{notification.title}</h3>
-                  <p className="text-sm text-gray-600">{notification.description}</p>
-                  <p className="text-xs text-gray-500 mt-1">{notification.timestamp}</p>
-                </div>
-                <div className="flex space-x-2">
-                  {!notification.read && (
-                    <button
-                      onClick={() => markAsRead(notification.id)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+          <>
+            {/* New Notifications Section */}
+            <div>
+              <h2 className="text-2xl font-semibold text-blue-600 mb-4">New Notifications</h2>
+              {newNotifications.length === 0 ? (
+                <p className="text-gray-600">No new notifications.</p>
+              ) : (
+                <ul className="space-y-4">
+                  {newNotifications.map((notification) => (
+                    <li
+                      key={notification.id}
+                      id={`notification-${notification.id}`}
+                      className="p-4 border rounded bg-blue-50 flex justify-between items-start"
                     >
-                      Mark as Read
-                    </button>
-                  )}
-                  <button
-                    onClick={() => deleteNotification(notification.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-800">{notification.message}</h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(notification.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => markAsRead(notification.id)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+                      >
+                        Mark as Read
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Read Notifications Section */}
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold text-gray-700 mb-4">Read Notifications</h2>
+              {readNotifications.length === 0 ? (
+                <p className="text-gray-600">No read notifications.</p>
+              ) : (
+                <ul className="space-y-4">
+                  {readNotifications.map((notification) => (
+                    <li
+                      key={notification.id}
+                      id={`notification-${notification.id}`}
+                      className="p-4 border rounded bg-gray-100 flex justify-between items-start"
+                    >
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-800">{notification.message}</h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(notification.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

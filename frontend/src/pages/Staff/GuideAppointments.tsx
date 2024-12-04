@@ -58,18 +58,20 @@ const GuideAppointments: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-700 mb-12">
+      <h1 className="text-3xl font-bold mb-8 text-blue-700">
         My Appointments
       </h1>
 
       {isLoading ? (
         <p className="text-center text-gray-500">Loading appointments...</p>
       ) : error ? (
-        <p className="text-center text-gray-500">
-          Failed to load appointments. Please try again.
-        </p>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-gray-700">
+            Failed to load appointments. Please try again.
+          </p>
+        </div>
       ) : appointments.length === 0 ? (
-        <div className="flex justify-center items-center h-64">
+        <div className="bg-white p-6 rounded-lg shadow">
           <p className="text-gray-500 text-lg">
             You currently have no appointments assigned to you.
           </p>
@@ -105,7 +107,7 @@ const GuideAppointments: React.FC = () => {
                         </p>
                         <p className="text-gray-600">
                           <span className="font-medium">Visitors:</span>{" "}
-                          {appointment.visitors}
+                          {appointment.visitors_number}
                         </p>
                       </div>
                       <div className="flex-shrink-0">
@@ -149,7 +151,7 @@ const GuideAppointments: React.FC = () => {
                         </p>
                         <p className="text-gray-600">
                           <span className="font-medium">Visitors:</span>{" "}
-                          {appointment.visitors}
+                          {appointment.visitors_number}
                         </p>
                       </div>
                       <div className="flex-shrink-0">

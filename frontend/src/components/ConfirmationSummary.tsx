@@ -12,27 +12,12 @@ interface ConfirmationSummaryProps {
 const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit }) => {
   const navigate = useNavigate();
 
-  // Helper to format time to HH:MM:SS
-  const formatTime = (time: string): string => {
-    const [hours, minutesPart] = time.split(':');
-    const [minutes, period] = minutesPart.split(' ');
-    let formattedHours = parseInt(hours, 10);
-
-    if (period === 'PM' && formattedHours !== 12) {
-      formattedHours += 12;
-    } else if (period === 'AM' && formattedHours === 12) {
-      formattedHours = 0;
-    }
-
-    return `${String(formattedHours).padStart(2, '0')}:${minutes}:00`;
-  };
-
   const handleConfirm = async () => {
     try {
       // Prepare the payload
       const payload = {
         date: data.date, // Assume already in YYYY-MM-DD format
-        time: formatTime(data.time), // Format time to HH:MM:SS
+        time: data.time, // Format time to HH:MM:SS
         city: data.city,
         visitors_number: data.visitors_number,
         note: data.note,
@@ -46,7 +31,7 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
       if (response) {
         toast.success('Appointment successfully created!');
         console.log('Created Appointment:', response);
-        navigate('/');
+        navigate('/visitor');
       } else {
         toast.error('Failed to create appointment. Please try again.');
       }
