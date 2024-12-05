@@ -1,4 +1,4 @@
-  import { Route, Routes } from "react-router-dom"
+  import { Navigate, Route, Routes } from "react-router-dom"
   import Home from "./pages/User/Home"
   import About from "./pages/User/About"
   import Contact from "./pages/User/Contact"
@@ -18,13 +18,26 @@
   import GuideAppointments from "./pages/Staff/GuideAppointments"
   import ProtectedRoutes from "./utils/ProtectedRoutes"
   import AuthPage from "./pages/Auth"
-  import { AuthProvider } from "./context/AuthContext"
+
 
   const App = () => {
+  
+    const getInitialPath = (): string =>{
+      let role = sessionStorage.getItem("role");
+      let access_token = sessionStorage.getItem("access_token");
+
+      if(role != null && access_token != null){
+        return `/${role}/home`;
+      }
+      
+      return "/auth";
+    }
+
+
     return (
       <div>
-      <AuthProvider>  
         <Routes>
+        <Route path="/" element={<Navigate to={getInitialPath()}/>} />
           {/*Visitors */}
           <Route element={<MainLayout />} >
           <Route path='/auth' element={<AuthPage/>}/>
@@ -52,7 +65,6 @@
             </Route>
           </Route> {/*MainLayout */}
         </Routes>
-      </AuthProvider>
       </div>
     )
   }

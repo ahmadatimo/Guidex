@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../utils/api";
 import { toast } from "react-toastify";
-import { useAuth } from "../context/AuthContext";
 
 
 const AuthPage: React.FC = () => {
@@ -12,7 +11,6 @@ const AuthPage: React.FC = () => {
   const [email, setEmail] = useState(""); // State for email input
   const [password, setPassword] = useState(""); // State for password input
   const navigate = useNavigate(); // Initialize useNavigate for redirection if needed
-  const { setUser } = useAuth(); // Get setUser from AuthContext
  
 
   // Dummy data for high school dropdown
@@ -43,10 +41,8 @@ const AuthPage: React.FC = () => {
 
       if(isLogin == true){
       // Call loginUser to authenticate the user
-      const { access_token, role } = await loginUser(email, password);
+      const { role } = await loginUser(email, password);
 
-      // Set the user data in the context
-      setUser(email, role, access_token);
 
       // After successful login, you can redirect the user or show a message
       console.log('Logged in with role:', role);

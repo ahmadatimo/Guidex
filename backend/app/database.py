@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 URL_DATABASE = 'mysql+pymysql://root:password@db/guidex'
 
-engine = create_engine(URL_DATABASE)
+engine = create_engine(URL_DATABASE, pool_pre_ping=True)
 
 SessionLocal = sessionmaker( autocommit=False, autoflush=False, bind=engine)
 
