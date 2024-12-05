@@ -143,11 +143,18 @@ export const loginUser = async (email: string, password: string): Promise<{ role
 /*-------------------------------- APPOINTMENTS FUNCTIONS --------------------------------*/
 
 // Fetch all appointments with optional pagination
-export const fetchAppointments = async (skip = 0, limit = 10): Promise<Appointment[]> => {
-  const response = await axiosInstance.get("/appointments/", {
-    params: { skip, limit },
-  });
-  return response.data;
+export const fetchAppointments = async (): Promise<Appointment[]> => {
+  try {
+    const response = await axiosInstance.get("/user/appointments", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Include JWT token
+      },
+    });
+    return response.data; // API returns appointments in JSON format
+  } catch (error: any) {
+    console.error("Error fetching appointments:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.detail || "Failed to fetch appointments");
+  }
 };
 
 // Create a new appointment

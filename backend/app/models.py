@@ -12,6 +12,8 @@ class AppointmentStatus(enum.Enum):
     PENDING_ADMIN = "pending_admin"  # Pending admin approval
     APPROVED = "approved"     # Approved by admin
     ACCEPTED = "accepted"     # Accepted by a guide
+    REJECTED = "rejected"     # Rejected by admin
+    DECLINED = "declined"     # Declined by a guide
     COMPLETED = "completed"   # Completed
     CANCELED = "canceled"     # Canceled (if applicable)
 
