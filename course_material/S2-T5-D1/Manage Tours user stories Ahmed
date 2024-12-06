@@ -1,4 +1,4 @@
-<Actor> 	as a coordinator
+<Actor> 	as an admin
 <Action>	I want to assign a guide
 <Value>  	to serve the visitors.
 --------------------------------------------------------------------------------------------------
@@ -6,6 +6,6 @@
 <Action>	I want to receive the assigning request
 <Value>  	to be able to approve it or decline it.
 --------------------------------------------------------------------------------------------------
-<Actor> 	as a coordinator
+<Actor> 	as an admin
 <Action>	I must respond to the customers
 <Value>  	to inform them if we can serve them at the date & time they chose.
