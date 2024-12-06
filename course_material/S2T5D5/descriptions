@@ -1,0 +1,61 @@
+Facade Design Pattern:
+The Facade Design Pattern is used to abstract and unify the interaction with multiple subsystem classes through a single interface.
+This makes the system easier to use for clients by hiding the complexities of the underlying subsystems.
+
+Facade Class:
+Appointments serves as facade class that provides methods like: 
+createAppointment()
+editAppointment()
+acceptingAppointment()
+decliningAppointment()
+assigningGuide()
+guideAcceptance()
+guideDecliance()
+In which they will interact with various subsystem classes such as User, Appointment, Notification to performe one of these operations.
+
+SubSystem Class:
+User Class: handels the normal information of a person like: name, phone, email, ..etc. and the users inherit this class so guides, admin, visitors can also be users.
+Appointment Class: Manages appointment-related data (ID, Date, Time, etc.) and actions like createAppointment(), deleteAppointment(), and assignGuide().
+Notification Class: Deals with notification-related actions like sendNotification() and markAsRead().
+
+
+Finally the client can be anyone who uses the program:
+the client interacts only with the AppointmentsFacade, which delegates tasks to the appropriate subsystem classes. 
+This shields the Client from the complexity of direct interactions with multiple subsystems.
+
+=======================================================================================================================================================================
+
+Strategy Design Pattern:
+The Strategy Pattern is implemented to provide multiple behaviors or algorithms for a specific action without altering the classes using those algorithms.
+It enables selecting behavior dynamically at runtime.
+
+The PendingApprovals interface and its different implementations are examples of the Strategy Pattern. 
+This allows roles like Admin and Guide to implement their own specific logic for managing pending approvals,
+while adhering to the shared contract (ShowPendingApprovals()).
+
+Structural Explanation:
+Interface: PendingApprovals declares the common method ShowPendingApprovals().
+
+Concrete Strategies:
+showAllPendingAppointments (used by Admin).
+ShowAcceptedAppointmentsbyAdmin (used by Guide).
+
+Context Class: The Appointments class interacts with these behaviors to handle pending approvals,
+
+Encapsulation Principle:
+Description: The Encapsulation Principle is demonstrated by ensuring that each class encapsulates its data and behavior, 
+providing a clear and organized structure for interaction. 
+
+For example:
+The Notification class encapsulates data (userID, appointmentID, usertype, etc.) 
+and provides methods like sendNotification(), receiveNotification(), and markAsRead() to control how notifications are handled.
+
+Similarly, the Appointment class encapsulates appointment-related data (ID, Date, City, etc.) 
+and methods (createAppointment(), deleteAppointment(), editAppointment(), etc.) to manage the lifecycle of an appointment.
+
+Structural Explanation:
+Classes like User, Guide, and Admin encapsulate user-specific data and provide role-specific methods (acceptAppointment(), assignGuide(), changeGuide(), etc.).
+Encapsulation ensures that only relevant methods and data are accessible externally while internal details are hidden.
+delegating to the appropriate strategy dynamically based on user roles.
+
+
