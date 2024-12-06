@@ -3,7 +3,7 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate
+from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User
 
 # Create the APIRouter instance
 router = APIRouter()
@@ -148,18 +148,15 @@ async def get_available_appointments_for_guides(
     return appointments
 
 
-@router.get("/guide/{guide_id}/appointments", response_model=List[AppointmentResponse])
+@router.get("/guide/appointments", response_model=List[AppointmentResponse])
 async def get_assigned_appointments_for_guide(
-    guide_id: int,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
     """
     Fetch all appointments assigned to a specific guide.
     """
-    if current_user["user_id"] != guide_id:
-        raise HTTPException(status_code=403, detail="Not authorized to access this guide's appointments.")
-    
+    guide_id = current_user['user_id']   
     appointments = db.query(Appointment).filter(Appointment.guide_id == guide_id).all()
     if not appointments:
         raise HTTPException(status_code=404, detail="No appointments found for this guide.")
@@ -206,12 +203,12 @@ async def assign_guide_to_appointment(appointment_id: int, guide_id: int, db: Se
     """
     appointment = await get_appointment_by_id(appointment_id, db)
     
-    if appointment.status != "APPROVED":
-        raise HTTPException(status_code=400, detail="Only approved appointments can be assigned.")
+    if appointment.status != AppointmentStatus.APPROVED:
+        raise HTTPException(status_code=400, detail="Only approved appointments can be assigned." + str(appointment.status))
     if appointment.guide_id is not None:
         raise HTTPException(status_code=400, detail="Appointment already assigned to a guide.")
     appointment.guide_id = guide_id
-    appointment.status = "ACCEPTED"  # Update status to accepted
+    appointment.status = AppointmentStatus.ACCEPTED  # Update status to accepted
     db.commit()
     db.refresh(appointment)
     return appointment
@@ -263,3 +260,38 @@ async def get_available_times_for_date(
     # Find available times
     available_times = [time for time in all_times if time not in booked_times]
     return available_times
+
+
+@router.get("/appointment/{appointment_id}/school")
+def get_school_name(appointment_id: int, db: Session = Depends(get_db)):
+    try:
+        school_name = get_school_name_by_user_id(db, appointment_id)
+        return {"appointment_id": appointment_id, "school_name": school_name}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+def get_school_name_by_user_id(db: Session, appointment_id: int) -> str:
+    """
+    Retrieve the school name associated with the user in an appointment.
+
+    :param db: SQLAlchemy session object
+    :param appointment_id: ID of the appointment
+    :return: School name associated with the user
+    :raises: ValueError if the appointment or user is not found
+    """
+    # Join Appointment with User table to retrieve the school name
+    appointment = (
+        db.query(Appointment)
+        .join(User, Appointment.user_id == User.id)
+        .filter(Appointment.id == appointment_id)
+        .first()
+    )
+
+    if not appointment:
+        raise ValueError("Appointment not found.")
+
+    if not appointment.user or not appointment.user.school_name:
+        raise ValueError("School name not found for this user.")
+
+    return appointment.user.school_name

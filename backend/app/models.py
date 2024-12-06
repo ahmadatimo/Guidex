@@ -101,4 +101,14 @@ class NotificationCreate(BaseModel):
     message: str
     type: str
 
-
+class NotificationResponse(BaseModel):
+    id: int
+    recipient_id: int
+    appointment_id: Optional[int]  # Optional if nullable in the database
+    message: str
+    type: str
+    is_read: bool
+    created_at: datetime
+    class Config:
+        from_attributes=True
+    

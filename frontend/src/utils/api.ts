@@ -7,14 +7,14 @@ const API_BASE_URL = "http://localhost:8000";
 // /*-------------------------------- TYPES -------------------------------- */
 export interface LoginResponse {
   access_token: string;
-  role : string;
-  refresh_token?: string; 
+  role: string;
+  refresh_token?: string;
 }
 
 export interface Appointment {
   id: number;
   user_id: number;
-  guide_id?: number; 
+  guide_id?: number;
   date: string;
   time: string;
   city: string;
@@ -24,11 +24,11 @@ export interface Appointment {
 }
 
 export interface CreateAppointmentRequest {
-  date: string; 
-  time: string; 
-  city: string; 
-  visitors_number: number; 
-  note?: string; 
+  date: string;
+  time: string;
+  city: string;
+  visitors_number: number;
+  note?: string;
 }
 
 export interface UpdateAppointmentRequest {
@@ -92,52 +92,53 @@ export const registerUser = async (
   school_name?: string,
   
 ): Promise<void> => {
-    // the body of the register request
-    const requestBody = {
-      user_email,
-      role,
-      name,
-      school_name,
-      password
-    };
+  // the body of the register request
+  const requestBody = {
+    user_email,
+    role,
+    name,
+    school_name,
+    password
+  };
 
-    // Make the POST request
-    const response = await axiosInstance.post("/auth/register", requestBody, {
-      headers: {
-        "Content-Type": "application/json" // Specify JSON content type
-      }
-    });
+  // Make the POST request
+  const response = await axiosInstance.post("/auth/register", requestBody, {
+    headers: {
+      "Content-Type": "application/json" // Specify JSON content type
+    }
+  });
 
-    console.log("User registered successfully:", response.data);
+  console.log("User registered successfully:", response.data);
 
 };
 
 // Function to log in a user
-export const loginUser = async (email: string, password: string): Promise<{ role: string }> => {
-    // Make the POST request with OAuth2 fields
-    const response = await axiosInstance.post(
-      "/auth/login", 
-      {
-        grant_type: "password", // Required field for password grant
-        username: email,
-        password: password, // User's password
-        scope: "", 
-        client_id: "", 
-        client_secret: ""
-      }, 
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
+export const loginUser = async (email: string, password: string): Promise<string> => {
+  // try {
+  // Make the POST request with OAuth2 fields
+  const response = await axiosInstance.post("/auth/login", {
+    grant_type: "password", // Required field for password grant
+    username: email,
+    password: password, // User's password
+    scope: "",
+    client_id: "",
+    client_secret: ""
+  },
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
       }
-    );
+    });
 
-    // Extract the access token and role from the response
-    const { access_token, role } = response.data;
-    sessionStorage.setItem("access_token" , access_token);
-    sessionStorage.setItem("role", role);
-    // Return the token and role
-    return {  role };
+  // Extract the access token from the response
+  const { access_token, role } = response.data;
+
+  // Store the token in localStorage
+  localStorage.setItem("access_token", access_token);
+
+  console.log("Login successful, token stored in localStorage.");
+  // return it to the LoginPage
+  return role;
 };
 
 /*-------------------------------- APPOINTMENTS FUNCTIONS --------------------------------*/
@@ -217,8 +218,8 @@ export const fetchAvailableAppointmentsForGuides = async (): Promise<Appointment
 };
 
 // Fetch appointments assigned to a specific guide
-export const fetchAssignedAppointmentsForGuide = async (guide_id: number): Promise<Appointment[]> => {
-  const response = await axiosInstance.get(`/guide/${guide_id}/appointments`);
+export const fetchAssignedAppointmentsForGuide = async (): Promise<Appointment[]> => {
+  const response = await axiosInstance.get(`/guide/appointments`);
   return response.data;
 };
 
@@ -228,10 +229,25 @@ export const fetchAvailableTimes = async (date: string): Promise<string[]> => {
   return response.data;
 };
 
+
+// Fetch school name for an appointment
+export const fetchSchoolNameForAppointment = async (appointmentId: number): Promise<string> => {
+  try {
+    const response = await axiosInstance.get(`/appointment/${appointmentId}/school`);
+    return response.data.school_name; // Extract school name from the response
+  } catch (error: any) {
+    console.error("Error fetching school name:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.detail || "Failed to fetch the school name. Please try again."
+    );
+  }
+};
+
+
 /*-------------------------------- NOTIFICATIONS FUNCTIONS -------------------------------- */
 
 export const fetchNotifications = async (): Promise<Notification[]> => {
-  const response = await axiosInstance.get("/notifications");
+  const response = await axiosInstance.get("/notifications/hi");
   return response.data;
 };
 

@@ -1,38 +1,51 @@
 import React, { useState, useEffect } from "react";
-import { fetchAssignedAppointmentsForGuide, Appointment } from "../../utils/api";
+import {
+  fetchAssignedAppointmentsForGuide,
+  fetchSchoolNameForAppointment,
+  Appointment,
+} from "../../utils/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Mock user simulating a logged-in guide
-const mockUser = {
-  id: 2, // Guide's ID
-  name: "Jane Doe",
-  role: "guide",
-};
-
 // Appointment statuses from backend
 enum AppointmentStatus {
-    CREATED = "created",
-    PENDING_ADMIN = "pending_admin",
-    APPROVED = "approved",
-    AVAILABLE = "available",
-    ACCEPTED = "accepted",
-    COMPLETED = "completed",
-    CANCELED = "canceled",
-  }
+  CREATED = "created",
+  PENDING_ADMIN = "pending_admin",
+  APPROVED = "approved",
+  AVAILABLE = "available",
+  ACCEPTED = "accepted",
+  COMPLETED = "completed",
+  CANCELED = "canceled",
+}
 
 const GuideAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [schoolNames, setSchoolNames] = useState<Record<number, string>>({});
 
   useEffect(() => {
     const loadAppointments = async () => {
       try {
         setIsLoading(true);
         setError(false);
-        const data = await fetchAssignedAppointmentsForGuide(mockUser.id);
+        const data = await fetchAssignedAppointmentsForGuide();
         setAppointments(data);
+
+        // Fetch school names for each appointment
+        const schoolNamesMap: Record<number, string> = {};
+        await Promise.all(
+          data.map(async (appointment) => {
+            try {
+              const schoolName = await fetchSchoolNameForAppointment(appointment.id);
+              schoolNamesMap[appointment.id] = schoolName;
+            } catch (error) {
+              console.error(`Error fetching school name for appointment ${appointment.id}:`, error);
+              schoolNamesMap[appointment.id] = "Unknown School";
+            }
+          })
+        );
+        setSchoolNames(schoolNamesMap);
       } catch (error) {
         console.error("Error fetching guide appointments:", error);
         toast.error("Failed to load appointments. Please try again.");
@@ -45,30 +58,26 @@ const GuideAppointments: React.FC = () => {
     loadAppointments();
   }, []);
 
-  /// Filter appointments based on status from the database
+  // Filter appointments based on status from the database
   const upcomingAppointments = appointments.filter(
-    (appointment) =>
-      appointment.status === AppointmentStatus.ACCEPTED 
+    (appointment) => appointment.status === AppointmentStatus.ACCEPTED
   );
 
   const pastAppointments = appointments.filter(
-    (appointment) => appointment.status === AppointmentStatus.COMPLETED ||
-                    appointment.status === AppointmentStatus.CANCELED
+    (appointment) =>
+      appointment.status === AppointmentStatus.COMPLETED ||
+      appointment.status === AppointmentStatus.CANCELED
   );
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8 text-blue-700">
-        My Appointments
-      </h1>
+      <h1 className="text-3xl font-bold mb-8 text-blue-700">My Appointments</h1>
 
       {isLoading ? (
         <p className="text-center text-gray-500">Loading appointments...</p>
       ) : error ? (
         <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-700">
-            Failed to load appointments. Please try again.
-          </p>
+          <p className="text-gray-700">Failed to load appointments. Please try again.</p>
         </div>
       ) : appointments.length === 0 ? (
         <div className="bg-white p-6 rounded-lg shadow">
@@ -95,15 +104,13 @@ const GuideAppointments: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-bold text-xl text-gray-700">
-                          {appointment.id}  {/*Change to school name */}
+                          {schoolNames[appointment.id] || "Loading..."}
                         </h3>
                         <p className="text-gray-600">
-                          <span className="font-medium">Date:</span>{" "}
-                          {appointment.date}
+                          <span className="font-medium">Date:</span> {appointment.date}
                         </p>
                         <p className="text-gray-600">
-                          <span className="font-medium">Time:</span>{" "}
-                          {appointment.time}
+                          <span className="font-medium">Time:</span> {appointment.time}
                         </p>
                         <p className="text-gray-600">
                           <span className="font-medium">Visitors:</span>{" "}
@@ -139,15 +146,13 @@ const GuideAppointments: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-bold text-xl text-gray-700">
-                          {appointment.id}   {/*Change to school name */}
+                          {schoolNames[appointment.id] || "Loading..."}
                         </h3>
                         <p className="text-gray-600">
-                          <span className="font-medium">Date:</span>{" "}
-                          {appointment.date}
+                          <span className="font-medium">Date:</span> {appointment.date}
                         </p>
                         <p className="text-gray-600">
-                          <span className="font-medium">Time:</span>{" "}
-                          {appointment.time}
+                          <span className="font-medium">Time:</span> {appointment.time}
                         </p>
                         <p className="text-gray-600">
                           <span className="font-medium">Visitors:</span>{" "}

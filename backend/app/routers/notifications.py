@@ -3,7 +3,7 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-from app.models import Notification, NotificationCreate, User
+from app.models import Notification, NotificationCreate, User, NotificationResponse
 from app.utils.email import send_email
 
 # Create the APIRouter instance
@@ -21,18 +21,17 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 
-@router.get("/notifications", response_model=List[Notification])
+@router.get("/notifications/hi", response_model=List[NotificationResponse])
 async def get_notifications(
     db: db_dependency,
     current_user: dict = Depends(get_current_user)
 ):
-    """
-    Fetch all notifications for the authenticated user.
-    """
+    print("Current User:", current_user)
     notifications = db.query(Notification).filter(
         Notification.recipient_id == current_user["user_id"]
     ).order_by(Notification.created_at.desc()).all()
-    return notifications
+    return [NotificationResponse.from_orm(notification) for notification in notifications]
+
 
 
 @router.put("/notifications/{notification_id}/read")
@@ -77,10 +76,10 @@ async def mark_all_notifications_as_read(
     return {"detail": f"{len(notifications)} notifications marked as read."}
 
 
-@router.post("/notifications", response_model=Notification)
+@router.post("/notifications", response_model=NotificationResponse)
 async def create_notification(
-    db: db_dependency,
     notification: NotificationCreate,
+    db: db_dependency,
     current_user: dict = Depends(get_current_user)
 ):
     """
@@ -104,15 +103,18 @@ async def create_notification(
     if not recipient or not recipient.user_email:
         raise HTTPException(status_code=404, detail="Recipient email not found.")
 
-    # Send the email notification
-    email_subject = "New Notification from Guidex"
+    # Use NotificationCreate details for email subject and body
+    email_subject = f"Notification: {notification.type.capitalize()}"
     email_body = f"""
     <p>Hello {recipient.name},</p>
     <p>You have a new notification:</p>
     <p>{notification.message}</p>
     <p>Thank you,<br>Guidex Team</p>
     """
-    await send_email(email_subject, [recipient.user_email], email_body)
+    try:
+        await send_email(email_subject, [recipient.user_email], email_body)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
 
     return new_notification
 
@@ -138,7 +140,7 @@ async def delete_notification(
     return {"detail": "Notification deleted successfully."}
 
 
-@router.get("/notifications/filter", response_model=List[Notification])
+@router.get("/notifications/filter", response_model=List[NotificationResponse])
 async def filter_notifications(
     db: db_dependency,
     type: str | None = None,
