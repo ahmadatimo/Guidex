@@ -10,6 +10,8 @@ from app.models import User
 from fastapi import HTTPException, Depends, status
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+from typing import Optional
+
 
 
 
@@ -39,7 +41,7 @@ class CreateUserRequest(BaseModel):
     user_email: EmailStr
     role: str
     name: str
-    school_name: str 
+    school: Optional[str] = None
     password: str
 
 
@@ -66,7 +68,7 @@ async def create_user(db: db_dependency, create_user: CreateUserRequest):
         user_email= create_user.user_email,
         name= create_user.name,
         role= create_user.role,
-        school_name= create_user.school_name,
+        school_name= create_user.school,
         hashed_password= bcrypt_context.hash(create_user.password)
     )
 

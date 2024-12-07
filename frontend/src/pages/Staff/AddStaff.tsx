@@ -9,10 +9,18 @@ const AddStaff: React.FC = () => {
     email: "",
     password: "",
     role: "",
+    school_name: ""
   });
 
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Example list of schools (replace this with your actual data or fetch from API)
+  const [schools, setSchools] = useState<{id: string; name: string}[]>([
+    { id: "1", name: "School A" },
+    { id: "2", name: "School B" },
+    { id: "3", name: "School C" }
+  ]);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -30,36 +38,51 @@ const AddStaff: React.FC = () => {
     fetchRole();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setNewAccount((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
+    // Basic validation
     if (!newAccount.name || !newAccount.email || !newAccount.password || !newAccount.role) {
       toast.error("All fields are required. Please fill out the form completely.", {
         position: "top-right",
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
       return;
     }
 
-    toast.success(`Account for "${newAccount.name}" created successfully as a "${newAccount.role}".`, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+    if (newAccount.role === "Visitor" && !newAccount.school_name) {
+      toast.error("Please select a school for Visitor accounts.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+      return;
+    }
 
-    setNewAccount({ name: "", email: "", password: "", role: "" });
+    try {
+      await registerUser(
+        newAccount.email,
+        newAccount.role,
+        newAccount.name,
+        newAccount.password,
+        newAccount.role === "Visitor" ? newAccount.school_name : undefined
+      );
+      toast.success(`Account for "${newAccount.name}" created successfully as a "${newAccount.role}".`, {
+        position: "top-right",
+        autoClose: 5000,
+      });
+      setNewAccount({ name: "", email: "", password: "", role: "", school_name: "" });
+    } catch (error) {
+      console.error("Error creating user account:", error);
+      toast.error("Failed to create the account. Please try again later.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+    }
   };
 
   if (loading) {
@@ -84,7 +107,7 @@ const AddStaff: React.FC = () => {
       <h1 className="text-3xl font-bold mb-2 text-blue-700">Add Staff Accounts</h1>
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">New Staff Account</h2>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleCreateAccount(); }}>
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Full Name
@@ -145,13 +168,35 @@ const AddStaff: React.FC = () => {
               <option value="Manager">Manager</option>
               <option value="Admin">Admin</option>
               <option value="Guide">Guide</option>
+              <option value="Visitor">Visitor</option>
             </select>
           </div>
 
+          {newAccount.role === "Visitor" && (
+            <div>
+              <label htmlFor="school_name" className="block text-sm font-medium text-gray-700">
+                School
+              </label>
+              <select
+                id="school_name"
+                name="school_name"
+                value={newAccount.school_name}
+                onChange={handleChange}
+                className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Select School</option>
+                {schools.map((school) => (
+                  <option key={school.id} value={school.name}>
+                    {school.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div>
             <button
-              type="button"
-              onClick={handleCreateAccount}
+              type="submit"
               className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
             >
               Create Account
