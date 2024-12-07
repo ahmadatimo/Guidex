@@ -31,6 +31,14 @@ export interface CreateAppointmentRequest {
   note?: string;
 }
 
+export interface User {
+  sub: string;
+  user_id: number;
+  role: string;
+  exp: number;
+}
+
+
 export interface UpdateAppointmentRequest {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Flexible type for partial updates
@@ -147,11 +155,7 @@ export const loginUser = async (email: string, password: string): Promise<string
 // Fetch all appointments with optional pagination
 export const fetchAppointments = async (): Promise<Appointment[]> => {
   try {
-    const response = await axiosInstance.get("/user/appointments", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`, // Include JWT token
-      },
-    });
+    const response = await axiosInstance.get("/user/appointments");
     return response.data; // API returns appointments in JSON format
   } catch (error: any) {
     console.error("Error fetching appointments:", error.response?.data || error.message);

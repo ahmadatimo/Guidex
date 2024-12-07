@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/User/Home";
 import About from "./pages/User/About";
@@ -20,25 +20,26 @@ import GuideAppointments from "./pages/Staff/GuideAppointments";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AuthPage from "./pages/Auth";
 import Spinner from "./components/Spinner";
+import { AuthContext } from "./context/AuthContext";
 
 const App = () => {
-  const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
+  const { user, loading } = useContext(AuthContext);
+    
   const handleInvalidRoute = () => {
-    if (loading) return <Spinner />; 
-    if (!role) return <Navigate to="/auth" />; 
-
-    // Redirect to role-specific homepage
-    if (role === "visitor") return <Navigate to="/visitor/home" />;
-    if (["admin", "guide"].includes(role)) return <Navigate to="/staff/home" />;
+    if (loading) return <Spinner />;
+    if (!user || !user.role) return <Navigate to="/auth" />;
+  
+    if (user.role === "visitor") return <Navigate to="/visitor/home" />;
+    if (["admin", "guide"].includes(user.role)) return <Navigate to="/staff/home" />;
   };
+  
 
 
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Navigate to={role ? `/${role}/home` : "/auth"} />} />
+        <Route path="/" element={<Navigate to={user?.role ? `/${user.role}/home` : "/auth"} />} />
 
         {/* Visitor Routes */}
         <Route element={<MainLayout />}>
