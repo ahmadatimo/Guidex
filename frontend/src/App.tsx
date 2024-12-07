@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/User/Home";
 import About from "./pages/User/About";
@@ -19,45 +19,21 @@ import StaffSettings from "./pages/Staff/StaffSettings";
 import GuideAppointments from "./pages/Staff/GuideAppointments";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AuthPage from "./pages/Auth";
-import { getCurrRole } from "./utils/api";
+import Spinner from "./components/Spinner";
 
 const App = () => {
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchRole = async () => {
-      const token = sessionStorage.getItem("access_token");
-      if (!token) {
-        setLoading(false);
-        setRole(null);
-        return;
-      }
-
-      try {
-        const fetchedRole = await getCurrRole();
-        setRole(fetchedRole);
-      } catch (error) {
-        console.error("Error fetching role:", error);
-        setRole(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRole();
-  }, []);
-
   const handleInvalidRoute = () => {
-    if (loading) return <div>Loading...</div>; // Show loading until role is determined
-    if (!role) return <Navigate to="/auth" />; // If no role, redirect to auth
+    if (loading) return <Spinner />; 
+    if (!role) return <Navigate to="/auth" />; 
 
     // Redirect to role-specific homepage
     if (role === "visitor") return <Navigate to="/visitor/home" />;
     if (["admin", "guide"].includes(role)) return <Navigate to="/staff/home" />;
   };
 
-  if (loading) return <div>Loading...</div>;
 
   return (
     <div>
