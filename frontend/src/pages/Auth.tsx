@@ -41,12 +41,12 @@ const AuthPage: React.FC = () => {
 
       if(isLogin == true){
       // Call loginUser to authenticate the user
-      const { role } = await loginUser(email, password);
+      const role = await loginUser(email, password);
 
 
       // After successful login, you can redirect the user or show a message
       console.log('Logged in with role:', role);
-      if (role == "staff" || role == "admin"){
+      if (role == "guide" || role == "admin"){
         navigate("/staff/home");
       }
       else if (role == "visitor"){

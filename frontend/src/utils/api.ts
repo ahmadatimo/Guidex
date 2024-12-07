@@ -135,6 +135,7 @@ export const loginUser = async (email: string, password: string): Promise<string
 
   // Store the token in localStorage
   localStorage.setItem("access_token", access_token);
+  sessionStorage.setItem("access_token", access_token);
 
   console.log("Login successful, token stored in localStorage.");
   // return it to the LoginPage
@@ -280,3 +281,12 @@ export const markNotificationAsRead = async (notificationId: number): Promise<vo
   await axiosInstance.put(`/notifications/${notificationId}/read`);
 };
 
+
+/*-------------------------------- Users FUNCTIONS -------------------------------- */
+
+
+export const getCurrRole = async (): Promise<string> => {
+  const response = await axiosInstance.get('/user/role');
+  console.log(response.data)
+  return response.data.role;
+};

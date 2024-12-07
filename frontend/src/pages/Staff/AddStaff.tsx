@@ -1,12 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-/*ACCESS ONLY FOR USERS WITH ROLE "ADMIN" */
-
-const currentUser = {
-  isAdmin: true,
-};
+import { getCurrRole, registerUser } from "../../utils/api";
 
 const AddStaff: React.FC = () => {
   const [newAccount, setNewAccount] = useState({
@@ -15,6 +10,25 @@ const AddStaff: React.FC = () => {
     password: "",
     role: "",
   });
+
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        const role = await getCurrRole();
+        setCurrentUserRole(role);
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        setCurrentUserRole(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRole();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -34,7 +48,7 @@ const AddStaff: React.FC = () => {
       });
       return;
     }
-  
+
     toast.success(`Account for "${newAccount.name}" created successfully as a "${newAccount.role}".`, {
       position: "top-right",
       autoClose: 5000,
@@ -44,12 +58,19 @@ const AddStaff: React.FC = () => {
       draggable: true,
       progress: undefined,
     });
-  
+
     setNewAccount({ name: "", email: "", password: "", role: "" });
   };
-  
-  
-  if (!currentUser.isAdmin) {
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-12 text-center bg-gray-100">
+        <h1 className="text-3xl font-bold mb-4 text-gray-500">Loading...</h1>
+      </div>
+    );
+  }
+
+  if (currentUserRole !== "admin") {
     return (
       <div className="max-w-7xl mx-auto px-6 py-12 text-center bg-gray-100">
         <h1 className="text-3xl font-bold mb-4 text-gray-500">Access Restricted</h1>
@@ -59,13 +80,11 @@ const AddStaff: React.FC = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-6 ">
+    <div className="max-w-lg mx-auto px-6">
       <h1 className="text-3xl font-bold mb-2 text-blue-700">Add Staff Accounts</h1>
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">New Staff Account</h2>
-        {/* Account Creation Form */}
         <form className="space-y-6">
-          {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Full Name
@@ -81,7 +100,6 @@ const AddStaff: React.FC = () => {
             />
           </div>
 
-          {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email Address
@@ -97,7 +115,6 @@ const AddStaff: React.FC = () => {
             />
           </div>
 
-          {/* Password Field */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
@@ -113,7 +130,6 @@ const AddStaff: React.FC = () => {
             />
           </div>
 
-          {/* Role Dropdown */}
           <div>
             <label htmlFor="role" className="block text-sm font-medium text-gray-700">
               Role
@@ -132,7 +148,6 @@ const AddStaff: React.FC = () => {
             </select>
           </div>
 
-          {/* Submit Button */}
           <div>
             <button
               type="button"
