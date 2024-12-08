@@ -1,6 +1,8 @@
 import React, { useState, useEffect} from 'react';
 import { toast } from 'react-toastify';
-import { fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus, assignGuideToAppointment, unassignGuideFromAppointment, getCurrRole} from "../../utils/api";
+import { 
+  fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus,
+  assignGuideToAppointment, unassignGuideFromAppointment, getCurrRole} from "../../utils/api";
 
 const PendingApprovals: React.FC = () => {
   const [approvals, setApprovals] = useState<Appointment[]>([]);
@@ -58,7 +60,7 @@ const PendingApprovals: React.FC = () => {
   
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: "accepted" } : appointment
+          appointment.id === id ? { ...appointment, status: "accepted"} : appointment
         )
       );
   
@@ -75,7 +77,7 @@ const PendingApprovals: React.FC = () => {
       await updateAppointmentStatus(id, { status: newStatus });
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: newStatus } : appointment
+          appointment.id === id ? { ...appointment, status: newStatus} : appointment
         )
       );
       toast.success(userRole === "admin" ? "Appointment rejected!" : "Appointment declined!")
@@ -105,7 +107,7 @@ const PendingApprovals: React.FC = () => {
 
     setApprovals((prev) =>
       prev.map((appointment) =>
-        appointment.id === id ? { ...appointment, status: newStatus } : appointment
+        appointment.id === id ? { ...appointment, status: newStatus} : appointment
       )
     );
 
@@ -146,8 +148,8 @@ const PendingApprovals: React.FC = () => {
                 key={approval.id}
                 className={`p-4 border rounded flex justify-between items-center 
                 ${
-                  (userRole === "admin" && approval.status === ("approved")) 
-                  ? "bg-green-100" : (userRole === "admin" && approval.status === ("rejected")) 
+                  (userRole === "admin" && (approval.status === ("approved") || approval.status === ("accepted") )) 
+                  ? "bg-green-100" : (userRole === "admin" && approval.status === ("rejected") || approval.status === ("declined")) 
                   ? "bg-red-100": (userRole === "guide" && approval.status === ("accepted")) 
                   ? "bg-green-100" :  (userRole === "guide" && approval.status === ("declined")) 
                   ? "bg-red-100": "bg-white" 
@@ -158,6 +160,7 @@ const PendingApprovals: React.FC = () => {
                   <h4 className= "font-bold text-lg">{approval.status}</h4>
                   <p className="text-gray-600">Date: {approval.date} </p>
                   <p className="text-gray-600">Time: {approval.time} </p>
+                  <p className="text-gray-600"> Guide ID: {approval.guide_id ? approval.guide_id : "Not Assigned"}</p>
                 </div>
 
                 {/* Buttons: Approve & Deny */}
@@ -167,7 +170,7 @@ const PendingApprovals: React.FC = () => {
                       <>
                         <button
                           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" 
-                          onClick={() => handleApproval(approval.id, "approved" )}>
+                          onClick={() => handleApproval(approval.id, "approved")}>
                           Approve
                         </button>
                         <button
@@ -194,7 +197,7 @@ const PendingApprovals: React.FC = () => {
                       </> 
                     )
                   }
-                  {approval.status !== "created" &&
+                  { (userRole === "admin" && approval.status !== "created") &&
                     (
                       <button
                         className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
