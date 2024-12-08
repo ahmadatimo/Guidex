@@ -165,14 +165,13 @@ const AddStaff: React.FC = () => {
               className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select Role</option>
-              <option value="Manager">Manager</option>
-              <option value="Admin">Admin</option>
-              <option value="Guide">Guide</option>
-              <option value="Visitor">Visitor</option>
+              <option value="admin">Admin</option>
+              <option value="guide">Guide</option>
+              <option value="visitor">Visitor</option>
             </select>
           </div>
 
-          {newAccount.role === "Visitor" && (
+          {newAccount.role === "visitor" && (
             <div>
               <label htmlFor="school_name" className="block text-sm font-medium text-gray-700">
                 School
