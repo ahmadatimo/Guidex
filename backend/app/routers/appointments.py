@@ -125,7 +125,7 @@ async def delete_appointment(
 # Utils
 @router.get("/user/appointments", response_model=List[AppointmentResponse])
 async def get_appointments_for_user(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     current_user: dict = Depends(get_current_user)  # Use JWT to get current user
 ):
     """
@@ -140,7 +140,7 @@ async def get_appointments_for_user(
 
 @router.get("/guides/available-appointments", response_model=List[AppointmentResponse])
 async def get_available_appointments_for_guides(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     current_user: dict = Depends(get_current_user)
 ):
     """
@@ -159,7 +159,7 @@ async def get_available_appointments_for_guides(
 
 @router.get("/guide/appointments", response_model=List[AppointmentResponse])
 async def get_assigned_appointments_for_guide(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     current_user: dict = Depends(get_current_user)
 ):
     """
@@ -176,7 +176,8 @@ async def get_assigned_appointments_for_guide(
 @router.get("/appointments/{appointment_id}", response_model=AppointmentResponse)
 async def get_appointment_by_id(
     appointment_id: int,
-    db: Session = Depends(get_db),
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Fetch an appointment by its ID.
@@ -187,7 +188,11 @@ async def get_appointment_by_id(
     return appointment
 
 @router.get("/appointments/status/{status}", response_model=List[AppointmentResponse])
-async def get_appointments_by_status(status: str, db: Session = Depends(get_db)):
+async def get_appointments_by_status(
+    status: str, 
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user)
+    ):
     """
     Fetch appointments with a specific status.
     """
@@ -206,7 +211,10 @@ async def set_appointment_status(appointment_id: int, update: AppointmentStatusU
     return appointment
 
 @router.put("/appointments/{appointment_id}/assign-guide")
-async def assign_guide_to_appointment(appointment_id: int, guide_id: int, db: Session = Depends(get_db)):
+async def assign_guide_to_appointment(
+    appointment_id: int, 
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user)):
     """
     Assign a guide to an appointment.
     """
@@ -216,7 +224,7 @@ async def assign_guide_to_appointment(appointment_id: int, guide_id: int, db: Se
         raise HTTPException(status_code=400, detail="Only approved appointments can be assigned." + str(appointment.status))
     if appointment.guide_id is not None:
         raise HTTPException(status_code=400, detail="Appointment already assigned to a guide.")
-    appointment.guide_id = guide_id
+    appointment.guide_id = current_user['user_id']
     appointment.status = AppointmentStatus.ACCEPTED  # Update status to accepted
     db.commit()
     db.refresh(appointment)
@@ -231,7 +239,7 @@ async def unassign_guide_from_appointment(appointment_id: int, db: Session = Dep
     if appointment.guide_id is None:
         raise HTTPException(status_code=400, detail="No guide is assigned to this appointment.")
     appointment.guide_id = None
-    appointment.status = "APPROVED"  # Revert status to approved
+    appointment.status = "APPROVED"
     db.commit()
     db.refresh(appointment)
     return appointment

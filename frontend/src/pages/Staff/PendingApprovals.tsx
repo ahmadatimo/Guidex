@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { toast } from 'react-toastify';
-import { fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus, getCurrRole} from "../../utils/api";
+import { fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus, assignGuideToAppointment, unassignGuideFromAppointment, getCurrRole} from "../../utils/api";
 
 const PendingApprovals: React.FC = () => {
   const [approvals, setApprovals] = useState<Appointment[]>([]);
@@ -45,14 +45,31 @@ const PendingApprovals: React.FC = () => {
           appointment.id === id ? { ...appointment, status: newStatus } : appointment
         )
       );
-      toast.success(userRole === "admin" ? "Appointment approved!" : "Appointment accepted!" )
+      toast.success("Appointment approved!" )
     } catch (error) {
       console.error("Failed to approve appointment:", error);
       toast.error("Failed to approve appointment. Please try again.");
     }
   };
 
- 
+  const handleAcceptance = async (id: number) => {
+    try {
+      await assignGuideToAppointment(id);
+  
+      setApprovals((prev) =>
+        prev.map((appointment) =>
+          appointment.id === id ? { ...appointment, status: "accepted" } : appointment
+        )
+      );
+  
+      toast.success("Appointment accepted!");
+    } catch (error) {
+      console.error("Failed to assign guide:", error);
+      toast.error("Failed to assign guide. Please try again.");
+    }
+  };
+  
+
   const handleRejection = async (id: number, newStatus: string) => {
    try {
       await updateAppointmentStatus(id, { status: newStatus });
@@ -68,20 +85,37 @@ const PendingApprovals: React.FC = () => {
     }
   };
 
-  const resetStatus = async (id: number, oldStatus: string) => {
-    try {
-      await updateAppointmentStatus(id, { status: oldStatus });
-      setApprovals((prev) =>
-        prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: oldStatus } : appointment
-        )
-      );
-      toast.info("Appointment status reset to pending.");
-    } catch (error) {
-      console.error("Failed to reset appointment:", error);
-      toast.error("Failed to reset appointment. Please try again.");
+  const resetStatus = async (id: number, newStatus: string) => {
+  // Find the current appointment to check its current status.
+  const currentAppointment = approvals.find((appointment) => appointment.id === id);
+
+  if (!currentAppointment) {
+    toast.error("Appointment not found.");
+    return;
+  }
+
+  try {
+    console.log('Current Status ', currentAppointment.status);
+
+    if (userRole === "admin" ) {
+      await unassignGuideFromAppointment(id);
     }
-  };
+
+    await updateAppointmentStatus(id, { status: newStatus });
+
+    setApprovals((prev) =>
+      prev.map((appointment) =>
+        appointment.id === id ? { ...appointment, status: newStatus } : appointment
+      )
+    );
+
+    toast.info("Appointment status reset successfully.");
+  } catch (error) {
+    console.error("Failed to reset appointment:", error);
+    toast.error("Failed to reset appointment. Please try again.");
+  }
+};
+
 
   if (userRole !== 'admin' && userRole !== 'guide') {
     return (
@@ -149,8 +183,8 @@ const PendingApprovals: React.FC = () => {
                       <>
                         <button
                           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                          onClick={() => handleApproval(approval.id,"accepted")}>
-                          Approve
+                          onClick={() => handleAcceptance(approval.id)}>
+                          Accept
                         </button>
                         <button
                           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"

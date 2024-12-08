@@ -198,8 +198,8 @@ export const updateAppointmentStatus = async (id: number, update: { status: stri
 };
 
 // Assign a guide to an appointment
-export const assignGuideToAppointment = async (id: number, guide_id: number): Promise<Appointment> => {
-  const response = await axiosInstance.put(`/appointments/${id}/assign-guide`, { guide_id });
+export const assignGuideToAppointment = async (id: number): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/assign-guide`);
   return response.data;
 };
 

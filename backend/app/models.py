@@ -50,7 +50,7 @@ class Appointment(Base):
 
     # Relationships
     user = relationship("User", foreign_keys=[user_id])
-    guide = relationship("User", foreign_keys=[guide_id], back_populates="assigned_appointments")
+    guide = relationship("User", foreign_keys=[guide_id])
     notifications = relationship("Notification", back_populates="appointment")
 
 
