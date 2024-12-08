@@ -160,7 +160,7 @@ const PendingApprovals: React.FC = () => {
                   <h4 className= "font-bold text-lg">{approval.status}</h4>
                   <p className="text-gray-600">Date: {approval.date} </p>
                   <p className="text-gray-600">Time: {approval.time} </p>
-                  <p className="text-gray-600"> Guide ID: {approval.guide_id ? approval.guide_id : "Not Assigned"}</p>
+                  {/*<p className="text-gray-600"> Guide ID: {approval.guide_id ? approval.guide_id : "Not Assigned"}</p>*/}
                 </div>
 
                 {/* Buttons: Approve & Deny */}
