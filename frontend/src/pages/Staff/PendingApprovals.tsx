@@ -1,43 +1,51 @@
 import React, { useState, useEffect} from 'react';
 import { toast } from 'react-toastify';
-import { fetchAppointments, Appointment, updateAppointmentStatus} from "../../utils/api";
+import { fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus, getCurrRole} from "../../utils/api";
 
 const PendingApprovals: React.FC = () => {
   const [approvals, setApprovals] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [userRole, setUserRole] = useState<string | null>(null); // State for storing the role of the user
 
 
-  // Fetch appointments on component mount
+  // Fetch user role and appointments on component mount
   useEffect(() => {
-    const loadAppointments = async () => {
+    const loadInitialData = async () => {
       try {
-        const data = await fetchAppointments();
-        console.log("Fetched appointments:", data);
-        setApprovals(data);
+        // Fetch the user's role
+        const role = await getCurrRole();
+        console.log('Fetched user role:', role);
+        setUserRole(role);
+
+        // Fetch the appointments based on role
+        let appointments: Appointment[] = []; // Declare the type explicitly
+        if (role === 'admin') {
+          appointments = await fetchAdminsAppointments(); // Admin sees all appointments
+        } else if (role === 'guide') {
+          appointments = await fetchAvailableAppointmentsForGuides(); // Guide sees only approved appointments
+        }
+        console.log('Fetched appointments:', appointments);
+        setApprovals(appointments);
       } catch (error) {
-        console.error("Failed to fetch appointments:", error);
-        toast.error("Failed to load appointments.");
+        console.error('Failed to load data:', error);
+        toast.error('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-    loadAppointments();
+    loadInitialData();
   }, []);
 
   
-  const approved = async (id: number) => {
+  const handleApproval  = async (id: number, newStatus: string) => {
     try {
-      // Update status to "approved" in the backend
-      await updateAppointmentStatus(id, { status: "approved" });
-      
-      // Update the frontend state
+      await updateAppointmentStatus(id, { status: newStatus });
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: "approved" } : appointment
+          appointment.id === id ? { ...appointment, status: newStatus } : appointment
         )
       );
-
-      toast.success("Appointment approved!");
+      toast.success(userRole === "admin" ? "Appointment approved!" : "Appointment accepted!" )
     } catch (error) {
       console.error("Failed to approve appointment:", error);
       toast.error("Failed to approve appointment. Please try again.");
@@ -45,31 +53,27 @@ const PendingApprovals: React.FC = () => {
   };
 
  
-  const rejected = async (id: number) => {
+  const handleRejection = async (id: number, newStatus: string) => {
    try {
-      // Update status to "approved" in the backend
-       await updateAppointmentStatus(id, { status: "rejected" });
-      
-      // Update the frontend state
+      await updateAppointmentStatus(id, { status: newStatus });
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: "rejected" } : appointment
+          appointment.id === id ? { ...appointment, status: newStatus } : appointment
         )
       );
-
-      toast.success("Appointment rejected!");
+      toast.success(userRole === "admin" ? "Appointment rejected!" : "Appointment declined!")
     } catch (error) {
       console.error("Failed to reject appointment:", error);
       toast.error("Failed to reject appointment. Please try again.");
     }
   };
 
-  const edit = async (id: number) => {
+  const resetStatus = async (id: number, oldStatus: string) => {
     try {
-      await updateAppointmentStatus(id, { status: "created" });
+      await updateAppointmentStatus(id, { status: oldStatus });
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: "created" } : appointment
+          appointment.id === id ? { ...appointment, status: oldStatus } : appointment
         )
       );
       toast.info("Appointment status reset to pending.");
@@ -79,10 +83,25 @@ const PendingApprovals: React.FC = () => {
     }
   };
 
+  if (userRole !== 'admin' && userRole !== 'guide') {
+    return (
+      <h1 className="text-3xl font-bold mb-8 text-blue-700">
+        You are not allowed here, brother/sister {"😔"}
+      </h1>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-8 text-blue-700">Pending Approvals</h1>
+      <h1 className="text-3xl font-bold mb-8 text-blue-700">
+        {
+          userRole === 'admin'
+          ? 'Admin Pending Approvals':
+          userRole === 'guide'
+          ?'Guide Pending Approvals': 
+          "why are you here ?"
+        }
+      </h1>
       <div className="bg-white p-6 rounded-lg shadow">
         {approvals.length === 0 ? (
           <p className="text-gray-700">No pending approvals.</p>
@@ -91,9 +110,14 @@ const PendingApprovals: React.FC = () => {
             {approvals.map((approval) => (
               <li
                 key={approval.id}
-                className={`p-4 border rounded flex justify-between items-center ${
-                approval.status === "approved" ? "bg-green-100" : approval.status === "rejected" ? "bg-red-100": "bg-white" }`}
-              >
+                className={`p-4 border rounded flex justify-between items-center 
+                ${
+                  (userRole === "admin" && approval.status === ("approved")) 
+                  ? "bg-green-100" : (userRole === "admin" && approval.status === ("rejected")) 
+                  ? "bg-red-100": (userRole === "guide" && approval.status === ("accepted")) 
+                  ? "bg-green-100" :  (userRole === "guide" && approval.status === ("declined")) 
+                  ? "bg-red-100": "bg-white" 
+                }`}>
                 {/* Approval Details */}
                 <div>
                   <h3 className="font-bold text-lg">{approval.id}</h3>
@@ -104,26 +128,56 @@ const PendingApprovals: React.FC = () => {
 
                 {/* Buttons: Approve & Deny */}
                 <div className="flex space-x-2">
-                {approval.status === "created" && (
-                    <>
+                  {userRole ==="admin" && approval.status === "created" && 
+                    (
+                      <>
+                        <button
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" 
+                          onClick={() => handleApproval(approval.id, "approved" )}>
+                          Approve
+                        </button>
+                        <button
+                          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                          onClick={() => handleRejection(approval.id , "rejected")}>
+                          Deny
+                        </button>
+                      </>
+                    )
+                  }
+                  {userRole === "guide" && approval.status === "approved" && 
+                    (
+                      <>
+                        <button
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                          onClick={() => handleApproval(approval.id,"accepted")}>
+                          Approve
+                        </button>
+                        <button
+                          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                          onClick={() => handleApproval(approval.id, "declined")}>
+                          Deny
+                        </button>
+                      </> 
+                    )
+                  }
+                  {approval.status !== "created" &&
+                    (
                       <button
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" 
-                        onClick={() => approved(approval.id)}>
-                        Approve
+                        className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                        onClick={() => resetStatus(approval.id, 'created')}>
+                        Edit
                       </button>
+                    )
+                  }
+                  {(userRole === "guide" && approval.status !== "approved") &&
+                    (
                       <button
-                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                        onClick={() => rejected(approval.id)}>
-                        Deny
+                        className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                        onClick={() => resetStatus(approval.id, 'approved')}>
+                        Edit
                       </button>
-                    </>
-                  )}
-                  {approval.status !== "created" && (
-                    <button
-                      className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
-                      onClick={() => edit(approval.id)}>
-                      Edit
-                    </button>)}
+                    )
+                  }
                 </div>
               </li>
             ))}

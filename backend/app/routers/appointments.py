@@ -22,8 +22,17 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 #CRUD functions
-# Get all appointments (for the current user)
 @router.get("/", response_model=List[AppointmentBase])
+async def get_all_appointments(
+    db: db_dependency, 
+    current_user: dict = Depends(get_current_user), 
+):
+    user_id = current_user['user_id']
+    appointments = db.query(Appointment).all()
+    return appointments
+
+# Get all appointments (for the current user)
+@router.get("/appointment", response_model=List[AppointmentBase])
 async def get_appointments(
     db: db_dependency, 
     current_user: dict = Depends(get_current_user), 
@@ -295,3 +304,14 @@ def get_school_name_by_user_id(db: Session, appointment_id: int) -> str:
         raise ValueError("School name not found for this user.")
 
     return appointment.user.school_name
+
+@router.get("/admin/appointments", response_model=List[AppointmentBase])
+async def get_admin_appointments(
+    db: db_dependency, 
+    current_user: dict = Depends(get_current_user), 
+    ):
+    appointments = db.query(Appointment).filter(
+    Appointment.status.notin_([AppointmentStatus.CANCELED, AppointmentStatus.COMPLETED])
+    ).all()
+
+    return appointments

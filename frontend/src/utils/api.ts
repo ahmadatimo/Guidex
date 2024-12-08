@@ -152,10 +152,15 @@ export const loginUser = async (email: string, password: string): Promise<string
 
 /*-------------------------------- APPOINTMENTS FUNCTIONS --------------------------------*/
 
+export const fetchAllAppointments = async (): Promise<Appointment[]> => {
+  const response = await axiosInstance.get('/');
+  return response.data;
+}
+
 // Fetch all appointments with optional pagination
 export const fetchAppointments = async (): Promise<Appointment[]> => {
   try {
-    const response = await axiosInstance.get("/user/appointments");
+    const response = await axiosInstance.get("/appointment");
     return response.data; // API returns appointments in JSON format
   } catch (error: any) {
     console.error("Error fetching appointments:", error.response?.data || error.message);
@@ -248,6 +253,11 @@ export const fetchSchoolNameForAppointment = async (appointmentId: number): Prom
   }
 };
 
+// returning appointments for the admins
+export const fetchAdminsAppointments = async (): Promise<Appointment[]> => {
+  const response = await axiosInstance.get('/admin/appointments');
+  return response.data;
+}
 
 /*-------------------------------- NOTIFICATIONS FUNCTIONS -------------------------------- */
 

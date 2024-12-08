@@ -57,6 +57,7 @@ class Appointment(Base):
 
 #pydantic models
 class AppointmentBase(BaseModel):
+    id: int
     date: date  # Appointment date
     time: time  # Appointment time
     city: str 
