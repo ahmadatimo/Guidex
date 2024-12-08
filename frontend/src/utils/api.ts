@@ -170,7 +170,7 @@ export const fetchAppointments = async (): Promise<Appointment[]> => {
 
 // Create a new appointment
 export const createAppointment = async (data: CreateAppointmentRequest): Promise<Appointment> => {
-  const response = await axiosInstance.post("/appointment", data);
+  const response = await axiosInstance.post("/create-appointment", data);
   return response.data;
 };
 

@@ -3,7 +3,7 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User
+from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User, AppointmentCreateBase
 
 # Create the APIRouter instance
 router = APIRouter()
@@ -62,9 +62,9 @@ async def get_appointment(
     return appointment
 
 # Create a new appointment
-@router.post("/appointment", status_code=201)
+@router.post("/create-appointment", status_code=201)
 async def create_appointment(
-    appointment: AppointmentBase, 
+    appointment: AppointmentCreateBase, 
     db: db_dependency, 
     current_user: dict = Depends(get_current_user)
 ):

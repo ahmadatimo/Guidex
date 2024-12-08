@@ -56,6 +56,15 @@ class Appointment(Base):
 
 
 #pydantic models
+class AppointmentCreateBase(BaseModel):
+    date: date  # Appointment date
+    time: time  # Appointment time
+    city: str 
+    visitors_number: int
+    note: Optional[str] = None  # Optional note
+    status: AppointmentStatus = AppointmentStatus.CREATED  # Default status
+
+    
 class AppointmentBase(BaseModel):
     id: int
     date: date  # Appointment date

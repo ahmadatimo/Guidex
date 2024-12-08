@@ -92,14 +92,14 @@ const PendingApprovals: React.FC = () => {
   const currentAppointment = approvals.find((appointment) => appointment.id === id);
 
   if (!currentAppointment) {
-    toast.error("Appointment not found.");
+    toast.error("Appointment not found."); 
     return;
   }
 
   try {
     console.log('Current Status ', currentAppointment.status);
 
-    if (userRole === "admin" ) {
+    if (currentAppointment.status === 'accepted') {
       await unassignGuideFromAppointment(id);
     }
 
