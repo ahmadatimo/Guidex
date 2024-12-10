@@ -5,15 +5,23 @@ import "react-toastify/dist/ReactToastify.css";
 const DateSelector: React.FC<{ onSelectDate: (date: string) => void }> = ({ onSelectDate }) => {
   const [defaultDate, setDefaultDate] = useState("");
 
+  // additional: 
+  const isWeekend = (date: Date): boolean => date.getDay() === 0 || date.getDay() === 6;
+
   // Function to calculate the next available weekday
   const getNextWeekday = (): string => {
     const today = new Date();
     let nextDay = new Date(today);
-
+    let counter = 0;
     // Increment the day until it's a weekday (Monday to Friday)
-    do {
+    /*do {
       nextDay.setDate(nextDay.getDate() + 1);
-    } while (nextDay.getDay() === 0 || nextDay.getDay() === 6); // Skip Sundays (0) and Saturdays (6)
+    } while (nextDay.getDay() === 0 || nextDay.getDay() === 6); // Skip Sundays (0) and Saturdays (6)*/
+
+    while (isWeekend(nextDay) && counter < 120) {
+      counter = counter +1;
+      nextDay.setDate(nextDay.getDate() + 1);
+    }
 
     // Format the date to YYYY-MM-DD
     return nextDay.toISOString().split("T")[0];
@@ -22,7 +30,7 @@ const DateSelector: React.FC<{ onSelectDate: (date: string) => void }> = ({ onSe
   // Function to validate and correct the selected date
   const handleDateChange = (date: string) => {
     const selectedDate = new Date(date);
-    if (selectedDate.getDay() === 0 || selectedDate.getDay() === 6) {
+    if (isWeekend(selectedDate)) {
       // If weekend, reset to the default date
       const nextWeekday = getNextWeekday();
       setDefaultDate(nextWeekday);
@@ -38,18 +46,21 @@ const DateSelector: React.FC<{ onSelectDate: (date: string) => void }> = ({ onSe
   };
 
   useEffect(() => {
-    const nextDate = getNextWeekday();
-    setDefaultDate(nextDate);
-    onSelectDate(nextDate); // Notify parent of the default date
-  }, [onSelectDate]);
+    if (!defaultDate) {
+      const nextDate = getNextWeekday();
+      setDefaultDate(nextDate);
+      onSelectDate(nextDate); // Notify parent of the default date
+    }
+  }, [defaultDate, onSelectDate]);
 
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-4">Select a Date</h2>
       <input
         type="date"
-        className="border rounded p-2 w-60" // Adjusted width to make it narrower
-        min={defaultDate} // Ensure only future dates can be selected
+        className="border rounded p-2 w-60"
+        aria-label="Select a date"
+        min={defaultDate}
         value={defaultDate}
         onChange={(e) => handleDateChange(e.target.value)}
       />

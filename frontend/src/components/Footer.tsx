@@ -24,7 +24,7 @@ const Footer = () => {
           <ul className="grid grid-cols-2 gap-4 text-sm">
             <li>
               <button
-                onClick={() => navigate("/")}
+                onClick={() => navigate("visitor/home")}
                 className="hover:text-blue-400 transition-all"
               >
                 Home
@@ -32,7 +32,7 @@ const Footer = () => {
             </li>
             <li>
               <button
-                onClick={() => navigate("/About")}
+                onClick={() => navigate("/visitor/about")}
                 className="hover:text-blue-400 transition-all"
               >
                 About Us
@@ -40,7 +40,7 @@ const Footer = () => {
             </li>
             <li>
               <button
-                onClick={() => navigate("/Contact")}
+                onClick={() => navigate("visitor/contact")}
                 className="hover:text-blue-400 transition-all"
               >
                 Contact Us
