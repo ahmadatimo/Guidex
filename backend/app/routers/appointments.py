@@ -237,7 +237,7 @@ async def unassign_guide_from_appointment(appointment_id: int, db: Session = Dep
     """
     appointment = await get_appointment_by_id(appointment_id, db)
     if appointment.guide_id is None:
-        raise HTTPException(status_code=400, detail="No guide is assigned to this appointment.")
+        return
     appointment.guide_id = None
     appointment.status = "APPROVED"
     db.commit()

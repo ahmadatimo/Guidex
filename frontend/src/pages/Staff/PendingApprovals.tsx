@@ -99,10 +99,7 @@ const PendingApprovals: React.FC = () => {
   try {
     console.log('Current Status ', currentAppointment.status);
 
-    if (currentAppointment.status === 'accepted') {
-      await unassignGuideFromAppointment(id);
-    }
-
+    await unassignGuideFromAppointment(id);
     await updateAppointmentStatus(id, { status: newStatus });
 
     setApprovals((prev) =>
