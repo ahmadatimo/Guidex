@@ -231,15 +231,14 @@ async def assign_guide_to_appointment(
     return appointment
 
 @router.put("/appointments/{appointment_id}/unassign-guide")
-async def unassign_guide_from_appointment(appointment_id: int, db: Session = Depends(get_db)):
+async def unassign_guide_from_appointment(appointment_id: int, newStatus: AppointmentStatusUpdate, db: Session = Depends(get_db)):
     """
     Remove a guide from an appointment.
     """
     appointment = await get_appointment_by_id(appointment_id, db)
-    if appointment.guide_id is None:
-        return
-    appointment.guide_id = None
-    appointment.status = "APPROVED"
+    if appointment.guide_id is not None:
+        appointment.guide_id = None
+    appointment.status = newStatus.status
     db.commit()
     db.refresh(appointment)
     return appointment

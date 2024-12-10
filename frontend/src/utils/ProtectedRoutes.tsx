@@ -1,24 +1,18 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import Spinner from "../components/Spinner";
-import { AuthContext } from "../context/AuthContext";
 
 
 const ProtectedRoutes: React.FC<{ allowedRoles: string[] }> = ({ allowedRoles }) => {
-  const { user, loading } = useContext(AuthContext);
-
-  if (loading) {
-    return <Spinner />;
-  }
-
-  if (!user) {
+  const role = sessionStorage.getItem("role") ;
+  console.log('Role is ', role)
+  if (!role) {
     console.log('User is not updated')
     return <Navigate to="/auth" />;
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  if (!allowedRoles.includes(role)) {
 
-    if (["admin", "guide"].includes(user.role)) {
+    if (["admin", "guide"].includes(role)) {
       return <Navigate to="/staff/home" replace />;
     }
     return <Navigate to="/visitor/home" replace />;

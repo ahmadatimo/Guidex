@@ -204,8 +204,8 @@ export const assignGuideToAppointment = async (id: number): Promise<Appointment>
 };
 
 // Unassign a guide from an appointment
-export const unassignGuideFromAppointment = async (id: number): Promise<Appointment> => {
-  const response = await axiosInstance.put(`/appointments/${id}/unassign-guide`);
+export const unassignGuideFromAppointment = async (id: number, status: { status: string }): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/unassign-guide`, status);
   return response.data;
 };
 
