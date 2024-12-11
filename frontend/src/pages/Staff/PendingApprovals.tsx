@@ -1,8 +1,9 @@
 import React, { useState, useEffect} from 'react';
+import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { 
   fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus,
-  assignGuideToAppointment, unassignGuideFromAppointment, getCurrRole} from "../../utils/api";
+  assignGuideToAppointment, unassignGuideFromAppointment} from "../../utils/api";
 
   interface PendingApprovalsProps {
     onApprovalStatusChange?: (pendingCount: number, unassignedCount: number) => void;
@@ -15,13 +16,15 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
   const [loading, setLoading] = useState<boolean>(true);
   const [userRole, setUserRole] = useState<string | null>(null); // State for storing the role of the user
 
-
   // Fetch user role and appointments on component mount
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         // Fetch the user's role
-        const role = await getCurrRole();
+        const role = sessionStorage.getItem("role");
+        if(!role){
+          return <Navigate to="/auth" replace />;
+        }
         console.log('Fetched user role:', role);
         setUserRole(role);
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getCurrRole, registerUser } from "../../utils/api";
+import { registerUser } from "../../utils/api";
 
 const AddStaff: React.FC = () => {
   const [newAccount, setNewAccount] = useState({
@@ -25,7 +26,11 @@ const AddStaff: React.FC = () => {
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        const role = await getCurrRole();
+        const role = sessionStorage.getItem("role") ;
+        if (!role) {
+          console.log('User is not updated')
+          return <Navigate to="/auth" />;
+        }
         setCurrentUserRole(role);
       } catch (error) {
         console.error("Error fetching user role:", error);

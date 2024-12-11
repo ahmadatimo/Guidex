@@ -49,6 +49,7 @@ class LoginResponse(BaseModel):
     access_token: str
     token_type: str
     role: str
+    name: str
 
 
 
@@ -128,7 +129,7 @@ async def sign_in_for_access_token(db: db_dependency, form_data: Annotated[OAuth
         raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED)
     
     token = create_access_token(valid_user.name, valid_user.id, timedelta(minutes=30))
-    return {'access_token': token, 'token_type' : 'bearer', 'role': valid_user.role}
+    return {'access_token': token, 'token_type' : 'bearer', 'role': valid_user.role, 'name' : valid_user.name}
         
 
 @router.get("/auth/get_user")

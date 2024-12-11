@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Appointment,
-  User,
-  getCurrUser,
   fetchAdminsAppointments,
   fetchAssignedAppointmentsForGuide,
 } from "../../utils/api";
@@ -18,10 +16,11 @@ const qoutes = [
 const StaffHomepage: React.FC = () => {
   const navigate = useNavigate();
   const [approvals, setApprovals] = useState<Appointment[]>([]);
-  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [pendingTours, setPendingTours] = useState<number>(0);
   const [unassignedTours, setUnassignedTours] = useState<number>(0);
+  const [userRole, setUserRole] = useState("");
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,15 +28,24 @@ const StaffHomepage: React.FC = () => {
         setIsLoading(true);
 
         // Fetch user data
-        const userData = await getCurrUser();
-        setUser(userData);
-        console.log("love u onii");
+        const role = sessionStorage.getItem("role");
+        const name = sessionStorage.getItem("name");
+        console.log('Role is ', role)
+        console.log('Name is ', name)
+        if (!role || !name) {
+          console.log('User is not updated')
+          return navigate("/auth");
+        }
+
+
+        setUserRole(role);
+        setUserName(name);
 
         // Determine fetch function based on user role
         let appointments: Appointment[] = [];
-        if (userData.role === "admin") {
+        if (role === "admin") {
           appointments = await fetchAdminsAppointments();
-        } else if (userData.role === "guide") {
+        } else if (role === "guide") {
           appointments = await fetchAssignedAppointmentsForGuide();
         }
 
@@ -84,7 +92,7 @@ const StaffHomepage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-6 py-12">
       {/* Hero Section */}
       <div className="mb-8 p-6 bg-blue-600 text-white rounded-lg shadow">
-        <h1 className="text-3xl font-bold">Welcome back, {user?.name}!</h1>
+        <h1 className="text-3xl font-bold">Welcome back, {userName}!</h1>
         <p className="mt-2">
           {qoutes[Math.floor(Math.random() * qoutes.length)]}
         </p>
@@ -126,10 +134,10 @@ const StaffHomepage: React.FC = () => {
             ) : (
               approvals.filter((appointment) => {
                   // Only show "created" status if the user is an admin
-                  if (user?.role === "admin") {
+                  if (userRole === "admin") {
                     return appointment.status === "created";
                   }
-                  else if (user?.role === "guide") {
+                  else if (userRole === "guide") {
                     return appointment.status === "approved";
                   }
                   return true; // For other roles, show all appointments

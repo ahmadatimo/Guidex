@@ -10,8 +10,7 @@ const Sidebar = () => {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    sessionStorage.removeItem('access_token');
+    sessionStorage.clear();
     navigate('/auth');
   }
   const isActive = (path: string) => location.pathname === path;

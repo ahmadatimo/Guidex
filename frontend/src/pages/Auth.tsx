@@ -42,9 +42,6 @@ const AuthPage: React.FC = () => {
       if(isLogin == true){
       // Call loginUser to authenticate the user
       const role = await loginUser(email, password);
-      if (role) {
-        sessionStorage.setItem("role", role);
-      }
       
       // After successful login, you can redirect the user or show a message
       console.log('Logged in with role:', role);
