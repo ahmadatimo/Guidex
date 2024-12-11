@@ -91,12 +91,11 @@ def authenticate_user(user_email: str, password: str, db):
     return user
     
 
-def create_access_token(username: str, user_id: int, role: str, expires_delta: timedelta):
+def create_access_token(username: str, user_id: int, expires_delta: timedelta):
     expires = datetime.now(timezone.utc) + expires_delta
     encode = {
         'sub': username,
         'user_id': user_id,
-        'role': role, 
         'exp': expires
     }
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORRITHM)
@@ -128,7 +127,7 @@ async def sign_in_for_access_token(db: db_dependency, form_data: Annotated[OAuth
     if not valid_user:
         raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED)
     
-    token = create_access_token(valid_user.name, valid_user.id, valid_user.role, timedelta(minutes=30))
+    token = create_access_token(valid_user.name, valid_user.id, timedelta(minutes=30))
     return {'access_token': token, 'token_type' : 'bearer', 'role': valid_user.role}
         
 

@@ -19,19 +19,15 @@ import StaffSettings from "./pages/Staff/StaffSettings";
 import GuideAppointments from "./pages/Staff/GuideAppointments";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AuthPage from "./pages/Auth";
-import Spinner from "./components/Spinner";
-import { AuthContext } from "./context/AuthContext";
 
 const App = () => {
 
-  const { user, loading } = useContext(AuthContext);
-    
+  const role = sessionStorage.getItem('role')
   const handleInvalidRoute = () => {
-    if (loading) return <Spinner />;
-    if (!user || !user.role) return <Navigate to="/auth" />;
+    if (!role) return <Navigate to="/auth" />;
   
-    if (user.role === "visitor") return <Navigate to="/visitor/home" />;
-    if (["admin", "guide"].includes(user.role)) return <Navigate to="/staff/home" />;
+    if (role === "visitor") return <Navigate to="/visitor/home" />;
+    if (["admin", "guide"].includes(role)) return <Navigate to="/staff/home" />;
   };
   
 
@@ -39,7 +35,7 @@ const App = () => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Navigate to={user?.role ? `/${user.role}/home` : "/auth"} />} />
+        <Route path="/" element={<Navigate to={role ? `/${role}/home` : "/auth"} />} />
 
         {/* Visitor Routes */}
         <Route element={<MainLayout />}>

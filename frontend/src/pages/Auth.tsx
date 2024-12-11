@@ -1,8 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../utils/api";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/AuthContext";
 
 
 const AuthPage: React.FC = () => {
@@ -34,8 +33,6 @@ const AuthPage: React.FC = () => {
     setPassword(event.target.value);
   };
 
-  const { login } = useContext(AuthContext);
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the default form submission behavior
     // data fetching goes here 
@@ -45,13 +42,10 @@ const AuthPage: React.FC = () => {
       if(isLogin == true){
       // Call loginUser to authenticate the user
       const role = await loginUser(email, password);
-
       if (role) {
-        const token = sessionStorage.getItem("access_token");
-        if (token) {
-          login(token); // Decode token, set user, set loading = false
-        }
+        sessionStorage.setItem("role", role);
       }
+      
       // After successful login, you can redirect the user or show a message
       console.log('Logged in with role:', role);
       if (role == "guide" || role == "admin"){
