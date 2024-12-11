@@ -5,7 +5,7 @@ import {
   assignGuideToAppointment, unassignGuideFromAppointment, getCurrRole} from "../../utils/api";
 
   interface PendingApprovalsProps {
-    onApprovalStatusChange: (pendingCount: number, unassignedCount: number) => void;
+    onApprovalStatusChange?: (pendingCount: number, unassignedCount: number) => void;
   }
   
 

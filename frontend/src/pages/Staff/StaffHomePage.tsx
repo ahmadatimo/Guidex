@@ -1,49 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import {Appointment, User,getCurrUser, fetchAppointments } from '../../utils/api';
-import PendingApprovals from './PendingApprovals';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Appointment,
+  User,
+  getCurrUser,
+  fetchAdminsAppointments,
+  fetchAssignedAppointmentsForGuide,
+} from "../../utils/api";
+import PendingApprovals from "./PendingApprovals";
 
 const qoutes = [
-  "\"Success is the sum of small efforts repeated day in and day out.\" – Robert Collier",
-  "\"The paycheck is coming, don't give up boss!.\" – Abdulaleem Altarsha",
-  "\"You may not like your work, but you surely like to buy the new iPhone, right ;)\" – Ahmad Haikal"
+  '"Success is the sum of small efforts repeated day in and day out." – Robert Collier',
+  '"The paycheck is coming, don\'t give up boss!." – Abdulaleem Altarsha',
+  '"You may not like your work, but you surely like to buy the new iPhone, right ;)" – Ahmad Haikal',
 ];
 
 const StaffHomepage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Access location state
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [approvals, setApprovals] = useState<Appointment[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [pendingTours, setPendingTours] = useState<number>(0);
   const [unassignedTours, setUnassignedTours] = useState<number>(0);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-  
+
         // Fetch user data
         const userData = await getCurrUser();
         setUser(userData);
-  
-        // Fetch appointments
-        const allAppointments = await fetchAppointments();
-        setAppointments(allAppointments);
-  
-        // Filter counts for statuses
-        if (appointments.length > 0) {
-          const pendingCount = appointments.filter(app => app.status === 'created').length;
-          const unassignedCount = appointments.filter(app => app.status === 'approved').length;
-          setPendingTours(pendingCount);
-          setUnassignedTours(unassignedCount);
+        console.log("love u onii");
 
-          console.log("Pending:", pendingCount, "Unassigned:", unassignedCount); // Add this log
-  
-          setPendingTours(pendingCount);
-          setUnassignedTours(unassignedCount);
+        // Determine fetch function based on user role
+        let appointments: Appointment[] = [];
+        if (userData.role === "admin") {
+          appointments = await fetchAdminsAppointments();
+        } else if (userData.role === "guide") {
+          appointments = await fetchAssignedAppointmentsForGuide();
         }
+
+        setApprovals(appointments);
+
+        // Filter counts for statuses
+        const pendingCount = appointments.filter(
+          (app) => app.status === "created"
+        ).length;
+        const unassignedCount = appointments.filter(
+          (app) => app.status === "approved"
+        ).length;
+
+        setPendingTours(pendingCount);
+        setUnassignedTours(unassignedCount);
+
+        console.log("Pending:", pendingCount, "Unassigned:", unassignedCount); // Add this log
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       } finally {
@@ -51,17 +62,19 @@ const StaffHomepage: React.FC = () => {
       }
     };
     fetchData(); // Fetch data initially
-  }, []); // Dependency array triggers this only once
+  }, []); // Empty dependency array ensures it runs once on mount
 
-  const handleApprovalStatusChange = (pendingCount: number, unassignedCount: number) => {
+  const handleApprovalStatusChange = (
+    pendingCount: number,
+    unassignedCount: number
+  ) => {
     setPendingTours(pendingCount);
     setUnassignedTours(unassignedCount);
   };
-  
 
-  const goToApproval = () => navigate('/staff/pending-approvals');
-  const goToCalendar = () => navigate('/staff/calendar');
-  const goToNotifications = () => navigate('/staff/notifications');
+  const goToApproval = () => navigate("/staff/pending-approvals");
+  const goToCalendar = () => navigate("/staff/calendar");
+  const goToNotifications = () => navigate("/staff/notifications");
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -72,7 +85,9 @@ const StaffHomepage: React.FC = () => {
       {/* Hero Section */}
       <div className="mb-8 p-6 bg-blue-600 text-white rounded-lg shadow">
         <h1 className="text-3xl font-bold">Welcome back, {user?.name}!</h1>
-        <p className="mt-2">{qoutes[Math.floor(Math.random() * qoutes.length)]}</p>
+        <p className="mt-2">
+          {qoutes[Math.floor(Math.random() * qoutes.length)]}
+        </p>
         <button
           className="mt-4 bg-white text-blue-600 py-2 px-6 rounded font-semibold hover:bg-gray-200"
           onClick={goToApproval}
@@ -87,13 +102,18 @@ const StaffHomepage: React.FC = () => {
         <div className="bg-white p-6 border rounded-lg shadow">
           <h2 className="text-xl font-bold mb-4">Task Summary</h2>
           <ul className="space-y-2 text-gray-700">
-          <li>{pendingTours} pending approvals</li>
-          <li>{unassignedTours} unassigned tours</li>
+            <li>{pendingTours} pending approvals</li>
+            <li>{unassignedTours} unassigned tours</li>
           </ul>
           <div className="mt-4 h-2 bg-gray-200 rounded-full">
-            <div className="h-full bg-blue-600 rounded-full" 
-              style={{ width: `${(pendingTours / (pendingTours + unassignedTours || 1)) * 100}%` }}> 
-            </div>
+            <div
+              className="h-full bg-blue-600 rounded-full"
+              style={{
+                width: `${
+                  (pendingTours / (pendingTours + unassignedTours || 1)) * 100
+                }%`,
+              }}
+            ></div>
           </div>
         </div>
 
@@ -101,9 +121,25 @@ const StaffHomepage: React.FC = () => {
         <div className="bg-white p-6 border rounded-lg shadow">
           <h2 className="text-xl font-bold mb-4">Upcoming Schedule</h2>
           <ul className="space-y-2 text-gray-700">
-            <li>9:00 AM - Team Meeting</li>
-            <li>11:00 AM - Visitor Tour</li>
-            <li>3:00 PM - Staff Training</li>
+            {approvals.length === 0 ? (
+              <li>No upcoming appointments</li>
+            ) : (
+              approvals.filter((appointment) => {
+                  // Only show "created" status if the user is an admin
+                  if (user?.role === "admin") {
+                    return appointment.status === "created";
+                  }
+                  else if (user?.role === "guide") {
+                    return appointment.status === "approved";
+                  }
+                  return true; // For other roles, show all appointments
+                })
+                .map((appointment) => (
+                  <li key={appointment.id}>
+                    {appointment.id} - {appointment.time} - {appointment.date}
+                  </li>
+                ))
+            )}
           </ul>
           <button
             className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
@@ -157,21 +193,29 @@ const StaffHomepage: React.FC = () => {
             className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50"
           >
             <h3 className="text-lg font-bold text-blue-600">Schedule a Tour</h3>
-            <p className="text-gray-700">Easily create and manage tours for visitors.</p>
+            <p className="text-gray-700">
+              Easily create and manage tours for visitors.
+            </p>
           </a>
           <a
             href="/manage-reports"
             className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50"
           >
             <h3 className="text-lg font-bold text-blue-600">Manage Reports</h3>
-            <p className="text-gray-700">Track and analyze performance reports.</p>
+            <p className="text-gray-700">
+              Track and analyze performance reports.
+            </p>
           </a>
           <a
             href="/visitor-requests"
             className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50"
           >
-            <h3 className="text-lg font-bold text-blue-600">Visitor Requests</h3>
-            <p className="text-gray-700">View and approve pending visitor requests.</p>
+            <h3 className="text-lg font-bold text-blue-600">
+              Visitor Requests
+            </h3>
+            <p className="text-gray-700">
+              View and approve pending visitor requests.
+            </p>
           </a>
         </div>
       </div>
@@ -181,4 +225,3 @@ const StaffHomepage: React.FC = () => {
 };
 
 export default StaffHomepage;
-
