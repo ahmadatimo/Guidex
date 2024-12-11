@@ -149,7 +149,7 @@ def create_admin_user(db: Session):
             name="Admin",
             user_email="admin@example.com",
             role="admin",
-            hashed_password=bcrypt_context.hash("admin1234"),
+            hashed_password=bcrypt_context.hash("abcd1234"),
             school_name=None,
         )
         db.add(admin_user)
@@ -158,11 +158,45 @@ def create_admin_user(db: Session):
     else:
         print("Admin user already exists.")
 
+#-----------------------------------------------------------Below code is for populating db with the mock visitor and mock guide--------------------
+#-----------------------------------------------------------it should be delete prior deployment----------------------------------------------------
+
+def create_mock_users(db: Session):
+    visitor = db.query(User).filter(User.role == "visitor").first()
+    guide = db.query(User).filter(User.role == "guide").first()
+
+    if not visitor and not guide:
+        visitor = User(
+            name = "VisitorExample",
+            user_email = "visitor@example.com",
+            role = "visitor",
+            hashed_password=bcrypt_context.hash("abcd1234"),
+            school_name = "High School A"
+        )
+
+        guide = User(
+            name = "GuideExample",
+            user_email = "guide@example.com",
+            role = "guide",
+            hashed_password=bcrypt_context.hash("abcd1234"),
+            school_name = None
+        )
+
+        db.add(visitor)
+        db.add(guide)
+        db.commit()
+        print("Mock visitor and guide users created")
+    else:
+        print("Users already exists.")
+
+
+
 # Event listener for after creating the table
 def after_create_listener(target, connection, **kwargs):
     # Create a session from the sessionmaker
     db = SessionLocal()
     create_admin_user(db)
+    create_mock_users(db)
     db.close()
 
 # Attach the event listener

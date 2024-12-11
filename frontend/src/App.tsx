@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/User/Home";
 import About from "./pages/User/About";
