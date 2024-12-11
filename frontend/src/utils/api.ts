@@ -32,10 +32,11 @@ export interface CreateAppointmentRequest {
 }
 
 export interface User {
-  sub: string;
   user_id: number;
+  name: string;
+  user_email: string;
   role: string;
-  exp: number;
+  school_name: string
 }
 
 
@@ -303,4 +304,11 @@ export const getCurrRole = async (): Promise<string> => {
   const response = await axiosInstance.get('/user/role');
   console.log(response.data)
   return response.data.role;
+};
+
+
+export const getCurrUser = async (): Promise<User> => {
+  const response = await axiosInstance.get('/user/info');
+  console.log(response.data)
+  return response.data;
 };

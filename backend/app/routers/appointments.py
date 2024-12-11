@@ -149,7 +149,7 @@ async def get_available_appointments_for_guides(
 
     appointments = (
         db.query(Appointment)
-        .filter(Appointment.status == "APPROVED", Appointment.guide_id == None)
+        .filter(Appointment.status == "approved", Appointment.guide_id == None)
         .all()
     )
     if not appointments:
@@ -239,7 +239,7 @@ async def unassign_guide_from_appointment(appointment_id: int, db: Session = Dep
     if appointment.guide_id is None:
         return
     appointment.guide_id = None
-    appointment.status = "APPROVED"
+    appointment.status = "approved"
     db.commit()
     db.refresh(appointment)
     return appointment

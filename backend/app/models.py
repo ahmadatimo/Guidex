@@ -64,6 +64,12 @@ class AppointmentCreateBase(BaseModel):
     note: Optional[str] = None  # Optional note
     status: AppointmentStatus = AppointmentStatus.CREATED  # Default status
 
+class UserBase(BaseModel):
+    user_id: int
+    name: str
+    user_email: str
+    role: str
+    school_name: Optional[str] = None
     
 class AppointmentBase(BaseModel):
     id: int

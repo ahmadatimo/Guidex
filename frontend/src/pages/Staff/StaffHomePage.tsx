@@ -1,39 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const mockStaff = {
-  name: 'John Doe',
-  school: 'Sunrise High School',
-  email: 'johndoe@example.com',
-};
+import {User,getCurrUser } from '../../utils/api';
 
 const qoutes = [
   "\"Success is the sum of small efforts repeated day in and day out.\" – Robert Collier",
-  "\"The paycheck is coming dont give up boss!.\" – Abdulaleem Altarsha",
-  "\"You may not like your work, but you surely like to buy the new IPhone right ;)\" – Ahmad Haikal"
-]
+  "\"The paycheck is coming, don't give up boss!.\" – Abdulaleem Altarsha",
+  "\"You may not like your work, but you surely like to buy the new iPhone, right ;)\" – Ahmad Haikal"
+];
 
 const StaffHomepage: React.FC = () => {
-  const navigate = useNavigate()
-  const goToApproval = () => {
-    navigate('/staff/pending-approvals');
-  }
-  const goToCalendar = () => {
-    navigate('/staff/calendar');
-  }
-  const goToNotifications = () => {
-    navigate('/staff/notifications');
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getCurrUser();
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const goToApproval = () => navigate('/staff/pending-approvals');
+  const goToCalendar = () => navigate('/staff/calendar');
+  const goToNotifications = () => navigate('/staff/notifications');
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       {/* Hero Section */}
       <div className="mb-8 p-6 bg-blue-600 text-white rounded-lg shadow">
-        <h1 className="text-3xl font-bold">Welcome back, {mockStaff.name}!</h1>
-        <p className="mt-2">{qoutes[Math.floor(Math.random() * 3)]}</p>
-        <button 
-        className="mt-4 bg-white text-blue-600 py-2 px-6 rounded font-semibold hover:bg-gray-200"
-        onClick={goToApproval}>
+        <h1 className="text-3xl font-bold">Welcome back, {user?.name}!</h1>
+        <p className="mt-2">{qoutes[Math.floor(Math.random() * qoutes.length)]}</p>
+        <button
+          className="mt-4 bg-white text-blue-600 py-2 px-6 rounded font-semibold hover:bg-gray-200"
+          onClick={goToApproval}
+        >
           View Pending Approvals
         </button>
       </div>
@@ -61,9 +72,10 @@ const StaffHomepage: React.FC = () => {
             <li>11:00 AM - Visitor Tour</li>
             <li>3:00 PM - Staff Training</li>
           </ul>
-          <button 
-          className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-          onClick={goToCalendar}>
+          <button
+            className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            onClick={goToCalendar}
+          >
             View Calendar
           </button>
         </div>
@@ -75,9 +87,10 @@ const StaffHomepage: React.FC = () => {
             <li>New high-priority request from Admissions Office.</li>
             <li>Reminder: Feedback on recent tour due tomorrow.</li>
           </ul>
-          <button 
-          className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-          onClick={goToNotifications}>
+          <button
+            className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            onClick={goToNotifications}
+          >
             See All Notifications
           </button>
         </div>
