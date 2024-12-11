@@ -224,8 +224,17 @@ export const fetchAppointmentsForUser = async (): Promise<Appointment[]> => {
 
 // Fetch available appointments for guides
 export const fetchAvailableAppointmentsForGuides = async (): Promise<Appointment[]> => {
-  const response = await axiosInstance.get("/guides/available-appointments");
-  return response.data;
+  try{
+    const response = await axiosInstance.get("/guides/available-appointments");
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      // Handle 404 specifically
+      console.warn("No available appointments found for guides.");
+      return []; // Return an empty array if no appointments exist
+    }
+    throw error; // Re-throw other errors
+  }
 };
 
 // Fetch appointments assigned to a specific guide

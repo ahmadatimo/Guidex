@@ -312,7 +312,7 @@ def get_school_name_by_user_id(db: Session, appointment_id: int) -> str:
 
     return appointment.user.school_name
 
-@router.get("/admin/appointments", response_model=List[AppointmentBase])
+@router.get("/admin/appointments", response_model=List[AppointmentResponse])
 async def get_admin_appointments(
     db: db_dependency, 
     current_user: dict = Depends(get_current_user), 

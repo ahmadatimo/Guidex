@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {User,getCurrUser } from '../../utils/api';
+import { useNavigate, useLocation } from 'react-router-dom';
+import {Appointment, User,getCurrUser, fetchAppointments } from '../../utils/api';
+import PendingApprovals from './PendingApprovals';
 
 const qoutes = [
   "\"Success is the sum of small efforts repeated day in and day out.\" – Robert Collier",
@@ -10,22 +11,53 @@ const qoutes = [
 
 const StaffHomepage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Access location state
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [pendingTours, setPendingTours] = useState<number>(0);
+  const [unassignedTours, setUnassignedTours] = useState<number>(0);
 
+  
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
       try {
+        setIsLoading(true);
+  
+        // Fetch user data
         const userData = await getCurrUser();
         setUser(userData);
+  
+        // Fetch appointments
+        const allAppointments = await fetchAppointments();
+        setAppointments(allAppointments);
+  
+        // Filter counts for statuses
+        if (appointments.length > 0) {
+          const pendingCount = appointments.filter(app => app.status === 'created').length;
+          const unassignedCount = appointments.filter(app => app.status === 'approved').length;
+          setPendingTours(pendingCount);
+          setUnassignedTours(unassignedCount);
+
+          console.log("Pending:", pendingCount, "Unassigned:", unassignedCount); // Add this log
+  
+          setPendingTours(pendingCount);
+          setUnassignedTours(unassignedCount);
+        }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchUser();
-  }, []);
+    fetchData(); // Fetch data initially
+  }, []); // Dependency array triggers this only once
+
+  const handleApprovalStatusChange = (pendingCount: number, unassignedCount: number) => {
+    setPendingTours(pendingCount);
+    setUnassignedTours(unassignedCount);
+  };
+  
 
   const goToApproval = () => navigate('/staff/pending-approvals');
   const goToCalendar = () => navigate('/staff/calendar');
@@ -55,12 +87,13 @@ const StaffHomepage: React.FC = () => {
         <div className="bg-white p-6 border rounded-lg shadow">
           <h2 className="text-xl font-bold mb-4">Task Summary</h2>
           <ul className="space-y-2 text-gray-700">
-            <li>3 pending approvals</li>
-            <li>2 unassigned tours</li>
-            <li>1 incomplete report</li>
+          <li>{pendingTours} pending approvals</li>
+          <li>{unassignedTours} unassigned tours</li>
           </ul>
           <div className="mt-4 h-2 bg-gray-200 rounded-full">
-            <div className="h-full bg-blue-600 rounded-full" style={{ width: '60%' }}></div>
+            <div className="h-full bg-blue-600 rounded-full" 
+              style={{ width: `${(pendingTours / (pendingTours + unassignedTours || 1)) * 100}%` }}> 
+            </div>
           </div>
         </div>
 
@@ -142,8 +175,10 @@ const StaffHomepage: React.FC = () => {
           </a>
         </div>
       </div>
+      <PendingApprovals onApprovalStatusChange={handleApprovalStatusChange} />
     </div>
   );
 };
 
 export default StaffHomepage;
+

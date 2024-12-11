@@ -4,7 +4,13 @@ import {
   fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus,
   assignGuideToAppointment, unassignGuideFromAppointment, getCurrRole} from "../../utils/api";
 
-const PendingApprovals: React.FC = () => {
+  interface PendingApprovalsProps {
+    onApprovalStatusChange: (pendingCount: number, unassignedCount: number) => void;
+  }
+  
+
+const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusChange = () => {}, }) => {
+
   const [approvals, setApprovals] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [userRole, setUserRole] = useState<string | null>(null); // State for storing the role of the user
@@ -28,6 +34,14 @@ const PendingApprovals: React.FC = () => {
         }
         console.log('Fetched appointments:', appointments);
         setApprovals(appointments);
+
+        // Calculate the counts for pending and unassigned appointments
+      const pendingCount = appointments.filter(app => app.status === 'created').length;
+      const unassignedCount = appointments.filter(app => app.status === 'approved').length;
+
+      // Call the callback to update the counts in StaffHomepage
+      onApprovalStatusChange(pendingCount, unassignedCount);
+
       } catch (error) {
         console.error('Failed to load data:', error);
         toast.error('Failed to load data. Please try again.');
@@ -157,7 +171,7 @@ const PendingApprovals: React.FC = () => {
                   <h4 className= "font-bold text-lg">{approval.status}</h4>
                   <p className="text-gray-600">Date: {approval.date} </p>
                   <p className="text-gray-600">Time: {approval.time} </p>
-                  {/*<p className="text-gray-600"> Guide ID: {approval.guide_id ? approval.guide_id : "Not Assigned"}</p>*/}
+                  <p className="text-gray-600"> Guide ID: {approval.guide_id ? approval.guide_id : "Not Assigned"}</p>
                 </div>
 
                 {/* Buttons: Approve & Deny */}
