@@ -13,7 +13,7 @@ const Home: React.FC = () => {
       <Testimonials />
       <HowItWorks />
       <div className="text-center mt-6">
-        <Link to="/feedback">
+        <Link to="visitor/feedback">
           <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Leave Feedback
           </button>
