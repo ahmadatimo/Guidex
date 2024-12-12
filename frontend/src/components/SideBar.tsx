@@ -8,6 +8,8 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const role = sessionStorage.getItem("role"); // Get user role
+
   const toggleSidebar = () => setIsOpen(!isOpen);
   const handleLogout = () => {
     sessionStorage.clear();
@@ -18,7 +20,7 @@ const Sidebar = () => {
   // Define restricted pages for roles
   const restrictedPages = {
     admin: ["appointments", "calendar"],
-    guide: ["add-staff", "analytics"],
+    guide: ["add-staff", "analytics", "notifications"],
   };
 
   const navigationItems = [
@@ -65,128 +67,25 @@ const Sidebar = () => {
         {/* Navigation Items */}
         <nav className="mt-4 flex-1 overflow-hidden">
           <ul className="flex flex-col space-y-1">
-            <li>
-              <Link
-                to="/staff/home"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineDashboard size={24} />
-                {isOpen && <span className="ml-3">Dashboard</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/staff/pending-approvals"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/pending-approvals')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineFileDone size={24} />
-                {isOpen && <span className="ml-3">Pending Approvals</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/staff/appointments"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/appointments')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineForm size={24} />
-                {isOpen && <span className="ml-3">Appointments</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/staff/calendar"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/calendar')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineCalendar size={24} />
-                {isOpen && <span className="ml-3">Calendar</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/staff/notifications"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/notifications')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineBell size={24} />
-                {isOpen && <span className="ml-3">Notifications</span>}
-              </Link>
-            </li> 
-            <li>
-              <Link
-                to="/staff/analytics"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/analytics')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineBarChart size={24} />
-                {isOpen && <span className="ml-3">Statistics</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/staff/add-staff"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/add-staff')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineUserAdd size={24} />
-                {isOpen && <span className="ml-3">Profile</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/staff/feedback"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/feedback')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineFileDone size={24} />
-                {isOpen && <span className="ml-3">Feedback</span>}
-              </Link>
-            </li>
-
-            <li>
-              <Link
-                to="/staff/settings"
-                className={`flex items-center px-4 py-2 ${
-                  isActive('/staff/settings')
-                    ? 'bg-blue-200 text-blue-700'
-                    : 'text-gray-700 hover:bg-blue-100'
-                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
-              >
-                <AiOutlineSetting size={24} />
-                {isOpen && <span className="ml-3">Settings</span>}
-              </Link>
-            </li>
+            {filteredNavigationItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className={`flex items-center px-4 py-3 text-base font-medium ${
+                    isActive(item.path)
+                      ? 'bg-blue-200 text-blue-700'
+                      : 'text-gray-700 hover:bg-blue-100'
+                  } transition-colors ${!isOpen ? 'justify-center' : ''}`}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  {isOpen && <span className="ml-3">{item.label}</span>}
+                </Link>
+              </li>
+            ))}
             <li>
               <div
                 onClick={handleLogout}
-                className={`flex items-center px-4 py-2 text-gray-700 hover:bg-red-400 transition-colors ${
+                className={`flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-red-400 transition-colors ${
                   !isOpen ? 'justify-center' : ''
                 } cursor-pointer`}
               >
