@@ -48,8 +48,17 @@ const StaffHomepage: React.FC = () => {
         if (role === "admin") {
           appointments = await fetchAdminsAppointments();
         } else if (role === "guide") {
-          appointments = await fetchAvailableAppointmentsForGuides();
-          myAppointments = await fetchAssignedAppointmentsForGuide();
+          try {
+            appointments = await fetchAvailableAppointmentsForGuides();
+          } catch (e) {
+            console.log(e)
+          }
+
+          try {
+            myAppointments = await fetchAssignedAppointmentsForGuide();
+          } catch (e) {
+            console.log(e)
+          }
         }
 
         setApprovals(appointments);
@@ -149,7 +158,7 @@ const StaffHomepage: React.FC = () => {
               <ul className="space-y-2 text-gray-700">
                 {myApprovals.map((appointment) => (
                   <li key={appointment.id}>
-                    {appointment.id} - {appointment.time} - {appointment.date}
+                    {appointment.id} - {appointment.time} - {appointment.date}  
                   </li>
                 ))}
               </ul>
