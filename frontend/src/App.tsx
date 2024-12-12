@@ -5,6 +5,7 @@ import Contact from "./pages/User/Contact";
 import MyProfile from "./pages/User/MyProfile";
 import MyAppointments from "./pages/User/MyAppointments";
 import Appointment from "./pages/User/Appointment";
+import Feedback from "./pages/User/Feedback";
 import VisitorLayout from "./layouts/VisitorLayout";
 import StaffLayout from "./layouts/StaffLayout";
 import MainLayout from "./layouts/MainLayout";
@@ -16,6 +17,7 @@ import Analytics from "./pages/Staff/Analytics";
 import AddStaff from "./pages/Staff/AddStaff";
 import StaffSettings from "./pages/Staff/StaffSettings";
 import GuideAppointments from "./pages/Staff/GuideAppointments";
+import FeedbackList from "./pages/Staff/FeedbackList";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AuthPage from "./pages/Auth";
 
@@ -44,6 +46,7 @@ const App = () => {
     { path: "/staff/add-staff", element: <AddStaff /> },
     { path: "/staff/settings", element: <StaffSettings /> },
     { path: "/staff/appointments", element: <GuideAppointments /> },
+    { path: "/staff/feedback-list", element: <FeedbackList /> },
   ];
 
   // Filter routes based on role
@@ -69,6 +72,7 @@ const App = () => {
               <Route path="/visitor/my-profile" element={<MyProfile />} />
               <Route path="/visitor/my-appointments" element={<MyAppointments />} />
               <Route path="/visitor/appointment" element={<Appointment />} />
+              <Route path="/visitor/feedback" element={<Feedback />} />
             </Route>
           </Route>
 
