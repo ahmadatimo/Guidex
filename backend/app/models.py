@@ -68,6 +68,13 @@ class Feedback(Base):
     user = relationship("User", back_populates="feedbacks")
     appointment = relationship("Appointment", back_populates="feedbacks")
 
+class OTP(Base):
+    __tablename__ = "otp"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(50), nullable=False, index=True)
+    otp = Column(String(6), nullable=False)
+    created_at = Column(DateTime, nullable=False)
+
 
 
 

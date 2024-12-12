@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime, timezone
+from random import randint
 from typing import Annotated
 from fastapi import APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -6,11 +7,12 @@ from pydantic import BaseModel, EmailStr
 from app.database import  SessionLocal
 from sqlalchemy.orm import Session
 from sqlalchemy import event
-from app.models import User
+from app.models import User, OTP
 from fastapi import HTTPException, Depends, status
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from typing import Optional
+from app.utils.email import send_email
 
 
 
@@ -26,6 +28,7 @@ bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
 
 SECRET_KEY = "91ab6d6051805a8a1bf2f65dd1c5bfbcb198cffe492808928c723002a779d2a9"
 ALGORRITHM = "HS256"
+OTP_EXPIRATION_MINUTES = 5  # OTP validity duration
 
 
 def get_db():
@@ -50,6 +53,13 @@ class LoginResponse(BaseModel):
     token_type: str
     role: str
     name: str
+
+class SendOtpRequest(BaseModel):
+    email: EmailStr
+
+class ValidateOtpRequest(BaseModel):
+    email: EmailStr
+    otp: str
 
 
 
@@ -135,6 +145,63 @@ async def sign_in_for_access_token(db: db_dependency, form_data: Annotated[OAuth
 @router.get("/auth/get_user")
 async def get_user():
     return {"current_user" : "Zesty Timo"}
+
+
+#---------------------------------------------------Below code is for forget password logic--------------------------------------
+
+def generate_otp() -> str:
+    """Generate a 6-digit OTP."""
+    return f"{randint(100000, 999999)}"
+
+@router.post("/send_otp", status_code=status.HTTP_200_OK)
+async def send_otp (request: SendOtpRequest, db: db_dependency):
+    """Send OTP to a user's email."""
+    user = db.query(User).filter(User.user_email == request.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    otp = generate_otp()
+    otp_entry = OTP(
+        email=user.user_email,
+        otp=otp,
+        created_at=datetime.utcnow()
+    )
+
+    # Store OTP in the database (replace any existing OTP for the email)
+    db.query(OTP).filter(OTP.email == user.user_email).delete()
+    db.add(otp_entry)
+    db.commit()
+
+    # Send the OTP via email
+    subject = "Your OTP Code"
+    message = f"Your OTP is {otp}. It is valid for {OTP_EXPIRATION_MINUTES} minutes."
+    await send_email(subject=subject, recipients=[user.user_email], body=message)
+    return {"message": "OTP sent successfully"}
+
+
+@router.post("/verify_otp", status_code=status.HTTP_200_OK)
+async def validate_otp(request: ValidateOtpRequest, db: db_dependency):
+    """Validate the provided OTP for a user."""
+    otp_entry = db.query(OTP).filter(OTP.email == request.email).first()
+    if not otp_entry:
+        raise HTTPException(status_code=404, detail="OTP not found")
+
+    # Check OTP expiration
+    if datetime.utcnow() > otp_entry.created_at + timedelta(minutes=OTP_EXPIRATION_MINUTES):
+        db.query(OTP).filter(OTP.email == request.email).delete()
+        db.commit()
+        raise HTTPException(status_code=400, detail="OTP expired")
+
+    # Validate OTP
+    if otp_entry.otp != request.otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+
+    # OTP is valid
+    db.query(OTP).filter(OTP.email == request.email).delete()  # Clean up used OTP
+    db.commit()
+
+    return {"message": "OTP validated successfully"}
+
 
 
 #--------------------------------------------------------------- Below code is for admin initialization--------------------------------------- 
