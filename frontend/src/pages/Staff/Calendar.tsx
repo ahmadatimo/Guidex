@@ -65,7 +65,7 @@ const StaffCalendar: React.FC = () => {
         setEvents(mappedEvents);
       } catch (error) {
         console.error("Error loading appointments with school names:", error);
-        toast.error("Failed to load appointments. Please try again.");
+        //toast.error("Failed to load appointments. Please try again.");
       } finally {
         setIsLoading(false);
       }

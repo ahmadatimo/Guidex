@@ -48,7 +48,7 @@ const GuideAppointments: React.FC = () => {
         setSchoolNames(schoolNamesMap);
       } catch (error) {
         console.error("Error fetching guide appointments:", error);
-        toast.error("Failed to load appointments. Please try again.");
+        //toast.error("Failed to load appointments. Please try again.");
         setError(true);
       } finally {
         setIsLoading(false);
@@ -75,15 +75,15 @@ const GuideAppointments: React.FC = () => {
 
       {isLoading ? (
         <p className="text-center text-gray-500">Loading appointments...</p>
-      ) : error ? (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-700">Failed to load appointments. Please try again.</p>
-        </div>
       ) : appointments.length === 0 ? (
         <div className="bg-white p-6 rounded-lg shadow">
           <p className="text-gray-500 text-lg">
             You currently have no appointments assigned to you.
           </p>
+        </div>
+      ) : error ? (
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-gray-700">Failed to load appointments. Please try again.</p>
         </div>
       ) : (
         <div className="space-y-16">

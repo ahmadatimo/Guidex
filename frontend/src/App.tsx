@@ -20,16 +20,36 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AuthPage from "./pages/Auth";
 
 const App = () => {
+  const role = sessionStorage.getItem("role");
 
-  const role = sessionStorage.getItem('role')
   const handleInvalidRoute = () => {
     if (!role) return <Navigate to="/auth" />;
-  
     if (role === "visitor") return <Navigate to="/visitor/home" />;
     if (["admin", "guide"].includes(role)) return <Navigate to="/staff/home" />;
   };
-  
 
+  // Define restricted routes for roles
+  const restrictedRoutes = {
+    admin: ["/staff/appointments", "/staff/calendar"],
+    guide: ["/staff/add-staff", "/staff/analytics", "/staff/notifications"],
+  };
+
+  // Define staff routes
+  const staffRoutes = [
+    { path: "/staff/home", element: <StaffHomepage /> },
+    { path: "/staff/pending-approvals", element: <PendingApprovals /> },
+    { path: "/staff/calendar", element: <Calendar /> },
+    { path: "/staff/notifications", element: <Notifications /> },
+    { path: "/staff/analytics", element: <Analytics /> },
+    { path: "/staff/add-staff", element: <AddStaff /> },
+    { path: "/staff/settings", element: <StaffSettings /> },
+    { path: "/staff/appointments", element: <GuideAppointments /> },
+  ];
+
+  // Filter routes based on role
+  const filteredStaffRoutes = staffRoutes.filter(
+    (route) => !restrictedRoutes[role]?.includes(route.path)
+  );
 
   return (
     <div>
@@ -55,14 +75,9 @@ const App = () => {
           {/* Protected Staff Routes */}
           <Route element={<ProtectedRoutes allowedRoles={["admin", "guide"]} />}>
             <Route element={<StaffLayout />}>
-              <Route path="/staff/home" element={<StaffHomepage />} />
-              <Route path="/staff/pending-approvals" element={<PendingApprovals />} />
-              <Route path="/staff/calendar" element={<Calendar />} />
-              <Route path="/staff/notifications" element={<Notifications />} />
-              <Route path="/staff/analytics" element={<Analytics />} />
-              <Route path="/staff/add-staff" element={<AddStaff />} />
-              <Route path="/staff/settings" element={<StaffSettings />} />
-              <Route path="/staff/appointments" element={<GuideAppointments />} />
+              {filteredStaffRoutes.map((route) => (
+                <Route key={route.path} path={route.path} element={route.element} />
+              ))}
             </Route>
           </Route>
 
