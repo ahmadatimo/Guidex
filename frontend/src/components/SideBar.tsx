@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AiOutlineSetting, AiOutlineForm, AiOutlineLogout, AiOutlineDashboard, AiOutlineFileDone, AiOutlineCalendar, AiOutlineBell, AiOutlineBarChart, AiOutlineUserAdd } from 'react-icons/ai';
+import { AiOutlineSetting, AiOutlineForm, AiOutlineLogout, AiOutlineDashboard, AiOutlineFileDone, AiOutlineCalendar, AiOutlineBell, AiOutlineBarChart, AiOutlineUserAdd, AiOutlineComment } from 'react-icons/ai';
 import { FiChevronLeft } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
@@ -31,6 +31,7 @@ const Sidebar = () => {
     { path: "/staff/notifications", icon: <AiOutlineBell />, label: "Notifications" },
     { path: "/staff/analytics", icon: <AiOutlineBarChart />, label: "Statistics" },
     { path: "/staff/add-staff", icon: <AiOutlineUserAdd />, label: "Add User" },
+    { path: "/staff/feedback-list", icon: <AiOutlineComment />, label: "Feedback List" },
     { path: "/staff/settings", icon: <AiOutlineSetting />, label: "Settings" },
   ];
 
