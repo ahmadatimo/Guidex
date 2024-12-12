@@ -29,29 +29,45 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     school_name = Column(String(225), nullable=True)
 
-    # Relationships
     created_appointments = relationship("Appointment", foreign_keys="Appointment.user_id", back_populates="user")
     assigned_appointments = relationship("Appointment", foreign_keys="Appointment.guide_id", back_populates="guide")
     notifications = relationship("Notification", back_populates="recipient")
+    feedbacks = relationship("Feedback", back_populates="user")  # Add this
+
 
 class Appointment(Base):
     __tablename__ = "appointment"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)  # User who created the appointment
-    guide_id = Column(Integer, ForeignKey("user.id"), nullable=True)  # Assigned guide/staff
-    date = Column(Date, nullable=False)  # Appointment date
-    time = Column(Time, nullable=False)  # Appointment time
-    city = Column(String(50), nullable=False)  # City for the appointment
-    visitors_number = Column(Integer, nullable=False)  # Number of visitors
-    note = Column(Text, nullable=True)  # Optional note
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)  # Timestamp of appointment creation
-    status = Column(Enum(AppointmentStatus), default=AppointmentStatus.CREATED, nullable=False)  # Status of the appointment
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    guide_id = Column(Integer, ForeignKey("user.id"), nullable=True)
+    date = Column(Date, nullable=False)
+    time = Column(Time, nullable=False)
+    city = Column(String(50), nullable=False)
+    visitors_number = Column(Integer, nullable=False)
+    note = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    status = Column(Enum(AppointmentStatus), default=AppointmentStatus.CREATED, nullable=False)
 
-    # Relationships
     user = relationship("User", foreign_keys=[user_id])
     guide = relationship("User", foreign_keys=[guide_id])
     notifications = relationship("Notification", back_populates="appointment")
+    feedbacks = relationship("Feedback", back_populates="appointment")  # Add this
+
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    appointment_id = Column(Integer, ForeignKey("appointment.id"), nullable=True)
+    rating = Column(Integer, nullable=False)
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    user = relationship("User", back_populates="feedbacks")
+    appointment = relationship("Appointment", back_populates="feedbacks")
+
 
 
 

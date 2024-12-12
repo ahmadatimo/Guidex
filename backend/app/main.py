@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import app.models as models
 from app.database import engine
-from app.routers import auth, appointments, notifications
+from app.routers import auth, appointments, notifications, feedback
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -21,3 +21,4 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(appointments.router)
 app.include_router(notifications.router)
+app.include_router(feedback.router, prefix="/api/feedback", tags=["Feedback"])

@@ -136,6 +136,20 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
+                to="/staff/feedback"
+                className={`flex items-center px-4 py-2 ${
+                  isActive('/staff/feedback')
+                    ? 'bg-blue-200 text-blue-700'
+                    : 'text-gray-700 hover:bg-blue-100'
+                } transition-colors ${!isOpen ? 'justify-center' : ''}`}
+              >
+                <AiOutlineFileDone size={24} />
+                {isOpen && <span className="ml-3">Feedback</span>}
+              </Link>
+            </li>
+
+            <li>
+              <Link
                 to="/staff/settings"
                 className={`flex items-center px-4 py-2 ${
                   isActive('/staff/settings')
