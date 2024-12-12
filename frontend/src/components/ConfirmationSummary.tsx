@@ -31,7 +31,8 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
       if (response) {
         toast.success('Appointment successfully created!');
         console.log('Created Appointment:', response);
-        navigate('/visitor');
+        console.log('We are gonna navigate to visitor home')
+        navigate('/visitor/home');
       } else {
         toast.error('Failed to create appointment. Please try again.');
       }
