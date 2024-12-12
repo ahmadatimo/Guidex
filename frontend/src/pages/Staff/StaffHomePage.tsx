@@ -4,6 +4,7 @@ import {
   Appointment,
   fetchAdminsAppointments,
   fetchAssignedAppointmentsForGuide,
+  fetchAvailableAppointmentsForGuides,
 } from "../../utils/api";
 import PendingApprovals from "./PendingApprovals";
 
@@ -16,6 +17,7 @@ const qoutes = [
 const StaffHomepage: React.FC = () => {
   const navigate = useNavigate();
   const [approvals, setApprovals] = useState<Appointment[]>([]);
+  const [myApprovals, setMyApprovals] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [pendingTours, setPendingTours] = useState<number>(0);
   const [unassignedTours, setUnassignedTours] = useState<number>(0);
@@ -30,27 +32,28 @@ const StaffHomepage: React.FC = () => {
         // Fetch user data
         const role = sessionStorage.getItem("role");
         const name = sessionStorage.getItem("name");
-        console.log('Role is ', role)
-        console.log('Name is ', name)
+        console.log("Role is ", role);
+        console.log("Name is ", name);
         if (!role || !name) {
-          console.log('User is not updated')
+          console.log("User is not updated");
           return navigate("/auth");
         }
-
 
         setUserRole(role);
         setUserName(name);
 
         // Determine fetch function based on user role
         let appointments: Appointment[] = [];
+        let myAppointments: Appointment[] = [];
         if (role === "admin") {
           appointments = await fetchAdminsAppointments();
         } else if (role === "guide") {
-          appointments = await fetchAssignedAppointmentsForGuide();
+          appointments = await fetchAvailableAppointmentsForGuides();
+          myAppointments = await fetchAssignedAppointmentsForGuide();
         }
 
         setApprovals(appointments);
-
+        setMyApprovals(myAppointments);
         // Filter counts for statuses
         const pendingCount = appointments.filter(
           (app) => app.status === "created"
@@ -114,39 +117,65 @@ const StaffHomepage: React.FC = () => {
             <li>{unassignedTours} unassigned tours</li>
           </ul>
           <div className="mt-4 h-2 bg-gray-200 rounded-full">
-            <div
-              className="h-full bg-blue-600 rounded-full"
-              style={{
-                width: `${
-                  (pendingTours / (pendingTours + unassignedTours || 1)) * 100
-                }%`,
-              }}
-            ></div>
+            {userRole === "admin" ? (
+              <div
+                className="h-full bg-blue-600 rounded-full"
+                style={{
+                  width: `${
+                    (pendingTours / (pendingTours + unassignedTours || 1)) * 100
+                  }%`,
+                }}
+              ></div>
+            ) : (
+              <div
+                className="h-full bg-blue-600 rounded-full"
+                style={{
+                  width: `${
+                    (unassignedTours / (pendingTours + unassignedTours || 1)) *
+                    100
+                  }%`,
+                }}
+              ></div>
+            )}
           </div>
         </div>
 
-        {/* Upcoming Schedule */}
+        {/* Schedule Section */}
         <div className="bg-white p-6 border rounded-lg shadow">
+          {/* My Schedule */}
+          {myApprovals.length > 0 && (
+            <>
+              <h2 className="text-xl font-bold mb-4">My Schedule</h2>
+              <ul className="space-y-2 text-gray-700">
+                {myApprovals.map((appointment) => (
+                  <li key={appointment.id}>
+                    {appointment.id} - {appointment.time} - {appointment.date}
+                  </li>
+                ))}
+              </ul>
+              <hr className="my-4 border-gray-300" />
+            </>
+          )}
+
+          {/* Upcoming Schedule */}
           <h2 className="text-xl font-bold mb-4">Upcoming Schedule</h2>
           <ul className="space-y-2 text-gray-700">
-            {approvals.length === 0 ? (
-              <li>No upcoming appointments</li>
-            ) : (
-              approvals.filter((appointment) => {
-                  // Only show "created" status if the user is an admin
+            {approvals.length > 0 ? (
+              approvals
+                .filter((appointment) => {
+                  // Admins see "created" status; guides see "approved" status
                   if (userRole === "admin") {
                     return appointment.status === "created";
                   }
-                  else if (userRole === "guide") {
-                    return appointment.status === "approved";
-                  }
-                  return true; // For other roles, show all appointments
+                  return appointment.status === "approved";
                 })
                 .map((appointment) => (
                   <li key={appointment.id}>
                     {appointment.id} - {appointment.time} - {appointment.date}
                   </li>
                 ))
+            ) : (
+              <li>No upcoming appointments</li>
             )}
           </ul>
           <button
