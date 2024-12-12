@@ -1,19 +1,7 @@
 import { useState } from 'react';
-import {
-  AiOutlineSetting,
-  AiOutlineForm,
-  AiOutlineLogout,
-  AiOutlineDashboard,
-  AiOutlineFileDone,
-  AiOutlineCalendar,
-  AiOutlineBell,
-  AiOutlineBarChart,
-  AiOutlineUserAdd
-} from 'react-icons/ai';
+import { AiOutlineSetting, AiOutlineForm, AiOutlineLogout, AiOutlineDashboard, AiOutlineFileDone, AiOutlineCalendar, AiOutlineBell, AiOutlineBarChart, AiOutlineUserAdd } from 'react-icons/ai';
 import { FiChevronLeft } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-
-
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
