@@ -47,7 +47,7 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
 
       } catch (error) {
         console.error('Failed to load data:', error);
-        toast.error('Failed to load data. Please try again.');
+        //toast.error('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
       }
