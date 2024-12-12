@@ -12,8 +12,30 @@ const Sidebar = () => {
   const handleLogout = () => {
     sessionStorage.clear();
     navigate('/auth');
-  }
-  const isActive = (path: string) => location.pathname === path;
+  };
+  const isActive = (path) => location.pathname === path;
+
+  // Define restricted pages for roles
+  const restrictedPages = {
+    admin: ["appointments", "calendar"],
+    guide: ["add-staff", "analytics"],
+  };
+
+  const navigationItems = [
+    { path: "/staff/home", icon: <AiOutlineDashboard />, label: "Dashboard" },
+    { path: "/staff/pending-approvals", icon: <AiOutlineFileDone />, label: "Pending Approvals" },
+    { path: "/staff/appointments", icon: <AiOutlineForm />, label: "Appointments" },
+    { path: "/staff/calendar", icon: <AiOutlineCalendar />, label: "Calendar" },
+    { path: "/staff/notifications", icon: <AiOutlineBell />, label: "Notifications" },
+    { path: "/staff/analytics", icon: <AiOutlineBarChart />, label: "Statistics" },
+    { path: "/staff/add-staff", icon: <AiOutlineUserAdd />, label: "Add User" },
+    { path: "/staff/settings", icon: <AiOutlineSetting />, label: "Settings" },
+  ];
+
+  const filteredNavigationItems = navigationItems.filter((item) => {
+    const pageKey = item.path.split("/").pop(); // Extract the last part of the path
+    return !(restrictedPages[role]?.includes(pageKey)); // Exclude restricted pages for the role
+  });
 
   return (
     <>

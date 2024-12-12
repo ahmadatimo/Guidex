@@ -31,7 +31,7 @@ const App = () => {
   // Define restricted routes for roles
   const restrictedRoutes = {
     admin: ["/staff/appointments", "/staff/calendar"],
-    guide: ["/staff/add-staff", "/staff/analytics", "/staff/notifications"],
+    guide: ["/staff/add-staff", "/staff/analytics"],
   };
 
   // Define staff routes

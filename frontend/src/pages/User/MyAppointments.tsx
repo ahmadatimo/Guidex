@@ -21,7 +21,7 @@ const MyAppointments: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching appointments:", error);
-        toast.error("Failed to load appointments. Please try again.");
+        //toast.error("Failed to load appointments. Please try again.");
         setError(true); // Show error message
       } finally {
         setIsLoading(false);
