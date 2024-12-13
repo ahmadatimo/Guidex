@@ -108,13 +108,13 @@ const AddStaff: React.FC = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-6">
-      <h1 className="text-3xl font-bold mb-2 text-blue-700">Add Staff Accounts</h1>
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">New Staff Account</h2>
+    <div className="max-w-lg mx-auto px-6 dark:bg-gray-800 dark:text-gray-200">
+      <h1 className="text-3xl font-bold mb-2 text-blue-700 dark:text-blue-400">Add Staff Accounts</h1>
+      <div className="bg-white p-6 rounded-lg shadow dark:bg-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">New Staff Account</h2>
         <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleCreateAccount(); }}>
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Full Name
             </label>
             <input
@@ -124,12 +124,12 @@ const AddStaff: React.FC = () => {
               placeholder="Enter full name"
               value={newAccount.name}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             />
           </div>
-
+  
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email Address
             </label>
             <input
@@ -139,12 +139,12 @@ const AddStaff: React.FC = () => {
               placeholder="Enter email address"
               value={newAccount.email}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             />
           </div>
-
+  
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <input
@@ -154,12 +154,12 @@ const AddStaff: React.FC = () => {
               placeholder="Enter password"
               value={newAccount.password}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             />
           </div>
-
+  
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Role
             </label>
             <select
@@ -167,7 +167,7 @@ const AddStaff: React.FC = () => {
               name="role"
               value={newAccount.role}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             >
               <option value="">Select Role</option>
               <option value="admin">Admin</option>
@@ -175,10 +175,10 @@ const AddStaff: React.FC = () => {
               <option value="visitor">Visitor</option>
             </select>
           </div>
-
+  
           {newAccount.role === "visitor" && (
             <div>
-              <label htmlFor="school_name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="school_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 School
               </label>
               <select
@@ -186,7 +186,7 @@ const AddStaff: React.FC = () => {
                 name="school_name"
                 value={newAccount.school_name}
                 onChange={handleChange}
-                className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
               >
                 <option value="">Select School</option>
                 {schools.map((school) => (
@@ -197,11 +197,11 @@ const AddStaff: React.FC = () => {
               </select>
             </div>
           )}
-
+  
           <div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
+              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               Create Account
             </button>
@@ -209,7 +209,7 @@ const AddStaff: React.FC = () => {
         </form>
       </div>
     </div>
-  );
+  );  
 };
 
 export default AddStaff;

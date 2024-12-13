@@ -51,13 +51,13 @@ const StaffHomepage: React.FC = () => {
           try {
             appointments = await fetchAvailableAppointmentsForGuides();
           } catch (e) {
-            console.log(e)
+            console.log(e);
           }
 
           try {
             myAppointments = await fetchAssignedAppointmentsForGuide();
           } catch (e) {
-            console.log(e)
+            console.log(e);
           }
         }
 
@@ -101,15 +101,16 @@ const StaffHomepage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="max-w-7xl mx-auto px-6 py-12 dark:bg-gray-900 dark:text-gray-200">
       {/* Hero Section */}
-      <div className="mb-8 p-6 bg-blue-600 text-white rounded-lg shadow">
+      <div className="mb-8 p-6 bg-blue-600 text-white rounded-lg shadow dark:bg-gray-800">
         <h1 className="text-3xl font-bold">Welcome back, {userName}!</h1>
         <p className="mt-2">
           {qoutes[Math.floor(Math.random() * qoutes.length)]}
         </p>
         <button
-          className="mt-4 bg-white text-blue-600 py-2 px-6 rounded font-semibold hover:bg-gray-200"
+          className="mt-4 bg-white text-blue-600 py-2 px-6 rounded font-semibold hover:bg-gray-200 
+          dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           onClick={goToApproval}
         >
           View Pending Approvals
@@ -119,13 +120,15 @@ const StaffHomepage: React.FC = () => {
       {/* Main Dashboard Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Task Summary */}
-        <div className="bg-white p-6 border rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-4">Task Summary</h2>
-          <ul className="space-y-2 text-gray-700">
+        <div className="bg-white p-6 border rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+          <h2 className="text-xl font-bold mb-4 dark:text-gray-300">
+            Task Summary
+          </h2>
+          <ul className="space-y-2 text-gray-700 dark:text-gray-400">
             <li>{pendingTours} pending approvals</li>
             <li>{unassignedTours} unassigned tours</li>
           </ul>
-          <div className="mt-4 h-2 bg-gray-200 rounded-full">
+          <div className="mt-4 h-2 bg-gray-200 rounded-full dark:bg-gray-700">
             {userRole === "admin" ? (
               <div
                 className="h-full bg-blue-600 rounded-full"
@@ -150,25 +153,29 @@ const StaffHomepage: React.FC = () => {
         </div>
 
         {/* Schedule Section */}
-        <div className="bg-white p-6 border rounded-lg shadow">
+        <div className="bg-white p-6 border rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
           {/* My Schedule */}
           {myApprovals.length > 0 && (
             <>
-              <h2 className="text-xl font-bold mb-4">My Schedule</h2>
-              <ul className="space-y-2 text-gray-700">
+              <h2 className="text-xl font-bold mb-4 dark:text-gray-300">
+                My Schedule
+              </h2>
+              <ul className="space-y-2 text-gray-700 dark:text-gray-400">
                 {myApprovals.map((appointment) => (
                   <li key={appointment.id}>
-                    {appointment.id} - {appointment.time} - {appointment.date}  
+                    {appointment.id} - {appointment.time} - {appointment.date}
                   </li>
                 ))}
               </ul>
-              <hr className="my-4 border-gray-300" />
+              <hr className="my-4 border-gray-300 dark:border-gray-600" />
             </>
           )}
 
           {/* Upcoming Schedule */}
-          <h2 className="text-xl font-bold mb-4">Upcoming Schedule</h2>
-          <ul className="space-y-2 text-gray-700">
+          <h2 className="text-xl font-bold mb-4 dark:text-gray-300">
+            Upcoming Schedule
+          </h2>
+          <ul className="space-y-2 text-gray-700 dark:text-gray-400">
             {approvals.length > 0 ? (
               approvals
                 .filter((appointment) => {
@@ -188,7 +195,8 @@ const StaffHomepage: React.FC = () => {
             )}
           </ul>
           <button
-            className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 
+            dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             onClick={goToCalendar}
           >
             View Calendar
@@ -196,14 +204,17 @@ const StaffHomepage: React.FC = () => {
         </div>
 
         {/* Notifications */}
-        <div className="bg-white p-6 border rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-4">Notifications</h2>
-          <ul className="space-y-2 text-gray-700">
+        <div className="bg-white p-6 border rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+          <h2 className="text-xl font-bold mb-4 dark:text-gray-300">
+            Notifications
+          </h2>
+          <ul className="space-y-2 text-gray-700 dark:text-gray-400">
             <li>New high-priority request from Admissions Office.</li>
             <li>Reminder: Feedback on recent tour due tomorrow.</li>
           </ul>
           <button
-            className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 
+            dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             onClick={goToNotifications}
           >
             See All Notifications
@@ -212,56 +223,60 @@ const StaffHomepage: React.FC = () => {
       </div>
 
       {/* Analytics Snapshot */}
-      <div className="mt-12 bg-gray-100 p-6 rounded-lg shadow">
+      <div className="mt-12 bg-gray-100 p-6 rounded-lg shadow dark:bg-gray-800 dark:text-gray-200">
         <h2 className="text-xl font-bold mb-4">Analytics Snapshot</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
             <h3 className="text-3xl font-bold text-blue-600">25</h3>
-            <p className="text-gray-700">Tours This Month</p>
+            <p className="text-gray-700 dark:text-gray-400">Tours This Month</p>
           </div>
           <div className="text-center">
             <h3 className="text-3xl font-bold text-blue-600">4.8</h3>
-            <p className="text-gray-700">Average Feedback Rating</p>
+            <p className="text-gray-700 dark:text-gray-400">
+              Average Feedback Rating
+            </p>
           </div>
           <div className="text-center">
             <h3 className="text-3xl font-bold text-blue-600">15%</h3>
-            <p className="text-gray-700">Increase in Visitor Engagement</p>
+            <p className="text-gray-700 dark:text-gray-400">
+              Increase in Visitor Engagement
+            </p>
           </div>
         </div>
       </div>
 
       {/* Quick Links Section */}
       <div className="mt-12">
-        <h2 className="text-xl font-bold mb-4 text-blue-700">Quick Links</h2>
+        <h2 className="text-xl font-bold mb-4 text-blue-700 dark:text-blue-400">
+          Quick Links
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <a
             href="/schedule-tour"
-            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50"
+            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             <h3 className="text-lg font-bold text-blue-600">Schedule a Tour</h3>
-            <p className="text-gray-700">
+            <p className="text-gray-700 dark:text-gray-400">
               Easily create and manage tours for visitors.
             </p>
           </a>
           <a
             href="/manage-reports"
-            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50"
+            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             <h3 className="text-lg font-bold text-blue-600">Manage Reports</h3>
-            <p className="text-gray-700">
+            <p className="text-gray-700 dark:text-gray-400">
               Track and analyze performance reports.
             </p>
           </a>
           <a
             href="/visitor-requests"
-            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50"
+            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50 
+            dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             <h3 className="text-lg font-bold text-blue-600">
               Visitor Requests
             </h3>
-            <p className="text-gray-700">
-              View and approve pending visitor requests.
-            </p>
           </a>
         </div>
       </div>

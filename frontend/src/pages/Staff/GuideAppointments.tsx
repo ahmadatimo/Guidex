@@ -37,10 +37,15 @@ const GuideAppointments: React.FC = () => {
         await Promise.all(
           data.map(async (appointment) => {
             try {
-              const schoolName = await fetchSchoolNameForAppointment(appointment.id);
+              const schoolName = await fetchSchoolNameForAppointment(
+                appointment.id
+              );
               schoolNamesMap[appointment.id] = schoolName;
             } catch (error) {
-              console.error(`Error fetching school name for appointment ${appointment.id}:`, error);
+              console.error(
+                `Error fetching school name for appointment ${appointment.id}:`,
+                error
+              );
               schoolNamesMap[appointment.id] = "Unknown School";
             }
           })
@@ -70,55 +75,67 @@ const GuideAppointments: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8 text-blue-700">My Appointments</h1>
+    <div className="max-w-7xl mx-auto px-6 py-12 bg-gray-900 dark:text-gray-200">
+      <h1 className="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-400">
+        My Appointments
+      </h1>
 
       {isLoading ? (
-        <p className="text-center text-gray-500">Loading appointments...</p>
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Loading appointments...
+        </p>
       ) : appointments.length === 0 ? (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-500 text-lg">
+        <div className="bg-gray-800 p-6 rounded-lg shadow dark:bg-gray-700">
+          <p className="text-gray-500 text-lg dark:text-gray-400">
             You currently have no appointments assigned to you.
           </p>
         </div>
       ) : error ? (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-700">Failed to load appointments. Please try again.</p>
+        <div className="bg-gray-800 p-6 rounded-lg shadow dark:bg-gray-700">
+          <p className="text-gray-700 dark:text-gray-300">
+            Failed to load appointments. Please try again.
+          </p>
         </div>
       ) : (
         <div className="space-y-16">
           {/* Upcoming Appointments */}
           <section>
-            <h2 className="text-3xl font-semibold text-gray-800 mb-6">
+            <h2 className="text-3xl font-semibold text-gray-800 mb-6 dark:text-gray-100">
               Upcoming Appointments
             </h2>
             {upcomingAppointments.length === 0 ? (
-              <p className="text-gray-500 text-lg">No upcoming appointments.</p>
+              <p className="text-gray-500 text-lg dark:text-gray-400">
+                No upcoming appointments.
+              </p>
             ) : (
               <ul className="space-y-6">
                 {upcomingAppointments.map((appointment) => (
                   <li
                     key={appointment.id}
-                    className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-500"
+                    className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-500 
+                    dark:bg-gray-700"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-bold text-xl text-gray-700">
+                        <h3 className="font-bold text-xl text-gray-700 dark:text-gray-100">
                           {schoolNames[appointment.id] || "Loading..."}
                         </h3>
-                        <p className="text-gray-600">
-                          <span className="font-medium">Date:</span> {appointment.date}
+                        <p className="text-gray-600 dark:text-gray-400">
+                          <span className="font-medium">Date:</span>{" "}
+                          {appointment.date}
                         </p>
-                        <p className="text-gray-600">
-                          <span className="font-medium">Time:</span> {appointment.time}
+                        <p className="text-gray-600 dark:text-gray-400">
+                          <span className="font-medium">Time:</span>{" "}
+                          {appointment.time}
                         </p>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Visitors:</span>{" "}
                           {appointment.visitors_number}
                         </p>
                       </div>
                       <div className="flex-shrink-0">
-                        <span className="bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-medium">
+                        <span className="bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-medium 
+                        dark:bg-blue-900 dark:text-blue-300">
                           Upcoming
                         </span>
                       </div>
@@ -131,36 +148,42 @@ const GuideAppointments: React.FC = () => {
 
           {/* Past Appointments */}
           <section>
-            <h2 className="text-3xl font-semibold text-gray-800 mb-6">
+            <h2 className="text-3xl font-semibold text-gray-800 mb-6 dark:text-gray-100">
               Past Appointments
             </h2>
             {pastAppointments.length === 0 ? (
-              <p className="text-gray-500 text-lg">No past appointments.</p>
+              <p className="text-gray-500 text-lg dark:text-gray-400">
+                No past appointments.
+              </p>
             ) : (
               <ul className="space-y-6">
                 {pastAppointments.map((appointment) => (
                   <li
                     key={appointment.id}
-                    className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-gray-400"
+                    className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-gray-400 
+                    dark:bg-gray-700"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-bold text-xl text-gray-700">
+                        <h3 className="font-bold text-xl text-gray-700 dark:text-gray-100">
                           {schoolNames[appointment.id] || "Loading..."}
                         </h3>
-                        <p className="text-gray-600">
-                          <span className="font-medium">Date:</span> {appointment.date}
+                        <p className="text-gray-600 dark:text-gray-400">
+                          <span className="font-medium">Date:</span>{" "}
+                          {appointment.date}
                         </p>
-                        <p className="text-gray-600">
-                          <span className="font-medium">Time:</span> {appointment.time}
+                        <p className="text-gray-600 dark:text-gray-400">
+                          <span className="font-medium">Time:</span>{" "}
+                          {appointment.time}
                         </p>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Visitors:</span>{" "}
                           {appointment.visitors_number}
                         </p>
                       </div>
                       <div className="flex-shrink-0">
-                        <span className="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm font-medium">
+                        <span className="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm font-medium 
+                        dark:bg-gray-600 dark:text-gray-200">
                           Past
                         </span>
                       </div>
