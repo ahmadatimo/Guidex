@@ -6,7 +6,10 @@ from app.routers.auth import get_current_user  # Import JWT auth dependency
 from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User, AppointmentCreateBase
 
 # Create the APIRouter instance
-router = APIRouter()
+router = APIRouter(
+    prefix="/appointments",
+    tags=["appointments"]
+)
 
 # Database Dependency
 def get_db():

@@ -7,8 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
 
-
-
 # Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,

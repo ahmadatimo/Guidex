@@ -63,6 +63,18 @@ class ValidateOtpRequest(BaseModel):
 
 
 
+class UserUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    user_email: Optional[EmailStr] = None
+    password: Optional[str] = None
+
+
+class UserUpdateResponse(BaseModel):
+    message: str
+    updated_user: dict
+
+
+
         
     
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -201,6 +213,62 @@ async def validate_otp(request: ValidateOtpRequest, db: db_dependency):
     db.commit()
 
     return {"message": "OTP validated successfully"}
+
+
+
+@router.patch("/update_user", response_model=UserUpdateResponse)
+async def update_user(
+    updates: UserUpdateRequest,
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user)
+):
+    user_id = current_user["user_id"]
+    
+    # Validate updates
+    if not updates.model_dump(exclude_unset=True):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No fields provided to update."
+        )
+    
+    # Fetch user from database
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found."
+        )
+
+    # Prepare updates
+    update_data = updates.model_dump(exclude_unset=True)
+
+    # Check if password is being updated
+    if "password" in update_data:
+        hashed_password = bcrypt_context.hash(update_data["password"])
+        user.hashed_password = hashed_password
+        update_data.pop("password")
+        update_data["hashed_passord"] = hashed_password
+    
+    for key, value in update_data.items():
+        setattr(user, key, value)
+
+    # Mark the object as modified (optional but explicit)
+    db.add(user)
+
+    # Commit changes
+    db.commit()
+
+
+    return UserUpdateResponse(
+        message="User updated successfully.",
+        updated_user={
+            "user_id": user.id,
+            "name": user.name,
+            "user_email": user.user_email,
+            "role": user.role,
+            "school_name": user.school_name
+        }
+    )
 
 
 

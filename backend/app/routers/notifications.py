@@ -7,7 +7,10 @@ from app.models import Notification, NotificationCreate, User, NotificationRespo
 from app.utils.email import send_email
 
 # Create the APIRouter instance
-router = APIRouter()
+router = APIRouter(
+    prefix="/notifications",
+    tags=["notifications"]
+)
 
 # Database Dependency
 def get_db():
