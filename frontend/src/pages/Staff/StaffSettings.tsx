@@ -1,25 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTheme } from "../../components/ThemeContext";
 import { useNavigate } from "react-router-dom";
-// Mock User Data
-const mockUser = {
-  name: "John Doe",
-  email: "john.doe@example.com",
-  role: "Manager",
-};
+import { updateUser } from "../../utils/api";
+
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(mockUser);
-  const [preferences, setPreferences] = useState({
-    notifications: true,
-    theme: "light",
-  });
   const [formData, setFormData] = useState({
-    name: sessionStorage.name,
-    email: user.email,
+    name: sessionStorage.getItem("name") || "",
+    user_email: sessionStorage.getItem("user_email") || "",
     password: "",
-    role: sessionStorage.role,
+    role: sessionStorage.getItem("role") || "",
   });
   const { isDarkMode, toggleDarkMode } = useTheme();
 
@@ -36,28 +27,48 @@ const Settings: React.FC = () => {
   };
 
   // Update Account Information
-  const handleUpdateAccount = () => {
-    if (!formData.name || !formData.email) {
-      alert("Name and Email cannot be empty.");
-      return;
-    }
-    setUser({ ...user, name: formData.name, email: formData.email });
+  const handleUpdateAccount = async () => {
+  const { name, user_email, password } = formData;
+
+   // Validation
+   if (!name || !user_email) {
+    alert("Name and Email cannot be empty.");
+    return;
+  }
+
+  try {
+    // Debugging the payload before sending
+    const payload = {
+      name,
+      user_email,
+      ...(password && { password }), // Include password only if it's not empty
+    };
+    console.log("Payload being sent to updateUser:", payload);
+
+    // Call the updateUser API function
+    const response = await updateUser(payload);
+
+    // Debugging the API response
+    console.log("Response from updateUser API:", response);
+
+    // Success feedback
     alert("Account information updated successfully!");
-    setFormData({ ...formData, password: "" });
-  };
+    setFormData({ ...formData, password: "" }); // Clear the password field
 
-  // Handle Preferences Change
-  const toggleNotifications = () => {
-    setPreferences((prev) => ({ ...prev, notifications: !prev.notifications }));
-  };
+    // Update sessionStorage with new user info
+    sessionStorage.setItem("name", name);
+    sessionStorage.setItem("user_email", user_email);
+    sessionStorage.setItem("password", password);
+    console.log("Session storage updated with new user info.");
+  } catch (error: any) {
+    // Debugging the error
+    console.error("Error during account update:", error.message);
+    console.error("Error details:", error);
+    // User feedback
+    alert(error.message || "Failed to update account. Please try again.");
+  }
+};
 
-  const toggleTheme = () => {
-    setPreferences((prev) => ({
-      ...prev,
-      theme: prev.theme === "light" ? "dark" : "light",
-    }));
-    alert(`Theme changed to ${preferences.theme === "light" ? "dark" : "light"}`);
-  };
   
   return (
     <div className="max-w-4xl mx-auto px-6 py-4 dark:bg-gray-900 dark:text-gray-200">
@@ -87,8 +98,8 @@ const Settings: React.FC = () => {
         <input
           type="email"
           id="email"
-          name="email"
-          value={formData.email}
+          name="user_email"
+          value={formData.user_email}
           onChange={handleChange}
           className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200"
         />
@@ -117,21 +128,6 @@ const Settings: React.FC = () => {
     </form>
   </div>
 
-  {/* Notification Preferences */}
-  <div className="bg-white p-6 rounded-lg shadow mb-6 dark:bg-gray-800 dark:border-gray-700">
-    <h2 className="text-xl font-semibold mb-4 dark:text-gray-300">Notification Preferences</h2>
-    <div className="flex items-center justify-between">
-      <span>Email Notifications</span>
-      <button
-        type="button"
-        onClick={toggleNotifications}
-        className={`px-4 py-2 rounded ${preferences.notifications ? "bg-green-600 text-white" : "bg-gray-300 text-black"}`}
-      >
-        {preferences.notifications ? "Enabled" : "Disabled"}
-      </button>
-    </div>
-  </div>
-
   {/* Theme Preferences */}
   <div className="bg-white p-6 rounded-lg shadow mb-6 dark:bg-gray-800 dark:border-gray-700">
     <h2 className="text-xl font-semibold mb-4 dark:text-gray-300">Theme Preferences</h2>
@@ -155,7 +151,7 @@ const Settings: React.FC = () => {
   <div className="bg-white p-6 rounded-lg shadow mb-6 dark:bg-gray-800 dark:border-gray-700">
     <h2 className="text-xl font-semibold mb-4 dark:text-gray-300">Role Information</h2>
     <p className="text-gray-700 dark:text-gray-400">
-      Your current role is: <span className="font-semibold text-blue-700 dark:text-blue-400">{user.role}</span>
+      Your current role is: <span className="font-semibold text-blue-700 dark:text-blue-400">{formData.role}</span>
     </p>
   </div>
 

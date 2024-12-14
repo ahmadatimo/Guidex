@@ -5,11 +5,7 @@ const API_BASE_URL = "http://localhost:8000";
 
 
 // /*-------------------------------- TYPES -------------------------------- */
-export interface LoginResponse {
-  access_token: string;
-  role: string;
-  refresh_token?: string;
-}
+
 
 export interface Appointment {
   id: number;
@@ -140,15 +136,37 @@ export const loginUser = async (email: string, password: string): Promise<string
     });
 
   // Extract the access token from the response
-  const { access_token, role, name } = response.data;
+  const { access_token, role, name, user_email } = response.data;
 
   // Store the token in localStorage
   sessionStorage.setItem("access_token", access_token);
   sessionStorage.setItem("role", role);
   sessionStorage.setItem("name" , name);
+  sessionStorage.setItem("user_email" , user_email);
   console.log("Login successful, token stored in localStorage.");
   // return it to the LoginPage
   return role;
+};
+
+// To update user information
+export const updateUser = async (
+  updates: Partial<{ name: string; user_email: string; password?: string }>
+): Promise<{ message: string; updated_user: Record<string, any> }> => {
+  try {
+    const response = await axiosInstance.patch("/auth/update_user", updates, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("User updated successfully:", response.data);
+    return response.data; // Return the success message and updated user details
+  } catch (error: any) {
+    console.error("Error updating user:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.detail || "Failed to update user. Please try again."
+    );
+  }
 };
 
 /*-------------------------------- APPOINTMENTS FUNCTIONS --------------------------------*/
