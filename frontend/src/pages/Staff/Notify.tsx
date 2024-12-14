@@ -91,12 +91,14 @@ const AddGuideNotification: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-12 px-6">
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">Send Notification to Guides</h1>
+    <div className="min-h-screen py-12 px-6 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-200">
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 dark:bg-gray-800 dark:border-gray-700">
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700 dark:text-blue-400">
+          Send Notification to Guides
+        </h1>
         <div className="space-y-6">
           <div>
-            <label htmlFor="notification_type" className="block text-lg font-medium text-gray-700 mb-2">
+            <label htmlFor="notification_type" className="block text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">
               Notification Title
             </label>
             <input
@@ -104,37 +106,29 @@ const AddGuideNotification: React.FC = () => {
               id="notification_type"
               name="notification_type"
               placeholder="Enter notification title"
-              value={notification.notification_type}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-lg font-medium text-gray-700 mb-2">
+            <label htmlFor="message" className="block text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">
               Notification Message
             </label>
             <textarea
               id="message"
               name="message"
               placeholder="Enter your message"
-              value={notification.message}
-              onChange={handleChange}
               rows={6}
-              className="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             />
           </div>
 
           <div className="text-center">
             <button
               type="button"
-              onClick={handleSendNotification}
-              disabled={isSubmitting}
-              className={`bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
-              }`}
+              className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
             >
-              {isSubmitting ? "Sending..." : "Send Notification"}
+              Send Notification
             </button>
           </div>
         </div>

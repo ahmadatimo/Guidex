@@ -1,5 +1,4 @@
-// context/ThemeContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type ThemeContextType = {
   isDarkMode: boolean;
@@ -20,6 +19,15 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       return newMode;
     });
   };
+
+  // Automatically apply the `dark` class to the <body>
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [isDarkMode]);
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
