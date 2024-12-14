@@ -22,7 +22,6 @@ export interface Appointment {
 export interface CreateAppointmentRequest {
   date: string;
   time: string;
-  city: string;
   visitors_number: number;
   note?: string;
 }

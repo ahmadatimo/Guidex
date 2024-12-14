@@ -5,8 +5,8 @@ from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
 from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User, AppointmentCreateBase
 from app.routers.notifications import notify_admins, notify_guides, notify_user
-
-
+import json
+import os
 # Create the APIRouter instance
 router = APIRouter()
 
@@ -72,8 +72,33 @@ async def create_appointment(
     Create a new appointment, notify admins, and confirm the appointment for the user.
     """
     user_id = current_user['user_id']
+    school = db.query(User.school_name).filter(User.id == user_id).first()
+    if not school:
+        raise HTTPException(status_code=404, detail="User's school not found")
+    
+    #schools_dir = os.path.join(__file__, '../../../../../frontend/public/json', 'schools.json')
+    schools_dir = os.path.join(__file__,  'schools.json')
+    # Load the JSON file containing school-city mapping
+    try:
+        with open("../../../../app/frontend/public/json/schools.json", "r") as file: 
+            print(file)
+            schools_data = json.load(file)
+    except FileNotFoundError:
+        raise HTTPException(status_code=500, detail="Schools data file not found")
+
+    # Find the city for the user's school
+    city = None
+    for school_entry in schools_data.get("highschools", []):
+        if school_entry["name"] == school[0]:  # `school[0]` since `first()` returns a tuple
+            city = school_entry.get("city")
+            break
+
+    if not city:
+        raise HTTPException(status_code=404, detail="City for user's school not found")
+
+    # Create the appointment with city included
     db_appointment = Appointment(
-        **appointment.dict(), user_id=user_id
+        **appointment.dict(), user_id=user_id, city=city
     )
     db.add(db_appointment)
     db.commit()

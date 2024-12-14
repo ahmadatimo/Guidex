@@ -26,7 +26,7 @@ class User(Base):
     user_email = Column(String(50), unique=True, nullable=False)
     role = Column(String(50), nullable=False)
     hashed_password = Column(String(255), nullable=False)
-    school_name = Column(String(225), nullable=True)
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)  # Link to school
 
     created_appointments = relationship("Appointment", foreign_keys="Appointment.user_id", back_populates="user")
     assigned_appointments = relationship("Appointment", foreign_keys="Appointment.guide_id", back_populates="guide")
@@ -81,7 +81,6 @@ class OTP(Base):
 class AppointmentCreateBase(BaseModel):
     date: date  # Appointment date
     time: time  # Appointment time
-    city: str 
     visitors_number: int
     note: Optional[str] = None  # Optional note
     status: AppointmentStatus = AppointmentStatus.CREATED  # Default status
@@ -153,3 +152,13 @@ class NotificationResponse(BaseModel):
 class CustomNotification(BaseModel):
     message: str
     notification_type: str
+
+# Add Schools Table
+class School(Base):
+    __tablename__ = "schools"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False, unique=True)  # School name
+    city = Column(String(255), nullable=False)  # City where the school is located
+
+    users = relationship("User", backref="school")

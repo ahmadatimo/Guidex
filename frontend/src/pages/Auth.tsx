@@ -1,137 +1,152 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import { loginUser, registerUser } from "../utils/api";
 import { toast } from "react-toastify";
-
+import "react-toastify/dist/ReactToastify.css";
+import { loginUser, registerUser } from "../utils/api";
 
 const AuthPage: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
-  const [school, setSchool] = useState(""); // State for high school dropdown
-  const [name, setName] = useState(""); // State for name input
-  const [email, setEmail] = useState(""); // State for email input
-  const [password, setPassword] = useState(""); // State for password input
-  const navigate = useNavigate(); // Initialize useNavigate for redirection if needed
- 
+  const [isLogin, setIsLogin] = useState(true);
+  const [schoolOptions, setSchoolOptions] = useState<{ value: string; label: string }[]>([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    school_name: ""
+  });
+  const navigate = useNavigate();
 
-  // Dummy data for high school dropdown
-  const highSchools = ["High School A", "High School B", "High School C"];
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        const response = await fetch("../../public/json/schools.json");
+        const data = await response.json();
+        const options = data.highschools.map((school: { name: string; city: string }) => ({
+          value: school.name,
+          label: `${school.name} (${school.city})`
+        }));
+        setSchoolOptions(options);
+      } catch (error) {
+        console.error("Error fetching schools:", error);
+        toast.error("Failed to load schools. Please try again later.");
+      }
+    };
 
-  // bullshit functions
-  const handleSchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSchool(event.target.value);
+    fetchSchools();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-  };
-
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
+  const handleSchoolChange = (selectedOption: any) => {
+    setFormData((prev) => ({ ...prev, school_name: selectedOption?.value || "" }));
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    // data fetching goes here 
-    console.log(email, password)
-    try{
+    event.preventDefault();
 
-      if(isLogin == true){
-      // Call loginUser to authenticate the user
-      const role = await loginUser(email, password);
-      
-      // After successful login, you can redirect the user or show a message
-      console.log('Logged in with role:', role);
-      if (role == "guide" || role == "admin"){
-        navigate("/staff/home");
+    if (isLogin) {
+      try {
+        const role = await loginUser(formData.email, formData.password);
+        if (role === "guide" || role === "admin") {
+          navigate("/staff/home");
+        } else if (role === "visitor") {
+          navigate("/visitor/home");
+        } else {
+          toast.error("Login failed. Invalid role returned.");
+        }
+      } catch (error: any) {
+        console.error("Error during login:", error.response?.data || error.message);
+        toast.error("Error during login: " + (error.response?.data || error.message));
       }
-      else if (role == "visitor"){
-        navigate("/visitor/home");
-        
-      }
-      else{
-        toast.error("Login failed. Invalid role returned.");
+    } else {
+      if (!formData.name || !formData.email || !formData.password || !formData.school_name) {
+        toast.error("All fields are required. Please fill out the form completely.", {
+          position: "top-right",
+          autoClose: 5000,
+        });
+        return;
       }
 
-      // handle the signup
-      }else{
-        await registerUser(email, "visitor", name, password, school);
-        toast.success("Succesfully created account");
-        navigate(0);
+      try {
+        await registerUser(
+          formData.email,
+          "visitor",
+          formData.name,
+          formData.password,
+          formData.school_name
+        );
+        toast.success("Welcome! Your account has been created.", {
+          position: "top-right",
+          autoClose: 5000,
+        });
+        setFormData({ name: "", email: "", password: "", school_name: "" });
+        setIsLogin(true);
+      } catch (error) {
+        console.error("Error during registration:", error);
+        toast.error("Failed to create your account. Please try again later.", {
+          position: "top-right",
+          autoClose: 5000,
+        });
       }
     }
-     catch (error: any) {
-      console.error("Error during login:", error.response?.data || error.message);
-      toast.error("Error during login:", error.response?.data || error.message);
-    }
-    
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-6 text-center">
           {isLogin ? "Login" : "Visitor Signup"}
         </h1>
 
         <form onSubmit={handleSubmit}>
-          {isLogin ? null : (
+          {!isLogin && (
             <>
-              {/* High School Dropdown */}
-              <label className="block mb-2 text-sm font-medium">
-                Select Your School
-              </label>
-              <select
-                className="w-full p-2 mb-4 bg-gray-200 text-black rounded-md"
-                value={school}
+              <label className="block mb-2 text-sm font-medium">Select Your School</label>
+              <Select
+                options={schoolOptions}
                 onChange={handleSchoolChange}
-              >
-                <option value="" disabled>
-                  Select your school
-                </option>
-                {highSchools.map((schoolName) => (
-                  <option key={schoolName} value={schoolName}>
-                    {schoolName}
-                  </option>
-                ))}
-              </select>
+                placeholder="Select a school"
+                isSearchable
+                className="mb-4 text-black"
+              />
 
-              {/* Name Field */}
               <label className="block mb-2 text-sm font-medium">Name</label>
               <input
-                type="text" // Correct input type for name
+                type="text"
+                name="name"
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={handleChange}
                 className="w-full p-2 mb-4 bg-gray-200 text-black rounded-md"
-                placeholder="Enter your Name"
-                value={name}
-                onChange={handleNameChange}
               />
             </>
           )}
 
-          {/* Email Field */}
           <label className="block mb-2 text-sm font-medium">Email</label>
           <input
             type="email"
-            className="w-full p-2 mb-4 bg-gray-200 text-black rounded-md"
+            name="email"
             placeholder="Enter your email"
-            value={email}
-            onChange={handleEmailChange}
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-2 mb-4 bg-gray-200 text-black rounded-md"
           />
 
-          {/* Password Field */}
           <label className="block mb-2 text-sm font-medium">Password</label>
           <input
             type="password"
-            className="w-full p-2 mb-6 bg-gray-200 text-black rounded-md"
+            name="password"
             placeholder="Enter your password"
-            value={password}
-            onChange={handlePasswordChange}
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-2 mb-6 bg-gray-200 text-black rounded-md"
           />
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mb-4"
@@ -140,9 +155,8 @@ const AuthPage: React.FC = () => {
           </button>
         </form>
 
-        {/* Toggle between Login and Signup */}
         <p className="text-center">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+          {isLogin ? "Don't have an account?" : "Already have an account?"} {" "}
           <span
             className="text-blue-500 cursor-pointer"
             onClick={() => setIsLogin(!isLogin)}
@@ -150,15 +164,6 @@ const AuthPage: React.FC = () => {
             {isLogin ? "Signup" : "Login"}
           </span>
         </p>
-        {/* Toggle between Login and Signup */}
-        <p className="text-center">
-            <span
-              className="text-blue-500 cursor-pointer"
-              onClick={() => navigate('/auth/RecoverEmail')}
-            >
-              {isLogin ? "Frogot your password?" : ''}{' '}
-            </span>
-          </p>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { createAppointment } from '../utils/api';
 
 interface ConfirmationSummaryProps {
-  data: { date: string; time: string; visitors_number: number; city: string; note: string };
+  data: { date: string; time: string; visitors_number: number; note: string };
   onEdit: () => void;
 }
 
@@ -18,7 +18,6 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
       const payload = {
         date: data.date, // Assume already in YYYY-MM-DD format
         time: data.time, // Format time to HH:MM:SS
-        city: data.city,
         visitors_number: data.visitors_number,
         note: data.note,
       };
@@ -54,9 +53,6 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
         </li>
         <li>
           <strong>Visitors:</strong> {data.visitors_number}
-        </li>
-        <li>
-          <strong>City:</strong> {data.city}
         </li>
         <li>
           <strong>Note:</strong> {data.note || 'None'}

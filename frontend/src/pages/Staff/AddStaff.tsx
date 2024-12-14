@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,20 +16,14 @@ const AddStaff: React.FC = () => {
 
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // Example list of schools (replace this with your actual data or fetch from API)
-  const [schools, setSchools] = useState<{id: string; name: string}[]>([
-    { id: "1", name: "School A" },
-    { id: "2", name: "School B" },
-    { id: "3", name: "School C" }
-  ]);
+  const [schoolOptions, setSchoolOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        const role = sessionStorage.getItem("role") ;
+        const role = sessionStorage.getItem("role");
         if (!role) {
-          console.log('User is not updated')
+          console.log("User is not updated");
           return <Navigate to="/auth" />;
         }
         setCurrentUserRole(role);
@@ -41,6 +36,23 @@ const AddStaff: React.FC = () => {
     };
 
     fetchRole();
+
+    const fetchSchools = async () => {
+      try {
+        const response = await fetch("../../../public/json/schools.json");
+        const data = await response.json();
+        const options = data.highschools.map((school: { name: string; city: string }) => ({
+          value: school.name,
+          label: `${school.name} (${school.city})`
+        }));
+        setSchoolOptions(options);
+      } catch (error) {
+        console.error("Error fetching schools:", error);
+        toast.error("Failed to load schools. Please try again later.");
+      }
+    };
+
+    fetchSchools();
   }, []);
 
   const handleChange = (
@@ -50,8 +62,11 @@ const AddStaff: React.FC = () => {
     setNewAccount((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSchoolChange = (selectedOption: any) => {
+    setNewAccount((prev) => ({ ...prev, school_name: selectedOption?.value || "" }));
+  };
+
   const handleCreateAccount = async () => {
-    // Basic validation
     if (!newAccount.name || !newAccount.email || !newAccount.password || !newAccount.role) {
       toast.error("All fields are required. Please fill out the form completely.", {
         position: "top-right",
@@ -60,7 +75,7 @@ const AddStaff: React.FC = () => {
       return;
     }
 
-    if (newAccount.role === "Visitor" && !newAccount.school_name) {
+    if (newAccount.role === "visitor" && !newAccount.school_name) {
       toast.error("Please select a school for Visitor accounts.", {
         position: "top-right",
         autoClose: 5000,
@@ -74,7 +89,7 @@ const AddStaff: React.FC = () => {
         newAccount.role,
         newAccount.name,
         newAccount.password,
-        newAccount.role === "Visitor" ? newAccount.school_name : undefined
+        newAccount.role === "visitor" ? newAccount.school_name : undefined
       );
       toast.success(`Account for "${newAccount.name}" created successfully as a "${newAccount.role}".`, {
         position: "top-right",
@@ -112,6 +127,20 @@ const AddStaff: React.FC = () => {
       <h1 className="text-3xl font-bold mb-2 text-blue-700 dark:text-blue-400">Add Staff Accounts</h1>
       <div className="bg-white p-6 rounded-lg shadow dark:bg-gray-700">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">New Staff Account</h2>
+        {newAccount.role === "visitor" && (
+          <div className="mb-6">
+            <label htmlFor="school_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              School
+            </label>
+            <Select
+              options={schoolOptions}
+              onChange={handleSchoolChange}
+              placeholder="Select a school"
+              isSearchable
+              className="text-gray-800 dark:text-gray-200"
+            />
+          </div>
+        )}
         <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleCreateAccount(); }}>
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -176,28 +205,6 @@ const AddStaff: React.FC = () => {
             </select>
           </div>
   
-          {newAccount.role === "visitor" && (
-            <div>
-              <label htmlFor="school_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                School
-              </label>
-              <select
-                id="school_name"
-                name="school_name"
-                value={newAccount.school_name}
-                onChange={handleChange}
-                className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
-              >
-                <option value="">Select School</option>
-                {schools.map((school) => (
-                  <option key={school.id} value={school.name}>
-                    {school.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-  
           <div>
             <button
               type="submit"
@@ -209,7 +216,7 @@ const AddStaff: React.FC = () => {
         </form>
       </div>
     </div>
-  );  
+  );
 };
 
 export default AddStaff;
