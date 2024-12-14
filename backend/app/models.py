@@ -13,7 +13,6 @@ class AppointmentStatus(enum.Enum):
     APPROVED = "approved"     # Approved by admin
     ACCEPTED = "accepted"     # Accepted by a guide
     REJECTED = "rejected"     # Rejected by admin
-    DECLINED = "declined"     # Declined by a guide
     COMPLETED = "completed"   # Completed
     CANCELED = "canceled"     # Canceled (if applicable)
 
@@ -151,3 +150,6 @@ class NotificationResponse(BaseModel):
     class Config:
         from_attributes=True
     
+class CustomNotification(BaseModel):
+    message: str
+    notification_type: str

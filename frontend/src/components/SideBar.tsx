@@ -9,7 +9,7 @@ import {
   AiOutlineBell,
   AiOutlineBarChart,
   AiOutlineUserAdd,
-  AiOutlineComment,
+  AiOutlineComment, AiTwotonePlayCircle, AiTwotonePlusCircle,
 } from "react-icons/ai";
 import { FiChevronLeft } from "react-icons/fi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -31,7 +31,7 @@ const Sidebar = () => {
   // Define restricted pages for roles
   const restrictedPages = {
     admin: ["appointments", "calendar"],
-    guide: ["add-staff", "analytics", "notifications"],
+    guide: ["add-staff", "analytics", "notifications", "notify"],
   };
 
   const navigationItems = [
@@ -52,6 +52,7 @@ const Sidebar = () => {
       icon: <AiOutlineBell />,
       label: "Notifications",
     },
+    { path: "/staff/notify", icon: <AiTwotonePlusCircle />, label: "Notify Guides"},
     {
       path: "/staff/analytics",
       icon: <AiOutlineBarChart />,

@@ -2,8 +2,8 @@ import React, { useState, useEffect} from 'react';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { 
-  fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus,
-  assignGuideToAppointment, unassignGuideFromAppointment} from "../../utils/api";
+  fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, rejectAppointment,
+  assignGuideToAppointment, unassignGuideFromAppointment, approveAppointment} from "../../utils/api";
 
   interface PendingApprovalsProps {
     onApprovalStatusChange?: (pendingCount: number, unassignedCount: number) => void;
@@ -56,12 +56,12 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
   }, []);
 
   
-  const handleApproval  = async (id: number, newStatus: string) => {
+  const handleApproval  = async (id: number) => {
     try {
-      await updateAppointmentStatus(id, { status: newStatus });
+      await approveAppointment(id);
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: newStatus } : appointment
+          appointment.id === id ? { ...appointment, status: "approved" } : appointment
         )
       );
       toast.success("Appointment approved!" )
@@ -89,12 +89,12 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
   };
   
 
-  const handleRejection = async (id: number, newStatus: string) => {
+  const handleRejection = async (id: number) => {
    try {
-      await updateAppointmentStatus(id, { status: newStatus });
+      await rejectAppointment(id);
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: newStatus} : appointment
+          appointment.id === id ? { ...appointment, status: 'rejected'} : appointment
         )
       );
       toast.success(userRole === "admin" ? "Appointment rejected!" : "Appointment declined!")
@@ -183,56 +183,56 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
   
                 {/* Buttons: Approve & Deny */}
                 <div className="flex space-x-2">
-                  {userRole === "admin" && approval.status === "created" && (
-                    <>
+                  {userRole ==="admin" && approval.status === "created" && 
+                    (
+                      <>
+                        <button
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" 
+                          onClick={() => handleApproval(approval.id)}>
+                          Approve
+                        </button>
+                        <button
+                          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                          onClick={() => handleRejection(approval.id)}>
+                          Deny
+                        </button>
+                      </>
+                    )
+                  }
+                  {userRole === "guide" && approval.status === "approved" && 
+                    (
+                      <>
+                        <button
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                          onClick={() => handleAcceptance(approval.id)}>
+                          Accept
+                        </button>
+                        {/* <button
+                          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                          onClick={() => handleApproval(approval.id, "declined")}>
+                          Deny
+                        </button> */}
+                      </> 
+                    )
+                  }
+                  { (userRole === "admin" && approval.status !== "created") &&
+                    (
                       <button
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
-                        onClick={() => handleApproval(approval.id, "approved")}
-                      >
-                        Approve
+                        className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                        onClick={() => resetStatus(approval.id, 'created')}>
+                        Edit
                       </button>
+                    )
+                  }
+                  {(userRole === "guide" && approval.status !== "approved") &&
+                    (
                       <button
-                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
-                        onClick={() => handleRejection(approval.id, "rejected")}
-                      >
-                        Deny
+                        className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                        onClick={() => resetStatus(approval.id, 'approved')}>
+                        Edit
                       </button>
-                    </>
-                  )}
-                  {userRole === "guide" && approval.status === "approved" && (
-                    <>
-                      <button
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
-                        onClick={() => handleAcceptance(approval.id)}
-                      >
-                        Accept
-                      </button>
-                      <button
-                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
-                        onClick={() => handleApproval(approval.id, "declined")}
-                      >
-                        Deny
-                      </button>
-                    </>
-                  )}
-                  {(userRole === "admin" && approval.status !== "created") && (
-                    <button
-                      className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 
-                      dark:bg-yellow-700 dark:hover:bg-yellow-600"
-                      onClick={() => resetStatus(approval.id, 'created')}
-                    >
-                      Edit
-                    </button>
-                  )}
-                  {(userRole === "guide" && approval.status !== "approved") && (
-                    <button
-                      className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 
-                      dark:bg-yellow-700 dark:hover:bg-yellow-600"
-                      onClick={() => resetStatus(approval.id, 'approved')}
-                    >
-                      Edit
-                    </button>
-                  )}
+                    )
+                  }
                 </div>
               </li>
             ))}

@@ -198,6 +198,18 @@ export const updateAppointmentStatus = async (id: number, update: { status: stri
   return response.data;
 };
 
+// Approve appointment status
+export const approveAppointment = async (id: number): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/approve`); 
+  return response.data;
+};
+
+// Approve appointment status
+export const rejectAppointment = async (id: number): Promise<Appointment> => {
+  const response = await axiosInstance.put(`/appointments/${id}/reject`); 
+  return response.data;
+};
+
 // Assign a guide to an appointment
 export const assignGuideToAppointment = async (id: number): Promise<Appointment> => {
   const response = await axiosInstance.put(`/appointments/${id}/assign-guide`);
@@ -303,4 +315,15 @@ export const filterNotifications = async (
 
 export const markNotificationAsRead = async (notificationId: number): Promise<void> => {
   await axiosInstance.put(`/notifications/${notificationId}/read`);
+};
+
+
+export const custom_notification = async (
+  message: string,
+  notificationType: string
+): Promise<void> => {
+  await axiosInstance.post("/notifications/custom-guide-notification", {
+    message,
+    notification_type: notificationType,
+  });
 };

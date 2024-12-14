@@ -3,7 +3,7 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-from app.models import Notification, NotificationCreate, User, NotificationResponse
+from app.models import Notification, NotificationCreate, User, NotificationResponse, CustomNotification
 from app.utils.email import send_email
 
 # Create the APIRouter instance
@@ -24,7 +24,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 
-@router.get("/notifications/hi", response_model=List[NotificationResponse])
+@router.get("/hi", response_model=List[NotificationResponse])
 async def get_notifications(
     db: db_dependency,
     current_user: dict = Depends(get_current_user)
@@ -37,7 +37,7 @@ async def get_notifications(
 
 
 
-@router.put("/notifications/{notification_id}/read")
+@router.put("/{notification_id}/read")
 async def mark_notification_as_read(
     db: db_dependency,
     notification_id: int,
@@ -59,7 +59,7 @@ async def mark_notification_as_read(
     return {"detail": "Notification marked as read."}
 
 
-@router.put("/notifications/read-all")
+@router.put("/read-all")
 async def mark_all_notifications_as_read(
     db: db_dependency,
     current_user: dict = Depends(get_current_user)
@@ -121,7 +121,7 @@ async def create_notification(
 
     return new_notification
 
-@router.delete("/notifications/{notification_id}")
+@router.delete("/{notification_id}")
 async def delete_notification(
     db: db_dependency,
     notification_id: int,
@@ -143,7 +143,7 @@ async def delete_notification(
     return {"detail": "Notification deleted successfully."}
 
 
-@router.get("/notifications/filter", response_model=List[NotificationResponse])
+@router.get("/filter", response_model=List[NotificationResponse])
 async def filter_notifications(
     db: db_dependency,
     type: str | None = None,
@@ -165,10 +165,170 @@ async def filter_notifications(
     return notifications
 
 
-@router.post("/notifications/test-email")
+@router.post("/test-email")
 async def test_email_endpoint():
     try:
         await send_email("Test", ["3boodkn@gmail.com"], "<p>Test email</p>")
         return {"detail": "Email sent successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+
+
+@router.post("/notify-admins")
+async def notify_admins(
+    appointment_id: int,
+    message: str,
+    notification_type: str,
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Notify all admins about a new appointment.
+    """
+    admins = db.query(User).filter(User.role == "admin").all()
+
+    if not admins:
+        raise HTTPException(status_code=404, detail="No admins found.")
+
+    notifications_created = []
+    for admin in admins:
+        # Create notification for each admin
+        new_notification = Notification(
+            recipient_id=admin.id,
+            appointment_id=appointment_id,
+            message=message,
+            type=notification_type,
+        )
+        db.add(new_notification)
+        db.commit()
+        db.refresh(new_notification)
+        notifications_created.append(new_notification)
+
+        # Send email to each admin
+        email_subject = f"Notification: {notification_type}"
+        email_body = f"""
+        <p>Hello {admin.name},</p>
+        <p>You have a new notification:</p>
+        <p>{message}</p>
+        <p>Thank you,<br>Guidex Team</p>
+        """
+        try:
+            await send_email(email_subject, [admin.user_email], email_body)
+        except Exception as e:
+            print(f"Failed to send email to admin {admin.id}: {e}")
+
+    return {"detail": f"Notifications sent to {len(notifications_created)} admins."}
+
+
+@router.post("/notify-guides")
+async def notify_guides(
+    message: str,
+    notification_type: str,
+    db: db_dependency,
+    appointment_id: int | None = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Notify all guides about a new appointment.
+    """
+    guides = db.query(User).filter(User.role == "guide").all()
+
+    if not guides:
+        raise HTTPException(status_code=404, detail="No guides found.")
+
+    notifications_created = []
+    for guide in guides:
+        # Create notification for each guide
+        new_notification = Notification(
+            recipient_id=guide.id,
+            appointment_id=appointment_id,
+            message=message,
+            type=notification_type,
+        )
+        db.add(new_notification)
+        db.commit()
+        db.refresh(new_notification)
+        notifications_created.append(new_notification)
+
+        # Send email to each guide
+        email_subject = f"Notification: {notification_type}"
+        email_body = f"""
+        <p>Hello {guide.name},</p>
+        <p>You have a new notification:</p>
+        <p>{message}</p>
+        <p>Thank you,<br>Guidex Team</p>
+        """
+        try:
+            await send_email(email_subject, [guide.user_email], email_body)
+        except Exception as e:
+            print(f"Failed to send email to guide {guide.id}: {e}")
+
+    return {"detail": f"Notifications sent to {len(notifications_created)} guides."}
+
+
+@router.post("/notify-user")
+async def notify_user(
+    recipient_id: int,
+    appointment_id: int,
+    message: str,
+    notification_type: str,
+    db: db_dependency
+):
+    """
+    Notify a specific user about an event and send an email.
+    """
+    # Fetch the recipient's details
+    recipient = db.query(User).filter(User.id == recipient_id).first()
+    if not recipient:
+        raise HTTPException(status_code=404, detail="Recipient not found.")
+
+    # Create a notification
+    new_notification = Notification(
+        recipient_id=recipient_id,
+        appointment_id=appointment_id,
+        message=message,
+        type=notification_type,
+    )
+    db.add(new_notification)
+    db.commit()
+    db.refresh(new_notification)
+
+    # Send email to the user
+    email_subject = f"Notification: {notification_type}"
+    email_body = f"""
+    <p>Hello {recipient.name},</p>
+    <p>{message}</p>
+    <p>Thank you,<br>Guidex Team</p>
+    """
+    try:
+        await send_email(email_subject, [recipient.user_email], email_body)
+    except Exception as e:
+        print(f"Failed to send email to user {recipient_id}: {e}")
+
+    return {"detail": f"Notification sent to user {recipient_id}."}
+
+
+@router.post("/custom-guide-notification")
+async def create_custom_guide_notification(
+    payload: CustomNotification,
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Allow admins to create custom notifications for all guides.
+    """
+    user_id = current_user['user_id']
+    user = db.query(User).filter(User.id == user_id and User.role == "admin").first()
+    if user == None:
+        raise HTTPException(status_code=403, detail="Only admins can send custom notifications.")
+
+
+    # Use the notify_guides function
+    await notify_guides(
+        appointment_id=None,  # No appointment associated
+        message=payload.message,
+        notification_type=payload.notification_type,
+        db=db
+    )
+
+    return {"detail": "Custom notifications sent to all guides."}

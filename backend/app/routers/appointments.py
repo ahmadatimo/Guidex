@@ -4,12 +4,11 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
 from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User, AppointmentCreateBase
+from app.routers.notifications import notify_admins, notify_guides, notify_user
+
 
 # Create the APIRouter instance
-router = APIRouter(
-    prefix="/appointments",
-    tags=["appointments"]
-)
+router = APIRouter()
 
 # Database Dependency
 def get_db():
@@ -20,8 +19,6 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
-
-
 
 
 #CRUD functions
@@ -71,6 +68,9 @@ async def create_appointment(
     db: db_dependency, 
     current_user: dict = Depends(get_current_user)
 ):
+    """
+    Create a new appointment, notify admins, and confirm the appointment for the user.
+    """
     user_id = current_user['user_id']
     db_appointment = Appointment(
         **appointment.dict(), user_id=user_id
@@ -78,6 +78,24 @@ async def create_appointment(
     db.add(db_appointment)
     db.commit()
     db.refresh(db_appointment)
+
+    # Notify admins about the new appointment
+    await notify_admins(
+        appointment_id=db_appointment.id,
+        message=f"A new appointment has been made at {db_appointment.date}, {db_appointment.time}.",
+        notification_type="New Appointment",
+        db=db
+    )
+
+    # Notify the user about their appointment confirmation
+    await notify_user(
+        recipient_id=user_id,
+        appointment_id=db_appointment.id,
+        message=f"Your appointment has been confirmed for {db_appointment.time}.",
+        notification_type="Appointment Confirmed",
+        db=db
+    )
+
     return db_appointment
 
 
@@ -211,6 +229,36 @@ async def set_appointment_status(appointment_id: int, update: AppointmentStatusU
     appointment.status = update.status
     db.commit()
     db.refresh(appointment)
+    return appointment
+
+@router.put("/appointments/{appointment_id}/reject")
+async def reject_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    """
+    Update the status of an appointment.
+    """
+    appointment = await get_appointment_by_id(appointment_id, db)
+    appointment.status = AppointmentStatus.REJECTED
+    db.commit()
+    db.refresh(appointment)
+    return appointment
+
+@router.put("/appointments/{appointment_id}/approve")
+async def approve_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    """
+    Update the status of an appointment.
+    """
+    appointment = await get_appointment_by_id(appointment_id, db)
+    appointment.status = AppointmentStatus.APPROVED
+    db.commit()
+    db.refresh(appointment)
+
+    await notify_guides(
+        appointment_id=appointment.id,
+        message=f"A new appointment has been approved, you can Accept it now!.",
+        notification_type="Appointment Approved",
+        db=db
+    )
+
     return appointment
 
 @router.put("/appointments/{appointment_id}/assign-guide")
