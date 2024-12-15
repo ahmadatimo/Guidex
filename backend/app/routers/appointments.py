@@ -182,17 +182,33 @@ async def get_available_appointments_for_guides(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Fetch all appointments available for guides to accept.
+    Fetch all appointments available for guides to accept, including school names.
     """
-
     appointments = (
-        db.query(Appointment)
+        db.query(
+            Appointment.id,
+            Appointment.user_id,
+            Appointment.guide_id,
+            Appointment.date,
+            Appointment.time,
+            Appointment.city,
+            Appointment.visitors_number,
+            Appointment.note,
+            Appointment.status,
+            Appointment.created_at,
+            School.name.label("school_name"),  # Join to fetch school name
+        )
+        .join(User, User.id == Appointment.user_id)  # Join with User table
+        .join(School, School.id == User.school_id)   # Join with School table
         .filter(Appointment.status == "approved", Appointment.guide_id == None)
         .all()
     )
+
     if not appointments:
         raise HTTPException(status_code=404, detail="No available appointments for guides.")
+
     return appointments
+
 
 
 @router.get("/guide/appointments", response_model=List[AppointmentResponse])
@@ -426,11 +442,34 @@ def get_school_name_by_appointment_id(db: Session, appointment_id: int) -> str:
 
 @router.get("/admin/appointments", response_model=List[AppointmentResponse])
 async def get_admin_appointments(
-    db: db_dependency, 
-    current_user: dict = Depends(get_current_user), 
-    ):
-    appointments = db.query(Appointment).filter(
-    Appointment.status.notin_([AppointmentStatus.CANCELED, AppointmentStatus.COMPLETED])
-    ).all()
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Fetch all admin appointments with associated school names.
+    """
+    appointments = (
+        db.query(
+            Appointment.id,
+            Appointment.user_id,
+            Appointment.guide_id,
+            Appointment.date,
+            Appointment.time,
+            Appointment.city,
+            Appointment.visitors_number,
+            Appointment.note,
+            Appointment.status,
+            Appointment.created_at,
+            School.name.label("school_name"),  # Join to fetch school name
+        )
+        .join(User, User.id == Appointment.user_id)  # Join with User table
+        .join(School, School.id == User.school_id)   # Join with School table
+        .filter(
+            Appointment.status.notin_(
+                [AppointmentStatus.CANCELED, AppointmentStatus.COMPLETED]
+            )
+        )
+        .all()
+    )
 
     return appointments

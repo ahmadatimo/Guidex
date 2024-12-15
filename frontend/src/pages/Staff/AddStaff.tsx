@@ -16,6 +16,7 @@ const AddStaff: React.FC = () => {
 
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [processing, setProcessing] = useState<boolean>(false); // New state to handle processing
   const [schoolOptions, setSchoolOptions] = useState<{ value: number; label: string }[]>([]);
 
   useEffect(() => {
@@ -82,6 +83,7 @@ const AddStaff: React.FC = () => {
       return;
     }
 
+    setProcessing(true); // Disable the button during the process
     try {
       await registerUser(
         newAccount.email,
@@ -101,6 +103,8 @@ const AddStaff: React.FC = () => {
         position: "top-right",
         autoClose: 5000,
       });
+    } finally {
+      setProcessing(false); // Enable the button after process completion
     }
   };
 
@@ -207,9 +211,12 @@ const AddStaff: React.FC = () => {
           <div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+              className={`w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 ${
+                processing ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={processing}
             >
-              Create Account
+              {processing ? "Processing..." : "Create Account"}
             </button>
           </div>
         </form>

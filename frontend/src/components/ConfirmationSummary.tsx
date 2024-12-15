@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,8 +11,10 @@ interface ConfirmationSummaryProps {
 
 const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit }) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleConfirm = async () => {
+    setLoading(true); // Disable the button
     try {
       // Prepare the payload
       const payload = {
@@ -30,7 +32,6 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
       if (response) {
         toast.success('Appointment successfully created!');
         console.log('Created Appointment:', response);
-        console.log('We are gonna navigate to visitor home')
         navigate('/visitor/home');
       } else {
         toast.error('Failed to create appointment. Please try again.');
@@ -38,6 +39,8 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
     } catch (error) {
       console.error('Error creating appointment:', error);
       toast.error('An error occurred while creating the appointment.');
+    } finally {
+      setLoading(false); // Re-enable the button
     }
   };
 
@@ -70,12 +73,13 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
         <button
           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all dark:bg-green-600 dark:hover:bg-green-500"
           onClick={handleConfirm}
+          disabled={loading} // Disable button while loading
         >
-          Confirm
+          {loading ? 'Processing...' : 'Confirm'} {/* Show feedback during loading */}
         </button>
       </div>
     </div>
-  );  
+  );
 };
 
 export default ConfirmationSummary;
