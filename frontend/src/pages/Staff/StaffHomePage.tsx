@@ -6,9 +6,7 @@ import {
   fetchAssignedAppointmentsForGuide,
   fetchAvailableAppointmentsForGuides,
   Notification,
-  fetchNotifications,
-  markNotificationAsRead
-} from "../../utils/api";
+  fetchNotifications} from "../../utils/api";
 import PendingApprovals from "./PendingApprovals";
 
 const qoutes = [
