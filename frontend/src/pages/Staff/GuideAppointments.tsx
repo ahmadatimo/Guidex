@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
   fetchAssignedAppointmentsForGuide,
-  fetchSchoolNameForAppointment,
   Appointment,
 } from "../../utils/api";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 // Appointment statuses from backend
 enum AppointmentStatus {
@@ -22,7 +19,6 @@ const GuideAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [schoolNames, setSchoolNames] = useState<Record<number, string>>({});
 
   useEffect(() => {
     const loadAppointments = async () => {
@@ -31,29 +27,8 @@ const GuideAppointments: React.FC = () => {
         setError(false);
         const data = await fetchAssignedAppointmentsForGuide();
         setAppointments(data);
-
-        // Fetch school names for each appointment
-        const schoolNamesMap: Record<number, string> = {};
-        await Promise.all(
-          data.map(async (appointment) => {
-            try {
-              const schoolName = await fetchSchoolNameForAppointment(
-                appointment.id
-              );
-              schoolNamesMap[appointment.id] = schoolName;
-            } catch (error) {
-              console.error(
-                `Error fetching school name for appointment ${appointment.id}:`,
-                error
-              );
-              schoolNamesMap[appointment.id] = "Unknown School";
-            }
-          })
-        );
-        setSchoolNames(schoolNamesMap);
       } catch (error) {
         console.error("Error fetching guide appointments:", error);
-        //toast.error("Failed to load appointments. Please try again.");
         setError(true);
       } finally {
         setIsLoading(false);
@@ -79,7 +54,7 @@ const GuideAppointments: React.FC = () => {
       <h1 className="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-400">
         My Appointments
       </h1>
-  
+
       {isLoading ? (
         <p className="text-center text-gray-500 dark:text-gray-400">
           Loading appointments...
@@ -118,7 +93,7 @@ const GuideAppointments: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-bold text-xl text-gray-800 dark:text-gray-100">
-                          {schoolNames[appointment.id] || "Loading..."}
+                          {appointment.school_name || "Unknown School"}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Date:</span>{" "}
@@ -145,7 +120,7 @@ const GuideAppointments: React.FC = () => {
               </ul>
             )}
           </section>
-  
+
           {/* Past Appointments */}
           <section>
             <h2 className="text-3xl font-semibold text-gray-800 mb-6 dark:text-gray-100">
@@ -166,7 +141,7 @@ const GuideAppointments: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-bold text-xl text-gray-800 dark:text-gray-100">
-                          {schoolNames[appointment.id] || "Loading..."}
+                          {appointment.school_name || "Unknown School"}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Date:</span>{" "}
@@ -196,7 +171,7 @@ const GuideAppointments: React.FC = () => {
         </div>
       )}
     </div>
-  );  
+  );
 };
 
 export default GuideAppointments;
