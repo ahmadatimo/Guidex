@@ -12,7 +12,6 @@ const Appointment: React.FC = () => {
   const [appointmentData, setAppointmentData] = useState({
     date: '',
     time: '',
-    city: '',
     visitors_number: 0,
     note: '',
   });
@@ -31,10 +30,6 @@ const Appointment: React.FC = () => {
       return false;
     }
     if (step === 3) {
-      if (!appointmentData.city) {
-        toast.error('City is required.');
-        return false;
-      }
       if (appointmentData.visitors_number <= 0) {
         toast.error('Number of visitors must be greater than zero.');
         return false;
@@ -75,12 +70,6 @@ const Appointment: React.FC = () => {
 
       {step === 3 && (
         <div>
-          <TextInput
-            label="City"
-            value={appointmentData.city}
-            placeholder="Enter the city for the appointment"
-            onChange={(value) => updateData('city', value)}
-          />
           <NumberInput
             label="Number of Visitors"
             value={appointmentData.visitors_number}

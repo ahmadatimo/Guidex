@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { registerUser } from "../../utils/api";
+import { registerUser, fetchAllSchools } from "../../utils/api"; // Use fetchAllSchools from API utils
 
 const AddStaff: React.FC = () => {
   const [newAccount, setNewAccount] = useState({
@@ -10,25 +11,19 @@ const AddStaff: React.FC = () => {
     email: "",
     password: "",
     role: "",
-    school_name: ""
+    school_id: 0,
   });
 
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // Example list of schools (replace this with your actual data or fetch from API)
-  const [schools, setSchools] = useState<{id: string; name: string}[]>([
-    { id: "1", name: "School A" },
-    { id: "2", name: "School B" },
-    { id: "3", name: "School C" }
-  ]);
+  const [schoolOptions, setSchoolOptions] = useState<{ value: number; label: string }[]>([]);
 
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        const role = sessionStorage.getItem("role") ;
+        const role = sessionStorage.getItem("role");
         if (!role) {
-          console.log('User is not updated')
+          console.log("User is not updated");
           return <Navigate to="/auth" />;
         }
         setCurrentUserRole(role);
@@ -41,6 +36,22 @@ const AddStaff: React.FC = () => {
     };
 
     fetchRole();
+
+    const loadSchools = async () => {
+      try {
+        const schools = await fetchAllSchools(); // Fetch schools from backend
+        const options = schools.map((school) => ({
+          value: school.id,
+          label: `${school.name} (${school.city})`,
+        }));
+        setSchoolOptions(options);
+      } catch (error) {
+        console.error("Error fetching schools:", error);
+        toast.error("Failed to load schools. Please try again later.");
+      }
+    };
+
+    loadSchools();
   }, []);
 
   const handleChange = (
@@ -50,8 +61,11 @@ const AddStaff: React.FC = () => {
     setNewAccount((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSchoolChange = (selectedOption: any) => {
+    setNewAccount((prev) => ({ ...prev, school_id: selectedOption?.value || 0 }));
+  };
+
   const handleCreateAccount = async () => {
-    // Basic validation
     if (!newAccount.name || !newAccount.email || !newAccount.password || !newAccount.role) {
       toast.error("All fields are required. Please fill out the form completely.", {
         position: "top-right",
@@ -60,7 +74,7 @@ const AddStaff: React.FC = () => {
       return;
     }
 
-    if (newAccount.role === "Visitor" && !newAccount.school_name) {
+    if (newAccount.role === "visitor" && newAccount.school_id === 0) {
       toast.error("Please select a school for Visitor accounts.", {
         position: "top-right",
         autoClose: 5000,
@@ -74,13 +88,13 @@ const AddStaff: React.FC = () => {
         newAccount.role,
         newAccount.name,
         newAccount.password,
-        newAccount.role === "Visitor" ? newAccount.school_name : undefined
+        newAccount.role === "visitor" ? newAccount.school_id : undefined // Pass school_id
       );
       toast.success(`Account for "${newAccount.name}" created successfully as a "${newAccount.role}".`, {
         position: "top-right",
         autoClose: 5000,
       });
-      setNewAccount({ name: "", email: "", password: "", role: "", school_name: "" });
+      setNewAccount({ name: "", email: "", password: "", role: "", school_id: 0 });
     } catch (error) {
       console.error("Error creating user account:", error);
       toast.error("Failed to create the account. Please try again later.", {
@@ -108,13 +122,27 @@ const AddStaff: React.FC = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-6">
-      <h1 className="text-3xl font-bold mb-2 text-blue-700">Add Staff Accounts</h1>
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">New Staff Account</h2>
+    <div className="max-w-lg mx-auto px-6 dark:bg-gray-800 dark:text-gray-200">
+      <h1 className="text-3xl font-bold mb-2 text-blue-700 dark:text-blue-400">Add Staff Accounts</h1>
+      <div className="bg-white p-6 rounded-lg shadow dark:bg-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">New Staff Account</h2>
+        {newAccount.role === "visitor" && (
+          <div className="mb-6">
+            <label htmlFor="school_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              School
+            </label>
+            <Select
+              options={schoolOptions}
+              onChange={handleSchoolChange}
+              placeholder="Select a school"
+              isSearchable
+              className="text-gray-800 dark:text-gray-200"
+            />
+          </div>
+        )}
         <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleCreateAccount(); }}>
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Full Name
             </label>
             <input
@@ -124,12 +152,12 @@ const AddStaff: React.FC = () => {
               placeholder="Enter full name"
               value={newAccount.name}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             />
           </div>
-
+  
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email Address
             </label>
             <input
@@ -139,12 +167,12 @@ const AddStaff: React.FC = () => {
               placeholder="Enter email address"
               value={newAccount.email}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             />
           </div>
-
+  
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <input
@@ -154,12 +182,12 @@ const AddStaff: React.FC = () => {
               placeholder="Enter password"
               value={newAccount.password}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             />
           </div>
-
+  
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Role
             </label>
             <select
@@ -167,7 +195,7 @@ const AddStaff: React.FC = () => {
               name="role"
               value={newAccount.role}
               onChange={handleChange}
-              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200"
             >
               <option value="">Select Role</option>
               <option value="admin">Admin</option>
@@ -175,33 +203,11 @@ const AddStaff: React.FC = () => {
               <option value="visitor">Visitor</option>
             </select>
           </div>
-
-          {newAccount.role === "visitor" && (
-            <div>
-              <label htmlFor="school_name" className="block text-sm font-medium text-gray-700">
-                School
-              </label>
-              <select
-                id="school_name"
-                name="school_name"
-                value={newAccount.school_name}
-                onChange={handleChange}
-                className="mt-1 p-3 border rounded w-full focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select School</option>
-                {schools.map((school) => (
-                  <option key={school.id} value={school.name}>
-                    {school.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
+  
           <div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
+              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               Create Account
             </button>

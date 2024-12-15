@@ -21,6 +21,7 @@ import FeedbackList from "./pages/Staff/FeedbackList";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AuthPage from "./pages/Auth";
 import RecoverPassword from "./pages/RecoverPassword";
+import Notify from "./pages/Staff/Notify";
 
 const App = () => {
   const role = sessionStorage.getItem("role");
@@ -34,7 +35,7 @@ const App = () => {
   // Define restricted routes for roles
   const restrictedRoutes = {
     admin: ["/staff/appointments", "/staff/calendar"],
-    guide: ["/staff/add-staff", "/staff/analytics"],
+    guide: ["/staff/add-staff", "/staff/analytics, /staff/notify"],
   };
 
   // Define staff routes
@@ -48,6 +49,7 @@ const App = () => {
     { path: "/staff/settings", element: <StaffSettings /> },
     { path: "/staff/appointments", element: <GuideAppointments /> },
     { path: "/staff/feedback-list", element: <FeedbackList /> },
+    { path: "/staff/notify", element: <Notify />}
   ];
 
   // Filter routes based on role

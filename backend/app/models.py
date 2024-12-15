@@ -13,7 +13,6 @@ class AppointmentStatus(enum.Enum):
     APPROVED = "approved"     # Approved by admin
     ACCEPTED = "accepted"     # Accepted by a guide
     REJECTED = "rejected"     # Rejected by admin
-    DECLINED = "declined"     # Declined by a guide
     COMPLETED = "completed"   # Completed
     CANCELED = "canceled"     # Canceled (if applicable)
 
@@ -27,7 +26,7 @@ class User(Base):
     user_email = Column(String(50), unique=True, nullable=False)
     role = Column(String(50), nullable=False)
     hashed_password = Column(String(255), nullable=False)
-    school_name = Column(String(225), nullable=True)
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)  # Link to school
 
     created_appointments = relationship("Appointment", foreign_keys="Appointment.user_id", back_populates="user")
     assigned_appointments = relationship("Appointment", foreign_keys="Appointment.guide_id", back_populates="guide")
@@ -82,7 +81,6 @@ class OTP(Base):
 class AppointmentCreateBase(BaseModel):
     date: date  # Appointment date
     time: time  # Appointment time
-    city: str 
     visitors_number: int
     note: Optional[str] = None  # Optional note
     status: AppointmentStatus = AppointmentStatus.CREATED  # Default status
@@ -92,7 +90,7 @@ class UserBase(BaseModel):
     name: str
     user_email: str
     role: str
-    school_name: Optional[str] = None
+    school_id: Optional[int] = None
     
 class AppointmentBase(BaseModel):
     id: int
@@ -114,6 +112,11 @@ class AppointmentResponse(BaseModel):
     note: Optional[str] = None
     status: AppointmentStatus
     created_at: datetime
+    school_name: Optional[str] = None  # Add school_name
+
+    class Config:
+        orm_mode = True  # Enable ORM mode for seamless conversion from DB models
+
 
 class AppointmentStatusUpdate(BaseModel):
     status: str
@@ -151,3 +154,16 @@ class NotificationResponse(BaseModel):
     class Config:
         from_attributes=True
     
+class CustomNotification(BaseModel):
+    message: str
+    notification_type: str
+
+# Add Schools Table
+class School(Base):
+    __tablename__ = "schools"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False, unique=True)  # School name
+    city = Column(String(255), nullable=False)  # City where the school is located
+
+    users = relationship("User", backref="school")

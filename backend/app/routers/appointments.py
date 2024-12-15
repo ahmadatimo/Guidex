@@ -3,13 +3,12 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.routers.auth import get_current_user  # Import JWT auth dependency
-from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User, AppointmentCreateBase
-
+from app.models import AppointmentBase, Appointment, AppointmentResponse, AppointmentStatus, AppointmentStatusUpdate, User, AppointmentCreateBase, School
+from app.routers.notifications import notify_admins, notify_guides, notify_user
+import json
+import os
 # Create the APIRouter instance
-router = APIRouter(
-    prefix="/appointments",
-    tags=["appointments"]
-)
+router = APIRouter()
 
 # Database Dependency
 def get_db():
@@ -20,8 +19,6 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
-
-
 
 
 #CRUD functions
@@ -65,19 +62,57 @@ async def get_appointment(
     return appointment
 
 # Create a new appointment
+
 @router.post("/create-appointment", status_code=201)
 async def create_appointment(
-    appointment: AppointmentCreateBase, 
-    db: db_dependency, 
-    current_user: dict = Depends(get_current_user)
+    appointment: AppointmentCreateBase,
+    db: db_dependency,
+    current_user: dict = Depends(get_current_user),
 ):
-    user_id = current_user['user_id']
+    """
+    Create a new appointment, notify admins, and confirm the appointment for the user.
+    """
+    user_id = current_user["user_id"]
+    
+    # Retrieve the user's school ID
+    user_school_id = db.query(User.school_id).filter(User.id == user_id).first()
+    if not user_school_id or not user_school_id[0]:
+        raise HTTPException(status_code=404, detail="User's school not found")
+    
+    # Retrieve the school details using the school ID
+    school = db.query(School).filter(School.id == user_school_id[0]).first()
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found in the database")
+
+    city = school.city
+    if not city:
+        raise HTTPException(status_code=404, detail="City for the school not found")
+
+    # Create the appointment with city included
     db_appointment = Appointment(
-        **appointment.dict(), user_id=user_id
+        **appointment.dict(), user_id=user_id, city=city
     )
     db.add(db_appointment)
     db.commit()
     db.refresh(db_appointment)
+
+    # Notify admins about the new appointment
+    await notify_admins(
+        appointment_id=db_appointment.id,
+        message=f"A new appointment has been made at {db_appointment.date}, {db_appointment.time}.",
+        notification_type="New Appointment",
+        db=db,
+    )
+
+    # Notify the user about their appointment confirmation
+    await notify_user(
+        recipient_id=user_id,
+        appointment_id=db_appointment.id,
+        message=f"Your appointment has been Has been created for {db_appointment.date}, {db_appointment.time}. Waiting for confirmation.",
+        notification_type="Appointment Created",
+        db=db,
+    )
+
     return db_appointment
 
 
@@ -166,13 +201,42 @@ async def get_assigned_appointments_for_guide(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Fetch all appointments assigned to a specific guide.
+    Fetch all appointments assigned to the current guide, including the school name.
     """
-    guide_id = current_user['user_id']   
-    appointments = db.query(Appointment).filter(Appointment.guide_id == guide_id).all()
+    guide_id = current_user["user_id"]
+
+    # Query appointments, join with User and School tables to fetch the school name
+    appointments = (
+        db.query(
+            Appointment,
+            School.name.label("school_name")
+        )
+        .join(User, Appointment.user_id == User.id)  # Join with User
+        .join(School, User.school_id == School.id)  # Join with School
+        .filter(Appointment.guide_id == guide_id)
+        .all()
+    )
+
     if not appointments:
         raise HTTPException(status_code=404, detail="No appointments found for this guide.")
-    return appointments
+
+    # Convert query result into response objects
+    return [
+        AppointmentResponse(
+            id=appointment.Appointment.id,
+            user_id=appointment.Appointment.user_id,
+            guide_id=appointment.Appointment.guide_id,
+            date=appointment.Appointment.date,
+            time=appointment.Appointment.time,
+            city=appointment.Appointment.city,
+            visitors_number=appointment.Appointment.visitors_number,
+            note=appointment.Appointment.note,
+            status=appointment.Appointment.status,
+            created_at=appointment.Appointment.created_at,
+            school_name=appointment.school_name  # Include school_name
+        )
+        for appointment in appointments
+    ]
 
 # Getters and Setters for Appointments
 
@@ -211,6 +275,45 @@ async def set_appointment_status(appointment_id: int, update: AppointmentStatusU
     appointment.status = update.status
     db.commit()
     db.refresh(appointment)
+    return appointment
+
+@router.put("/appointments/{appointment_id}/reject")
+async def reject_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    """
+    Update the status of an appointment.
+    """
+    appointment = await get_appointment_by_id(appointment_id, db)
+    appointment.status = AppointmentStatus.REJECTED
+    db.commit()
+    db.refresh(appointment)
+    return appointment
+
+@router.put("/appointments/{appointment_id}/approve")
+async def approve_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    """
+    Update the status of an appointment.
+    """
+    appointment = await get_appointment_by_id(appointment_id, db)
+    appointment.status = AppointmentStatus.APPROVED
+    db.commit()
+    db.refresh(appointment)
+
+    await notify_guides(
+        appointment_id=appointment.id,
+        message=f"A new appointment has been approved, you can Accept it now!.",
+        notification_type="Appointment Approved",
+        db=db
+    )
+    
+    # Notify the user about their appointment confirmation
+    await notify_user(
+        recipient_id=appointment.user_id,
+        appointment_id=appointment.id,
+        message=f"Your appointment has been confirmed for {appointment.date}, {appointment.time}.",
+        notification_type="Appointment Confirmed",
+        db=db,
+    )
+
     return appointment
 
 @router.put("/appointments/{appointment_id}/assign-guide")
@@ -284,36 +387,42 @@ async def get_available_times_for_date(
 @router.get("/appointment/{appointment_id}/school")
 def get_school_name(appointment_id: int, db: Session = Depends(get_db)):
     try:
-        school_name = get_school_name_by_user_id(db, appointment_id)
+        school_name = get_school_name_by_appointment_id(db, appointment_id)
         return {"appointment_id": appointment_id, "school_name": school_name}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 
-def get_school_name_by_user_id(db: Session, appointment_id: int) -> str:
+def get_school_name_by_appointment_id(db: Session, appointment_id: int) -> str:
     """
     Retrieve the school name associated with the user in an appointment.
 
     :param db: SQLAlchemy session object
     :param appointment_id: ID of the appointment
     :return: School name associated with the user
-    :raises: ValueError if the appointment or user is not found
+    :raises: ValueError if the appointment, user, or school is not found
     """
-    # Join Appointment with User table to retrieve the school name
-    appointment = (
-        db.query(Appointment)
-        .join(User, Appointment.user_id == User.id)
-        .filter(Appointment.id == appointment_id)
-        .first()
-    )
+    # Fetch the appointment to retrieve the user_id
+    appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
 
     if not appointment:
         raise ValueError("Appointment not found.")
 
-    if not appointment.user or not appointment.user.school_name:
-        raise ValueError("School name not found for this user.")
+    if not appointment.user_id:
+        raise ValueError("User ID not found for this appointment.")
 
-    return appointment.user.school_name
+    # Fetch the user using the user_id
+    user = db.query(User).filter(User.id == appointment.user_id).first()
+    if not user or not user.school_id:
+        raise ValueError("School ID not found for this user.")
+
+    # Fetch the school using the school_id
+    school = db.query(School).filter(School.id == user.school_id).first()
+    if not school:
+        raise ValueError("School not found for this user.")
+
+    return school.name
+
 
 @router.get("/admin/appointments", response_model=List[AppointmentResponse])
 async def get_admin_appointments(

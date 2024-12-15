@@ -135,45 +135,45 @@ const FeedbackList = () => {
   );
 
   return (
-    <div className="container mx-auto mt-10 p-4">
-      <h1 className="text-2xl font-bold text-gray-900 text-center mb-8">
+    <div className="container mx-auto mt-10 p-4 dark:bg-gray-900 dark:text-gray-200">
+      <h1 className="text-2xl font-bold text-gray-900 text-center mb-8 dark:text-gray-100">
         Visitor Feedback
       </h1>
-      
+  
       {feedbacks.length === 0 ? (
-        <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-100">
-          <p className="text-gray-500">No feedback submitted yet.</p>
+        <div className="text-center py-8 bg-gray-800 rounded-lg border border-gray-700">
+          <p className="text-gray-500 dark:text-gray-400">No feedback submitted yet.</p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {feedbacks.map((feedback) => (
             <div
               key={feedback.id}
-              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+              className="bg-gray-800 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 dark:bg-gray-700"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-semibold text-blue-600">
+                    <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
                       {feedback.rating}/5
                     </span>
                     <RatingStars rating={feedback.rating} />
                   </div>
                 </div>
-                <time className="text-sm text-gray-500">
+                <time className="text-sm text-gray-500 dark:text-gray-400">
                   {new Date(feedback.created_at).toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'short',
-                    day: 'numeric'
+                    day: 'numeric',
                   })}
                 </time>
               </div>
-              
-              <p className="text-gray-700 overflow-hidden line-clamp-3">{feedback.comment}</p>
-              
+  
+              <p className="text-gray-700 overflow-hidden line-clamp-3 dark:text-gray-300">{feedback.comment}</p>
+  
               {feedback.appointment_id && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <span className="text-sm text-gray-500">
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
                     Appointment ID: {feedback.appointment_id}
                   </span>
                 </div>
@@ -183,7 +183,7 @@ const FeedbackList = () => {
         </div>
       )}
     </div>
-  );
+  );  
 };
 
 export default FeedbackList;

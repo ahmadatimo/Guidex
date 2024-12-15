@@ -2,8 +2,8 @@ import React, { useState, useEffect} from 'react';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { 
-  fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, updateAppointmentStatus,
-  assignGuideToAppointment, unassignGuideFromAppointment} from "../../utils/api";
+  fetchAvailableAppointmentsForGuides, fetchAdminsAppointments, Appointment, rejectAppointment,
+  assignGuideToAppointment, unassignGuideFromAppointment, approveAppointment} from "../../utils/api";
 
   interface PendingApprovalsProps {
     onApprovalStatusChange?: (pendingCount: number, unassignedCount: number) => void;
@@ -56,12 +56,12 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
   }, []);
 
   
-  const handleApproval  = async (id: number, newStatus: string) => {
+  const handleApproval  = async (id: number) => {
     try {
-      await updateAppointmentStatus(id, { status: newStatus });
+      await approveAppointment(id);
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: newStatus } : appointment
+          appointment.id === id ? { ...appointment, status: "approved" } : appointment
         )
       );
       toast.success("Appointment approved!" )
@@ -89,12 +89,12 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
   };
   
 
-  const handleRejection = async (id: number, newStatus: string) => {
+  const handleRejection = async (id: number) => {
    try {
-      await updateAppointmentStatus(id, { status: newStatus });
+      await rejectAppointment(id);
       setApprovals((prev) =>
         prev.map((appointment) =>
-          appointment.id === id ? { ...appointment, status: newStatus} : appointment
+          appointment.id === id ? { ...appointment, status: 'rejected'} : appointment
         )
       );
       toast.success(userRole === "admin" ? "Appointment rejected!" : "Appointment declined!")
@@ -142,19 +142,19 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-8 text-blue-700">
+    <div className="max-w-7xl mx-auto px-6 py-12 dark:bg-gray-900 dark:text-gray-200">
+      <h1 className="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-400">
         {
           userRole === 'admin'
-          ? 'Admin Pending Approvals':
-          userRole === 'guide'
-          ?'Guide Pending Approvals': 
-          "why are you here ?"
+          ? 'Admin Pending Approvals'
+          : userRole === 'guide'
+          ? 'Guide Pending Approvals' 
+          : "Why are you here?"
         }
       </h1>
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div className="bg-white p-6 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
         {approvals.length === 0 ? (
-          <p className="text-gray-700">No pending approvals.</p>
+          <p className="text-gray-700 dark:text-gray-400">No pending approvals.</p>
         ) : (
           <ul className="space-y-4">
             {approvals.map((approval) => (
@@ -162,21 +162,25 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
                 key={approval.id}
                 className={`p-4 border rounded flex justify-between items-center 
                 ${
-                  (userRole === "admin" && (approval.status === ("approved") || approval.status === ("accepted") )) 
-                  ? "bg-green-100" : (userRole === "admin" && approval.status === ("rejected") || approval.status === ("declined")) 
-                  ? "bg-red-100": (userRole === "guide" && approval.status === ("accepted")) 
-                  ? "bg-green-100" :  (userRole === "guide" && approval.status === ("declined")) 
-                  ? "bg-red-100": "bg-white" 
+                  (userRole === "admin" && (approval.status === "approved" || approval.status === "accepted")) 
+                  ? "bg-green-100 dark:bg-green-700" 
+                  : (userRole === "admin" && (approval.status === "rejected" || approval.status === "declined")) 
+                  ? "bg-red-100 dark:bg-red-700"
+                  : (userRole === "guide" && approval.status === "accepted") 
+                  ? "bg-green-100 dark:bg-green-700" 
+                  : (userRole === "guide" && approval.status === "declined") 
+                  ? "bg-red-100 dark:bg-red-700"
+                  : "bg-white dark:bg-gray-800"
                 }`}>
                 {/* Approval Details */}
                 <div>
-                  <h3 className="font-bold text-lg">{approval.id}</h3>
-                  <h4 className= "font-bold text-lg">{approval.status}</h4>
-                  <p className="text-gray-600">Date: {approval.date} </p>
-                  <p className="text-gray-600">Time: {approval.time} </p>
-                  <p className="text-gray-600"> Guide ID: {approval.guide_id ? approval.guide_id : "Not Assigned"}</p>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{approval.id}</h3>
+                  <h4 className="font-bold text-lg text-gray-900 dark:text-gray-100">{approval.status}</h4>
+                  <p className="text-gray-600 dark:text-gray-300">Date: {approval.date}</p>
+                  <p className="text-gray-600 dark:text-gray-300">Time: {approval.time}</p>
+                  <p className="text-gray-600 dark:text-gray-300">Guide ID: {approval.guide_id ? approval.guide_id : "Not Assigned"}</p>
                 </div>
-
+  
                 {/* Buttons: Approve & Deny */}
                 <div className="flex space-x-2">
                   {userRole ==="admin" && approval.status === "created" && 
@@ -184,12 +188,12 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
                       <>
                         <button
                           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" 
-                          onClick={() => handleApproval(approval.id, "approved")}>
+                          onClick={() => handleApproval(approval.id)}>
                           Approve
                         </button>
                         <button
                           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                          onClick={() => handleRejection(approval.id , "rejected")}>
+                          onClick={() => handleRejection(approval.id)}>
                           Deny
                         </button>
                       </>
@@ -203,11 +207,11 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
                           onClick={() => handleAcceptance(approval.id)}>
                           Accept
                         </button>
-                        <button
+                        {/* <button
                           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                           onClick={() => handleApproval(approval.id, "declined")}>
                           Deny
-                        </button>
+                        </button> */}
                       </> 
                     )
                   }
@@ -236,7 +240,7 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({ onApprovalStatusCha
         )}
       </div>
     </div>
-  );
+  );  
 };
 
 export default PendingApprovals;
