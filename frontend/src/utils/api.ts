@@ -556,7 +556,7 @@ export const sendContactEmail = async (emailRequest: ContactEmailRequest): Promi
 // Fetch all feedback (admin and guide access only)
 export const fetchAllFeedback = async (): Promise<Feedback[]> => {
   try {
-    const response = await axiosInstance.get("/feedback/list");
+    const response = await axiosInstance.get("/api/feedback/list");
     console.log("Fetched feedback successfully:", response.data);
     return response.data;
   } catch (error: any) {
@@ -570,7 +570,7 @@ export const fetchAllFeedback = async (): Promise<Feedback[]> => {
 // Submit feedback (user only)
 export const submitFeedback = async (feedbackRequest: FeedbackCreate): Promise<Feedback> => {
   try {
-    const response = await axiosInstance.post("/feedback/submit", feedbackRequest, {
+    const response = await axiosInstance.post("/api/feedback/submit", feedbackRequest, {
       headers: {
         "Content-Type": "application/json",
       },
