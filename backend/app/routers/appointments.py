@@ -409,7 +409,6 @@ def get_school_name(appointment_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-
 def get_school_name_by_appointment_id(db: Session, appointment_id: int) -> str:
     """
     Retrieve the school name associated with the user in an appointment.

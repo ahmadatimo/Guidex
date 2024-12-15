@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
@@ -30,20 +30,20 @@ const StaffCalendar: React.FC = () => {
     const loadAppointments = async () => {
       try {
         setIsLoading(true);
-    
+
         // Fetch the assigned appointments
         const appointments = await fetchAssignedAppointmentsForGuide();
-    
+
         // Map appointments to calendar events
         const mappedEvents: CalendarEvent[] = appointments.map((appointment) => ({
           id: appointment.id,
-          title: appointment.school_name || "Unknown School", // Ensure title is always a string
+          title: appointment.school_name || "Unknown School",
           start: new Date(`${appointment.date}T${appointment.time}`),
           end: new Date(new Date(`${appointment.date}T${appointment.time}`).getTime() + 3 * 60 * 60 * 1000),
-          school: appointment.school_name || "Unknown School", // Ensure school is always a string
-          note: appointment.note || "", // Default note to an empty string if undefined
+          school: appointment.school_name || "Unknown School",
+          note: appointment.note || "",
         }));
-    
+
         setEvents(mappedEvents);
       } catch (error) {
         console.error("Error loading appointments:", error);
@@ -51,7 +51,7 @@ const StaffCalendar: React.FC = () => {
       } finally {
         setIsLoading(false);
       }
-    };    
+    };
 
     loadAppointments();
   }, []);
@@ -59,7 +59,7 @@ const StaffCalendar: React.FC = () => {
   const EventRenderer = ({ event }: { event: CalendarEvent }) => (
     <div>
       <strong>{event.title}</strong>
-      <div className="text-sm text-gray-300">{moment(event.start).format("hh:mm A")}</div>
+      <div className="text-sm text-gray-300">{moment(event.start).format("h:mm A")}</div>
     </div>
   );
 
@@ -106,11 +106,13 @@ const StaffCalendar: React.FC = () => {
                     <strong>School:</strong> {selectedEvent.school}
                   </p>
                   <p>
-                    <strong>Date:</strong> {moment(selectedEvent.start).format("MMMM Do YYYY")}
+                    <strong>Date:</strong>{" "}
+                    {moment(selectedEvent.start).format("dddd, MMMM Do YYYY")} {/* Friendly date format */}
                   </p>
                   <p>
-                    <strong>Time:</strong> {moment(selectedEvent.start).format("hh:mm A")} -{" "}
-                    {moment(selectedEvent.end).format("hh:mm A")}
+                    <strong>Time:</strong>{" "}
+                    {moment(selectedEvent.start).format("h:mm A")} -{" "}
+                    {moment(selectedEvent.end).format("h:mm A")} {/* Friendly time format */}
                   </p>
                   {selectedEvent.note && (
                     <p>

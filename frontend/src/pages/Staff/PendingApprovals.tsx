@@ -169,10 +169,17 @@ const PendingApprovals: React.FC<PendingApprovalsProps> = ({
                   <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
                     {approval.school_name || 'Unknown School'}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">Date: {approval.date}</p>
-                  <p className="text-gray-600 dark:text-gray-300">Time: {approval.time}</p>
                   <p className="text-gray-600 dark:text-gray-300">
-                    Guide ID: {approval.guide_id || 'Not Assigned'}
+                    Guide Status: {approval.guide_id ? 'Assigned' : 'Not Assigned'}
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Date: {new Date(approval.date).toLocaleDateString()}
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Time: {new Date(`1970-01-01T${approval.time}Z`).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </p>
                 </div>
 

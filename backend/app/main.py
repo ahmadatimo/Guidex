@@ -20,7 +20,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(appointments.router)
 app.include_router(notifications.router)
-app.include_router(feedback.router, prefix="/api/feedback", tags=["Feedback"])
-app.include_router(schools.router, prefix="/api/schools", tags=["Schools"])
+app.include_router(feedback.router, prefix="/feedback", tags=["Feedback"])
+app.include_router(schools.router, prefix="/schools", tags=["Schools"])
 app.include_router(email.router)
 
