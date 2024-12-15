@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Annotated
 from app.database import get_db
-from app.models import Feedback, User
+from app.models import Feedback, User, Appointment
 from datetime import datetime
 from pydantic import BaseModel
 from app.routers.auth import get_current_user  # Add this import
@@ -34,11 +34,18 @@ async def submit_feedback(
     db: db_dependency,
     current_user: user_dependency
 ):
+    # Validate the appointment_id if provided
+    if feedback.appointment_id is not None:
+        appointment_exists = db.query(Appointment).filter(Appointment.id == feedback.appointment_id).first()
+        if not appointment_exists:
+            raise HTTPException(status_code=400, detail="Invalid appointment_id")
+
+    # Create the feedback
     db_feedback = Feedback(
         user_id=current_user['user_id'],
         rating=feedback.rating,
         comment=feedback.comment,
-        appointment_id=feedback.appointment_id
+        appointment_id=feedback.appointment_id  # This will be None if not provided
     )
     db.add(db_feedback)
     db.commit()

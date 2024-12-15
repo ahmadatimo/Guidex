@@ -71,6 +71,21 @@ export interface School {
   city: string;
 }
 
+export interface Feedback {
+  id: number;
+  user_id: number;
+  appointment_id?: number;
+  rating: number;
+  comment: string;
+  created_at: string; // ISO string for date
+}
+
+export interface FeedbackCreate {
+  rating: number;
+  comment: string;
+  appointment_id?: number;
+}
+
 
 /*-------------------------------- AXIOS FUNCTIONS -------------------------------- */
 
@@ -532,5 +547,40 @@ export const sendContactEmail = async (emailRequest: ContactEmailRequest): Promi
   } catch (error: any) {
     console.error("Failed to send email:", error.response?.data || error.message);
     throw new Error(error.response?.data?.detail || "Failed to send email. Please try again.");
+  }
+};
+
+
+/*-------------------------------- FEEDBACK FUNCTIONS -------------------------------- */
+
+// Fetch all feedback (admin and guide access only)
+export const fetchAllFeedback = async (): Promise<Feedback[]> => {
+  try {
+    const response = await axiosInstance.get("/feedback/list");
+    console.log("Fetched feedback successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching feedback:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.detail || "Failed to fetch feedback. Please try again."
+    );
+  }
+};
+
+// Submit feedback (user only)
+export const submitFeedback = async (feedbackRequest: FeedbackCreate): Promise<Feedback> => {
+  try {
+    const response = await axiosInstance.post("/feedback/submit", feedbackRequest, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Feedback submitted successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error submitting feedback:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.detail || "Failed to submit feedback. Please try again."
+    );
   }
 };
