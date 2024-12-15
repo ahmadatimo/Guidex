@@ -5,11 +5,7 @@ const API_BASE_URL = "http://localhost:8000";
 
 
 // /*-------------------------------- TYPES -------------------------------- */
-export interface LoginResponse {
-  access_token: string;
-  role: string;
-  refresh_token?: string;
-}
+
 
 export interface Appointment {
   id: number;
@@ -140,16 +136,68 @@ export const loginUser = async (email: string, password: string): Promise<string
     });
 
   // Extract the access token from the response
-  const { access_token, role, name } = response.data;
+  const { access_token, role, name, user_email } = response.data;
 
   // Store the token in localStorage
   sessionStorage.setItem("access_token", access_token);
   sessionStorage.setItem("role", role);
   sessionStorage.setItem("name" , name);
+  sessionStorage.setItem("user_email", user_email)
   console.log("Login successful, token stored in localStorage.");
   // return it to the LoginPage
   return role;
 };
+
+
+export const sendOTP = async (email: string): Promise<number> => {
+  const response = await axiosInstance.post(
+    "auth/send_otp", 
+    { email : email }, // Payload goes here
+    { 
+      headers: { 
+        accept: "application/json", 
+        "Content-Type": "application/json" 
+      }
+    }
+  );
+  return response.status; 
+};
+
+export const verifyOTP = async (email : string, otp : string): Promise<number> =>{
+  const response = await axiosInstance.post(
+    "auth/verify_otp", 
+    { email : email,
+      otp : otp,
+     }, // Payload goes here
+    { 
+      headers: { 
+        accept: "application/json", 
+        "Content-Type": "application/json" 
+      }
+    }
+  );
+  return response.status;
+}
+
+
+export const resetPassword = async (email: string, newPassword: string): Promise<number> => {
+  const response = await axiosInstance.patch(
+    'auth/reset_password',
+    {
+      user_email: email, // Update the key to match the API spec
+      new_password: newPassword,
+    },
+    {
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.status;
+};
+
+
 
 /*-------------------------------- APPOINTMENTS FUNCTIONS --------------------------------*/
 

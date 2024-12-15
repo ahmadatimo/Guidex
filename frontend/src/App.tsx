@@ -20,6 +20,7 @@ import GuideAppointments from "./pages/Staff/GuideAppointments";
 import FeedbackList from "./pages/Staff/FeedbackList";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AuthPage from "./pages/Auth";
+import RecoverPassword from "./pages/RecoverPassword";
 
 const App = () => {
   const role = sessionStorage.getItem("role");
@@ -62,6 +63,7 @@ const App = () => {
         {/* Visitor Routes */}
         <Route element={<MainLayout />}>
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/auth/recover_password" element={<RecoverPassword/>}/>
 
           {/* Protected Visitor Routes */}
           <Route element={<ProtectedRoutes allowedRoles={["visitor"]} />}>

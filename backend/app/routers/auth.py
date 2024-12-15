@@ -53,6 +53,7 @@ class LoginResponse(BaseModel):
     token_type: str
     role: str
     name: str
+    user_email: str
 
 class SendOtpRequest(BaseModel):
     email: EmailStr
@@ -151,7 +152,7 @@ async def sign_in_for_access_token(db: db_dependency, form_data: Annotated[OAuth
         raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED)
     
     token = create_access_token(valid_user.name, valid_user.id, timedelta(minutes=30))
-    return {'access_token': token, 'token_type' : 'bearer', 'role': valid_user.role, 'name' : valid_user.name}
+    return {'access_token': token, 'token_type' : 'bearer', 'role': valid_user.role, 'name' : valid_user.name, 'user_email': valid_user.user_email}
         
 
 @router.get("/auth/get_user")
@@ -270,6 +271,24 @@ async def update_user(
         }
     )
 
+class ResetPassword(BaseModel):
+    user_email : EmailStr
+    new_password : str
+
+
+@router.patch("/reset_password", status_code=status.HTTP_202_ACCEPTED)
+async def reset_password(db:db_dependency, request_model : ResetPassword):
+    user = db.query(User).filter(User.user_email == request_model.user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    hashed_new_password = bcrypt_context.hash(request_model.new_password)
+    user.hashed_password = hashed_new_password
+
+    db.add(user)
+    db.commit()
+
+    return {"message" : "Password reset was succesfull"}
 
 
 #--------------------------------------------------------------- Below code is for admin initialization--------------------------------------- 

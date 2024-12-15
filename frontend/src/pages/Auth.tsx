@@ -154,7 +154,7 @@ const AuthPage: React.FC = () => {
         <p className="text-center">
             <span
               className="text-blue-500 cursor-pointer"
-              onClick={() => navigate('/auth/RecoverEmail')}
+              onClick={() => navigate('/auth/recover_password')}
             >
               {isLogin ? "Frogot your password?" : ''}{' '}
             </span>
