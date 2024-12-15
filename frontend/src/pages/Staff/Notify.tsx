@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { custom_notification } from "../../utils/api"; // Import the notifyGuides API function
+import { custom_notification } from "../../utils/api";
 
 const AddGuideNotification: React.FC = () => {
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
@@ -51,15 +51,14 @@ const AddGuideNotification: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      console.log("Sending notification:", notification); // Debug request payload
-
+      
       await custom_notification(notification.message, notification.notification_type);
       toast.success("Notification sent to all guides.", {
         position: "top-right",
         autoClose: 5000,
       });
 
-      setNotification({ notification_type: "", message: "" }); // Reset state
+      setNotification({ notification_type: "", message: "" });
     } catch (error) {
       console.error("Error sending notification:", error);
       toast.error("Failed to send notification. Please try again.", {
@@ -67,7 +66,7 @@ const AddGuideNotification: React.FC = () => {
         autoClose: 5000,
       });
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Re-enable button after process ends
     }
   };
 
@@ -105,6 +104,8 @@ const AddGuideNotification: React.FC = () => {
               type="text"
               id="notification_type"
               name="notification_type"
+              value={notification.notification_type}
+              onChange={handleChange}
               placeholder="Enter notification title"
               className="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
             />
@@ -117,6 +118,8 @@ const AddGuideNotification: React.FC = () => {
             <textarea
               id="message"
               name="message"
+              value={notification.message}
+              onChange={handleChange}
               placeholder="Enter your message"
               rows={6}
               className="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
@@ -126,9 +129,13 @@ const AddGuideNotification: React.FC = () => {
           <div className="text-center">
             <button
               type="button"
-              className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
+              onClick={handleSendNotification}
+              disabled={isSubmitting} // Disable button when submitting
+              className={`bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
+              }`}
             >
-              Send Notification
+              {isSubmitting ? "Sending..." : "Send Notification"}
             </button>
           </div>
         </div>

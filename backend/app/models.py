@@ -112,6 +112,11 @@ class AppointmentResponse(BaseModel):
     note: Optional[str] = None
     status: AppointmentStatus
     created_at: datetime
+    school_name: Optional[str] = None  # Add school_name
+
+    class Config:
+        orm_mode = True  # Enable ORM mode for seamless conversion from DB models
+
 
 class AppointmentStatusUpdate(BaseModel):
     status: str

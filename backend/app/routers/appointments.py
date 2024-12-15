@@ -201,13 +201,42 @@ async def get_assigned_appointments_for_guide(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Fetch all appointments assigned to a specific guide.
+    Fetch all appointments assigned to the current guide, including the school name.
     """
-    guide_id = current_user['user_id']   
-    appointments = db.query(Appointment).filter(Appointment.guide_id == guide_id).all()
+    guide_id = current_user["user_id"]
+
+    # Query appointments, join with User and School tables to fetch the school name
+    appointments = (
+        db.query(
+            Appointment,
+            School.name.label("school_name")
+        )
+        .join(User, Appointment.user_id == User.id)  # Join with User
+        .join(School, User.school_id == School.id)  # Join with School
+        .filter(Appointment.guide_id == guide_id)
+        .all()
+    )
+
     if not appointments:
         raise HTTPException(status_code=404, detail="No appointments found for this guide.")
-    return appointments
+
+    # Convert query result into response objects
+    return [
+        AppointmentResponse(
+            id=appointment.Appointment.id,
+            user_id=appointment.Appointment.user_id,
+            guide_id=appointment.Appointment.guide_id,
+            date=appointment.Appointment.date,
+            time=appointment.Appointment.time,
+            city=appointment.Appointment.city,
+            visitors_number=appointment.Appointment.visitors_number,
+            note=appointment.Appointment.note,
+            status=appointment.Appointment.status,
+            created_at=appointment.Appointment.created_at,
+            school_name=appointment.school_name  # Include school_name
+        )
+        for appointment in appointments
+    ]
 
 # Getters and Setters for Appointments
 

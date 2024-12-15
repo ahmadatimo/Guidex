@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import Modal from "react-modal";
-import { fetchAssignedAppointmentsForGuide, fetchSchoolNameForAppointment } from "../../utils/api";
+import { fetchAssignedAppointmentsForGuide } from "../../utils/api";
 import { toast } from "react-toastify";
 
 // Set the app element for accessibility (adjust the selector based on your app's root element)
@@ -12,7 +12,6 @@ Modal.setAppElement("#root");
 // Localizer for the calendar (using moment.js)
 const localizer = momentLocalizer(moment);
 
-// Appointment type for event mapping
 interface CalendarEvent {
   id: number;
   title: string;
@@ -28,53 +27,35 @@ const StaffCalendar: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const loadAppointmentsWithSchoolNames = async () => {
+    const loadAppointments = async () => {
       try {
         setIsLoading(true);
-
+    
         // Fetch the assigned appointments
         const appointments = await fetchAssignedAppointmentsForGuide();
-
-        // Map appointments to include school names
-        const mappedEvents: CalendarEvent[] = await Promise.all(
-          appointments.map(async (appointment) => {
-            try {
-              const schoolName = await fetchSchoolNameForAppointment(appointment.id);
-              return {
-                id: appointment.id,
-                title: schoolName,
-                start: new Date(`${appointment.date}T${appointment.time}`),
-                end: new Date(new Date(`${appointment.date}T${appointment.time}`).getTime() + 3 * 60 * 60 * 1000),
-                school: schoolName,
-                note: appointment.note
-              };
-            } catch (error) {
-              console.error(`Error fetching school name for appointment ${appointment.id}:`, error);
-              return {
-                id: appointment.id,
-                title: "Unknown School",
-                start: new Date(`${appointment.date}T${appointment.time}`),
-                end: new Date(new Date(`${appointment.date}T${appointment.time}`).getTime() + 3 * 60 * 60 * 1000),
-                school: "Unknown School",
-                note: appointment.note
-              };
-            }
-          })
-        );
-
+    
+        // Map appointments to calendar events
+        const mappedEvents: CalendarEvent[] = appointments.map((appointment) => ({
+          id: appointment.id,
+          title: appointment.school_name || "Unknown School", // Ensure title is always a string
+          start: new Date(`${appointment.date}T${appointment.time}`),
+          end: new Date(new Date(`${appointment.date}T${appointment.time}`).getTime() + 3 * 60 * 60 * 1000),
+          school: appointment.school_name || "Unknown School", // Ensure school is always a string
+          note: appointment.note || "", // Default note to an empty string if undefined
+        }));
+    
         setEvents(mappedEvents);
       } catch (error) {
-        console.error("Error loading appointments with school names:", error);
-        //toast.error("Failed to load appointments. Please try again.");
+        console.error("Error loading appointments:", error);
+        toast.error("Failed to load appointments. Please try again.");
       } finally {
         setIsLoading(false);
       }
-    };
+    };    
 
-    loadAppointmentsWithSchoolNames();
+    loadAppointments();
   }, []);
 
-  // Custom Event Renderer (Optional: if you want to customize how events appear)
   const EventRenderer = ({ event }: { event: CalendarEvent }) => (
     <div>
       <strong>{event.title}</strong>
@@ -101,18 +82,16 @@ const StaffCalendar: React.FC = () => {
               popup
               onSelectEvent={(event) => setSelectedEvent(event as CalendarEvent)}
               components={{
-                event: EventRenderer, // Use custom event renderer if needed
+                event: EventRenderer,
               }}
               eventPropGetter={(event) => ({
                 style: {
-                  backgroundColor: "#3b82f6", // Event color
+                  backgroundColor: "#3b82f6",
                   color: "white",
                   fontSize: "14px",
                 },
               })}
             />
-  
-            {/* Modal for Appointment Details */}
             <Modal
               isOpen={!!selectedEvent}
               onRequestClose={() => setSelectedEvent(null)}
@@ -151,7 +130,7 @@ const StaffCalendar: React.FC = () => {
         )}
       </div>
     </div>
-  );  
+  );
 };
 
 export default StaffCalendar;

@@ -17,6 +17,7 @@ export interface Appointment {
   visitors_number: number;
   note: string;
   status: string;
+  school_name?: string;
 }
 
 export interface CreateAppointmentRequest {
