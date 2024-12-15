@@ -8,12 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Notifications: React.FC = () => {
-  const [newNotifications, setNewNotifications] = useState<NotificationType[]>(
-    []
-  );
-  const [readNotifications, setReadNotifications] = useState<
-    NotificationType[]
-  >([]);
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Fetch notifications from the backend
@@ -23,12 +18,8 @@ const Notifications: React.FC = () => {
         setIsLoading(true);
         const data = await fetchNotifications();
 
-        // Split notifications into "new" and "read"
-        const unread = data.filter((notification) => !notification.is_read);
-        const read = data.filter((notification) => notification.is_read);
-
-        setNewNotifications(unread);
-        setReadNotifications(read);
+        // Set all notifications
+        setNotifications(data);
       } catch (error) {
         console.error("Error fetching notifications:", error);
         toast.error("Failed to load notifications. Please try again.");
@@ -45,18 +36,13 @@ const Notifications: React.FC = () => {
     try {
       await markNotificationAsRead(id);
 
-      // Move the notification to the "read" section
-      setNewNotifications((prev) =>
-        prev.filter((notification) => {
-          if (notification.id === id) {
-            setReadNotifications((prevRead) => [
-              ...prevRead,
-              { ...notification, is_read: true },
-            ]);
-            return false;
-          }
-          return true;
-        })
+      // Update the notification's is_read status
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id
+            ? { ...notification, is_read: true }
+            : notification
+        )
       );
 
       toast.success("Notification marked as read.");
@@ -65,6 +51,13 @@ const Notifications: React.FC = () => {
       toast.error("Failed to mark notification as read. Please try again.");
     }
   };
+
+  const newNotifications = notifications.filter(
+    (notification) => !notification.is_read
+  );
+  const readNotifications = notifications.filter(
+    (notification) => notification.is_read
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 dark:bg-gray-900 dark:text-gray-200">

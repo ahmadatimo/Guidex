@@ -362,10 +362,10 @@ export const fetchAvailableTimes = async (date: string): Promise<string[]> => {
 // Fetch school name for an appointment
 export const fetchSchoolNameForAppointment = async (appointmentId: number): Promise<string> => {
   try {
-    const response = await axiosInstance.get(`/appointments/${appointmentId}/school`);
+    const response = await axiosInstance.get(`/appointment/${appointmentId}/school`);
     
     // Ensure the API response includes the school object with the name field
-    const schoolName = response.data?.school?.name; // Extract the school name from the response
+    const schoolName = response.data?.school_name; // Extract the school name from the response
     if (!schoolName) {
       throw new Error("School name not found in the response.");
     }
@@ -464,7 +464,7 @@ export const notifyguides = async (
 export const fetchAllSchools = async (): Promise<School[]> => {
   // Make the GET request to the `/schools` endpoint
   try {
-    const response = await axiosInstance.get("/api/schools/schools", {
+    const response = await axiosInstance.get("/schools/schools", {
       headers: {
         "Content-Type": "application/json", // Explicitly specify JSON content type
       },
@@ -482,7 +482,7 @@ export const fetchAllSchools = async (): Promise<School[]> => {
 // Fetch a single school by ID
 export const fetchSchoolById = async (schoolId: number): Promise<School> => {
   try {
-    const response = await axiosInstance.get(`/api/schools/schools/${schoolId}`);
+    const response = await axiosInstance.get(`/schools/schools/${schoolId}`);
     return response.data; // API returns the school in JSON format
   } catch (error: any) {
     console.error(`Error fetching school with ID ${schoolId}:`, error.response?.data || error.message);
@@ -494,7 +494,7 @@ export const fetchSchoolById = async (schoolId: number): Promise<School> => {
 export const createSchool = async (name: string, city: string): Promise<School> => {
   try {
     const response = await axiosInstance.post(
-      "/api/schools/schools",
+      "/schools/schools",
       { name, city },
       {
         headers: {
@@ -513,7 +513,7 @@ export const createSchool = async (name: string, city: string): Promise<School> 
 // Update an existing school by ID
 export const updateSchool = async (schoolId: number, updates: Partial<{ name: string; city: string }>): Promise<School> => {
   try {
-    const response = await axiosInstance.put(`/api/schools/schools/${schoolId}`, updates, {
+    const response = await axiosInstance.put(`/schools/schools/${schoolId}`, updates, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -529,7 +529,7 @@ export const updateSchool = async (schoolId: number, updates: Partial<{ name: st
 // Delete a school by ID
 export const deleteSchool = async (schoolId: number): Promise<void> => {
   try {
-    await axiosInstance.delete(`/api/schools/schools/${schoolId}`);
+    await axiosInstance.delete(`/schools/schools/${schoolId}`);
     console.log(`School with ID ${schoolId} deleted successfully.`);
   } catch (error: any) {
     console.error(`Error deleting school with ID ${schoolId}:`, error.response?.data || error.message);

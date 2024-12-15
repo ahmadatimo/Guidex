@@ -1,189 +1,94 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { fetchAllFeedback, fetchSchoolNameForAppointment, Feedback } from "../../utils/api";
 
-interface Feedback {
-  id: number;
-  rating: number;
-  comment: string;
-  created_at: string;
-  user_id: number;
-  appointment_id: number | null;
-}
-
-const FeedbackList = () => {
+const FeedbackList: React.FC = () => {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [schoolNames, setSchoolNames] = useState<Record<number, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    const fetchFeedbacks = async () => {
+    const loadFeedbacks = async () => {
       try {
-        const token = sessionStorage.getItem('token');
-        if (!token) {
-          setShouldRedirect(true);
-          return;
-        }
+        setIsLoading(true);
+        setError(false);
 
-        const response = await fetch('/api/feedback/list', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include'
-        });
+        // Fetch all feedbacks
+        const feedbackData = await fetchAllFeedback();
+        setFeedbacks(feedbackData);
 
-        // Handle specific HTTP status codes
-        switch (response.status) {
-          case 401:
-            sessionStorage.removeItem('token'); // Clear invalid token
-            setShouldRedirect(true);
-            return;
-          case 403:
-            throw new Error('Access denied - You do not have permission to view feedback');
-          case 404:
-            throw new Error('Feedback data not found');
-          case 500:
-            throw new Error('Server error - Please try again later');
-        }
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch feedback: ${response.statusText}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('Invalid response format - Expected JSON data');
-        }
-
-        const data = await response.json();
-        
-        // Validate response data structure
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid data format - Expected an array of feedback');
-        }
-
-        // Validate each feedback object
-        const validatedFeedbacks = data.map((item: any) => {
-          if (!item.id || typeof item.rating !== 'number' || !item.created_at) {
-            throw new Error('Invalid feedback data structure');
-          }
-          return item as Feedback;
-        });
-
-        setFeedbacks(validatedFeedbacks);
+        // Fetch school names for feedbacks with appointment IDs
+        const schoolNamesMap: Record<number, string> = {};
+        await Promise.all(
+          feedbackData.map(async (feedback) => {
+            if (feedback.appointment_id) {
+              try {
+                const schoolName = await fetchSchoolNameForAppointment(feedback.appointment_id);
+                schoolNamesMap[feedback.appointment_id] = schoolName;
+              } catch (err) {
+                console.error(`Error fetching school name for appointment ${feedback.appointment_id}:`, err);
+                schoolNamesMap[feedback.appointment_id] = "Unknown School";
+              }
+            }
+          })
+        );
+        setSchoolNames(schoolNamesMap);
       } catch (err) {
-        console.error('Error fetching feedback:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch feedback');
+        console.error("Error loading feedbacks:", err);
+        setError(true);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchFeedbacks();
+    loadFeedbacks();
   }, []);
 
-  if (shouldRedirect) {
-    return <Navigate to="/auth" replace />;
-  }
-
   if (isLoading) {
-    return (
-      <div className="container mx-auto mt-10 p-4">
-        <div className="flex justify-center items-center space-x-2">
-          <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
-          <span className="text-gray-600">Loading feedback...</span>
-        </div>
-      </div>
-    );
+    return <div>Loading feedback...</div>;
   }
 
   if (error) {
-    return (
-      <div className="container mx-auto mt-10 p-4">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-red-600 text-lg">⚠️</span>
-            <h3 className="text-red-800 font-semibold">Error</h3>
-          </div>
-          <p className="text-red-600 mt-2">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+    return <div>Failed to load feedback. Please try again later.</div>;
   }
 
-  const RatingStars = ({ rating }: { rating: number }) => (
-    <div className="flex items-center">
-      {[...Array(5)].map((_, index) => (
-        <span
-          key={index}
-          className={`text-xl ${
-            index < rating ? 'text-yellow-400' : 'text-gray-300'
-          }`}
-        >
-          ★
-        </span>
-      ))}
-    </div>
-  );
-
   return (
-    <div className="container mx-auto mt-10 p-4 dark:bg-gray-900 dark:text-gray-200">
-      <h1 className="text-2xl font-bold text-gray-900 text-center mb-8 dark:text-gray-100">
-        Visitor Feedback
+    <div className="max-w-7xl mx-auto px-6 py-12 dark:bg-gray-900 dark:text-gray-200">
+      <h1 className="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-400">
+        Feedbacks
       </h1>
-  
       {feedbacks.length === 0 ? (
-        <div className="text-center py-8 bg-gray-800 rounded-lg border border-gray-700">
-          <p className="text-gray-500 dark:text-gray-400">No feedback submitted yet.</p>
-        </div>
+        <p>No feedback available.</p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="space-y-6">
           {feedbacks.map((feedback) => (
-            <div
+            <li
               key={feedback.id}
-              className="bg-gray-800 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 dark:bg-gray-700"
+              className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-500 dark:bg-gray-800"
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="space-y-1">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                      {feedback.rating}/5
-                    </span>
-                    <RatingStars rating={feedback.rating} />
-                  </div>
-                </div>
-                <time className="text-sm text-gray-500 dark:text-gray-400">
-                  {new Date(feedback.created_at).toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </time>
+              <div>
+                <h3 className="font-bold text-xl text-gray-800 dark:text-gray-100">
+                  {feedback.appointment_id
+                    ? schoolNames[feedback.appointment_id] || "Loading..."
+                    : "No Appointment"}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Rating:</span> {feedback.rating}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Comment:</span> {feedback.comment || "No comment"}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Date:</span>{" "}
+                  {new Date(feedback.created_at).toLocaleDateString()}
+                </p>
               </div>
-  
-              <p className="text-gray-700 overflow-hidden line-clamp-3 dark:text-gray-300">{feedback.comment}</p>
-  
-              {feedback.appointment_id && (
-                <div className="mt-4 pt-4 border-t border-gray-700">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    Appointment ID: {feedback.appointment_id}
-                  </span>
-                </div>
-              )}
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
-  );  
+  );
 };
 
 export default FeedbackList;

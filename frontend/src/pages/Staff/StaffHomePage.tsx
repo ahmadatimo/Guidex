@@ -6,9 +6,7 @@ import {
   fetchAssignedAppointmentsForGuide,
   fetchAvailableAppointmentsForGuides,
   Notification,
-  fetchNotifications,
-  markNotificationAsRead
-} from "../../utils/api";
+  fetchNotifications} from "../../utils/api";
 import PendingApprovals from "./PendingApprovals";
 
 const qoutes = [
@@ -288,41 +286,6 @@ const StaffHomepage: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Links Section */}
-      {/* <div className="mt-12">
-        <h2 className="text-xl font-bold mb-4 text-blue-700 dark:text-blue-400">
-          Quick Links
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <a
-            href="/schedule-tour"
-            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-          >
-            <h3 className="text-lg font-bold text-blue-600">Schedule a Tour</h3>
-            <p className="text-gray-700 dark:text-gray-400">
-              Easily create and manage tours for visitors.
-            </p>
-          </a>
-          <a
-            href="/manage-reports"
-            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-          >
-            <h3 className="text-lg font-bold text-blue-600">Manage Reports</h3>
-            <p className="text-gray-700 dark:text-gray-400">
-              Track and analyze performance reports.
-            </p>
-          </a>
-          <a
-            href="/visitor-requests"
-            className="p-4 bg-white border rounded-lg shadow hover:bg-blue-50 
-            dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-          >
-            <h3 className="text-lg font-bold text-blue-600">
-              Visitor Requests
-            </h3>
-          </a>
-        </div>
-      </div> */}
       <PendingApprovals onApprovalStatusChange={handleApprovalStatusChange} />
     </div>
   );

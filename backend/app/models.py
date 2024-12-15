@@ -31,7 +31,7 @@ class User(Base):
     created_appointments = relationship("Appointment", foreign_keys="Appointment.user_id", back_populates="user")
     assigned_appointments = relationship("Appointment", foreign_keys="Appointment.guide_id", back_populates="guide")
     notifications = relationship("Notification", back_populates="recipient")
-    feedbacks = relationship("Feedback", back_populates="user")  # Add this
+    feedbacks = relationship("Feedback", back_populates="user")  
 
 
 class Appointment(Base):

@@ -38,6 +38,25 @@ const GuideAppointments: React.FC = () => {
     loadAppointments();
   }, []);
 
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(new Date(dateString));
+  };
+
+  const formatTime = (timeString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(new Date(`1970-01-01T${timeString}`));
+  };
+
   // Filter appointments based on status from the database
   const upcomingAppointments = appointments.filter(
     (appointment) => appointment.status === AppointmentStatus.ACCEPTED
@@ -97,11 +116,11 @@ const GuideAppointments: React.FC = () => {
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Date:</span>{" "}
-                          {appointment.date}
+                          {formatDate(appointment.date)}
                         </p>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Time:</span>{" "}
-                          {appointment.time}
+                          {formatTime(appointment.time)}
                         </p>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Visitors:</span>{" "}
@@ -145,11 +164,11 @@ const GuideAppointments: React.FC = () => {
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Date:</span>{" "}
-                          {appointment.date}
+                          {formatDate(appointment.date)}
                         </p>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Time:</span>{" "}
-                          {appointment.time}
+                          {formatTime(appointment.time)}
                         </p>
                         <p className="text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Visitors:</span>{" "}
