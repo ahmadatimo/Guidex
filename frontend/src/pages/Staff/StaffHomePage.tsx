@@ -246,7 +246,7 @@ const StaffHomepage: React.FC = () => {
       </div>
 
       {/* Quick Links Section */}
-      <div className="mt-12">
+      {/* <div className="mt-12">
         <h2 className="text-xl font-bold mb-4 text-blue-700 dark:text-blue-400">
           Quick Links
         </h2>
@@ -279,7 +279,7 @@ const StaffHomepage: React.FC = () => {
             </h3>
           </a>
         </div>
-      </div>
+      </div> */}
       <PendingApprovals onApprovalStatusChange={handleApprovalStatusChange} />
     </div>
   );

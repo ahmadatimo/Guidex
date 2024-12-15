@@ -2,6 +2,7 @@ from fastapi import FastAPI
 import app.models as models
 from app.database import engine
 from app.routers import auth, appointments, notifications, feedback, schools
+from app.utils import email
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -21,3 +22,5 @@ app.include_router(appointments.router)
 app.include_router(notifications.router)
 app.include_router(feedback.router, prefix="/api/feedback", tags=["Feedback"])
 app.include_router(schools.router, prefix="/api/schools", tags=["Schools"])
+app.include_router(email.router)
+
