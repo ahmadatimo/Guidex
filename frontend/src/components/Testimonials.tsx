@@ -9,18 +9,24 @@ const testimonials = [
 
 const Testimonials: React.FC = () => {
   return (
-    <section className="py-12 bg-white">
-      <h2 className="text-3xl font-bold text-center mb-8">What Students Say</h2>
+    <section className="py-12 bg-white dark:bg-gray-900">
+      <h2 className="text-3xl font-bold text-center mb-8 text-blue-700 dark:text-blue-400">
+        What Students Say
+      </h2>
       <Swiper spaceBetween={20} slidesPerView={1} autoplay={{ delay: 6000 }} className="max-w-4xl mx-auto">
         {testimonials.map((testimonial, index) => (
           <SwiperSlide key={index} className="flex flex-col items-center text-center">
-            <blockquote className="text-gray-600 italic">{testimonial.quote}</blockquote>
-            <p className="mt-4 font-bold">{testimonial.name}</p>
+            <blockquote className="text-gray-600 italic dark:text-gray-300">
+              {testimonial.quote}
+            </blockquote>
+            <p className="mt-4 font-bold text-gray-900 dark:text-white">
+              {testimonial.name}
+            </p>
           </SwiperSlide>
         ))}
       </Swiper>
     </section>
-  );
+  );  
 };
 
 export default Testimonials;

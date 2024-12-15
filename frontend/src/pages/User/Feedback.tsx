@@ -43,51 +43,63 @@ const Feedback: React.FC = () => {
 
   return (
     <div className="container mx-auto mt-10 p-4">
-      <h1 className="text-2xl font-bold text-center">Submit Your Feedback</h1>
+      <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-white">
+        Submit Your Feedback
+      </h1>
       <form className="mt-6 max-w-md mx-auto" onSubmit={handleSubmit}>
+        {/* Rating Section */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Rating</label>
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">Rating</label>
           <select
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary"
             value={feedback.rating}
-            onChange={(e) => setFeedback(prev => ({ ...prev, rating: parseInt(e.target.value) }))}
+            onChange={(e) =>
+              setFeedback((prev) => ({ ...prev, rating: parseInt(e.target.value) }))
+            }
           >
-            {[5, 4, 3, 2, 1].map(num => (
-              <option key={num} value={num}>{num} Stars</option>
+            {[5, 4, 3, 2, 1].map((num) => (
+              <option
+                key={num}
+                value={num}
+                className="text-gray-800 dark:text-gray-300 bg-white dark:bg-gray-700"
+              >
+                {num} Stars
+              </option>
             ))}
           </select>
         </div>
-        
+  
+        {/* Comment Section */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Comment</label>
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">Comment</label>
           <textarea
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary"
             placeholder="Write your feedback here..."
             value={feedback.comment}
-            onChange={(e) => setFeedback(prev => ({ ...prev, comment: e.target.value }))}
+            onChange={(e) => setFeedback((prev) => ({ ...prev, comment: e.target.value }))}
             required
             rows={4}
           />
         </div>
-
+  
+        {/* Error Message */}
         {error && (
-          <div className="mb-4 text-red-500 text-sm">
-            {error}
-          </div>
+          <div className="mb-4 text-red-500 text-sm">{error}</div>
         )}
-
+  
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={isSubmitting}
           className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full ${
-            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
+          {isSubmitting ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>
-  );
+  );  
 };
 
 export default Feedback;

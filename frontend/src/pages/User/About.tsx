@@ -68,25 +68,28 @@ const About: React.FC = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="mt-12 bg-gray-100 p-6 rounded-lg">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-blue-700">What Our Students Say</h2>
+      <div className="mt-12 bg-gray-100 dark:bg-gray-900 p-6 rounded-lg">
+        <h2 className="text-3xl font-semibold mb-6 text-center text-blue-700 dark:text-blue-400">
+          What Our Students Say
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-4 border rounded shadow">
-            <p className="italic text-gray-700">
+          <div className="p-4 border rounded shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+            <p className="italic text-gray-700 dark:text-gray-300">
               "Bilkent is an institution that provides excellent academic preparation, a great social environment, and
               opportunities for a brilliant career."
             </p>
-            <p className="font-bold mt-2 text-gray-800">– Ani Kristo, Albania</p>
+            <p className="font-bold mt-2 text-gray-800 dark:text-gray-100">– Ani Kristo, Albania</p>
           </div>
-          <div className="p-4 border rounded shadow">
-            <p className="italic text-gray-700">
+          <div className="p-4 border rounded shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+            <p className="italic text-gray-700 dark:text-gray-300">
               "I would recommend Bilkent for several reasons. The standard of education is high, and the university is
               gaining increasing international recognition."
             </p>
-            <p className="font-bold mt-2 text-gray-800">– Lazifa Karimli, Azerbaijan</p>
+            <p className="font-bold mt-2 text-gray-800 dark:text-gray-100">– Lazifa Karimli, Azerbaijan</p>
           </div>
         </div>
       </div>
+
 
       {/* Useful Links Section */}
       <div className="mt-12">

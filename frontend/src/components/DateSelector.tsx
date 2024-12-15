@@ -55,17 +55,18 @@ const DateSelector: React.FC<{ onSelectDate: (date: string) => void }> = ({ onSe
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-xl font-bold mb-4">Select a Date</h2>
+      <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Select a Date</h2>
       <input
         type="date"
-        className="border rounded p-2 w-60"
-        aria-label="Select a date"
+        className="border rounded p-2 w-60 bg-white text-gray-800 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary"
+        aria-label="Select a date"  
         min={defaultDate}
         value={defaultDate}
         onChange={(e) => handleDateChange(e.target.value)}
       />
     </div>
   );
+  
 };
 
 export default DateSelector;

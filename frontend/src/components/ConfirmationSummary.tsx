@@ -42,9 +42,11 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow-md">
-      <h2 className="text-xl font-bold mb-4 text-gray-700">Confirm Your Appointment</h2>
-      <ul className="mb-4 text-gray-600">
+    <div className="bg-white p-6 rounded shadow-md dark:bg-gray-800 dark:text-white">
+      <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-white">
+        Confirm Your Appointment
+      </h2>
+      <ul className="mb-4 text-gray-600 dark:text-gray-300">
         <li>
           <strong>Date:</strong> {data.date}
         </li>
@@ -60,20 +62,20 @@ const ConfirmationSummary: React.FC<ConfirmationSummaryProps> = ({ data, onEdit 
       </ul>
       <div className="flex justify-end space-x-4">
         <button
-          className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-all"
+          className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-all dark:bg-yellow-600 dark:hover:bg-yellow-500"
           onClick={onEdit}
         >
           Edit
         </button>
         <button
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all"
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all dark:bg-green-600 dark:hover:bg-green-500"
           onClick={handleConfirm}
         >
           Confirm
         </button>
       </div>
     </div>
-  );
+  );  
 };
 
 export default ConfirmationSummary;

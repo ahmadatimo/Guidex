@@ -75,23 +75,23 @@ const GuideAppointments: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12 bg-gray-900 dark:text-gray-200">
+    <div className="max-w-7xl mx-auto px-6 py-12 dark:bg-gray-900 dark:text-gray-200">
       <h1 className="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-400">
         My Appointments
       </h1>
-
+  
       {isLoading ? (
         <p className="text-center text-gray-500 dark:text-gray-400">
           Loading appointments...
         </p>
       ) : appointments.length === 0 ? (
-        <div className="bg-gray-800 p-6 rounded-lg shadow dark:bg-gray-700">
-          <p className="text-gray-500 text-lg dark:text-gray-400">
+        <div className="bg-white p-6 rounded-lg shadow dark:bg-gray-800">
+          <p className="text-gray-600 text-lg dark:text-gray-400">
             You currently have no appointments assigned to you.
           </p>
         </div>
       ) : error ? (
-        <div className="bg-gray-800 p-6 rounded-lg shadow dark:bg-gray-700">
+        <div className="bg-white p-6 rounded-lg shadow dark:bg-gray-800">
           <p className="text-gray-700 dark:text-gray-300">
             Failed to load appointments. Please try again.
           </p>
@@ -104,7 +104,7 @@ const GuideAppointments: React.FC = () => {
               Upcoming Appointments
             </h2>
             {upcomingAppointments.length === 0 ? (
-              <p className="text-gray-500 text-lg dark:text-gray-400">
+              <p className="text-gray-600 text-lg dark:text-gray-400">
                 No upcoming appointments.
               </p>
             ) : (
@@ -112,12 +112,12 @@ const GuideAppointments: React.FC = () => {
                 {upcomingAppointments.map((appointment) => (
                   <li
                     key={appointment.id}
-                    className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-500 
-                    dark:bg-gray-700"
+                    className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-500 
+                    dark:bg-gray-800"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-bold text-xl text-gray-700 dark:text-gray-100">
+                        <h3 className="font-bold text-xl text-gray-800 dark:text-gray-100">
                           {schoolNames[appointment.id] || "Loading..."}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
@@ -145,14 +145,14 @@ const GuideAppointments: React.FC = () => {
               </ul>
             )}
           </section>
-
+  
           {/* Past Appointments */}
           <section>
             <h2 className="text-3xl font-semibold text-gray-800 mb-6 dark:text-gray-100">
               Past Appointments
             </h2>
             {pastAppointments.length === 0 ? (
-              <p className="text-gray-500 text-lg dark:text-gray-400">
+              <p className="text-gray-600 text-lg dark:text-gray-400">
                 No past appointments.
               </p>
             ) : (
@@ -160,12 +160,12 @@ const GuideAppointments: React.FC = () => {
                 {pastAppointments.map((appointment) => (
                   <li
                     key={appointment.id}
-                    className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-gray-400 
-                    dark:bg-gray-700"
+                    className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-gray-400 
+                    dark:bg-gray-800"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-bold text-xl text-gray-700 dark:text-gray-100">
+                        <h3 className="font-bold text-xl text-gray-800 dark:text-gray-100">
                           {schoolNames[appointment.id] || "Loading..."}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
@@ -182,7 +182,7 @@ const GuideAppointments: React.FC = () => {
                         </p>
                       </div>
                       <div className="flex-shrink-0">
-                        <span className="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm font-medium 
+                        <span className="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm font-medium 
                         dark:bg-gray-600 dark:text-gray-200">
                           Past
                         </span>
@@ -196,7 +196,7 @@ const GuideAppointments: React.FC = () => {
         </div>
       )}
     </div>
-  );
+  );  
 };
 
 export default GuideAppointments;

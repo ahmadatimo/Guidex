@@ -47,7 +47,7 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({ date, onSelectTime }) => {
 
   return (
     <div className="text-center">
-      <h2 className="text-xl font-semibold mb-4">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         Select a Time for {new Date(date).toLocaleDateString()}
       </h2>
       <div className="grid grid-cols-3 gap-4">
@@ -58,10 +58,10 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({ date, onSelectTime }) => {
               key={time}
               className={`py-2 px-4 rounded ${
                 selectedTime === time
-                  ? "shadow-lg border bg-blue-800 text-white"
+                  ? "shadow-lg border bg-blue-800 text-white dark:bg-blue-700 dark:border-blue-600"
                   : availableTimes.includes(formattedTime)
-                  ? "bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white transition-all duration-200"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400"
               }`}
               onClick={() => handleTimeSelect(time)}
               disabled={!availableTimes.includes(formattedTime)} // Disable if time is not available
@@ -72,7 +72,7 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({ date, onSelectTime }) => {
         })}
       </div>
     </div>
-  );
+  );  
 };
 
 export default TimeSelector;
