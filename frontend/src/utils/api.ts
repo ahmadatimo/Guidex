@@ -7,6 +7,13 @@ const API_BASE_URL = "http://localhost:8000";
 // /*-------------------------------- TYPES -------------------------------- */
 
 
+interface ContactEmailRequest {
+  sender_name: string;
+  sender_email: string;
+  message: string;
+}
+
+
 export interface Appointment {
   id: number;
   user_id: number;
@@ -512,5 +519,18 @@ export const deleteSchool = async (schoolId: number): Promise<void> => {
   } catch (error: any) {
     console.error(`Error deleting school with ID ${schoolId}:`, error.response?.data || error.message);
     throw new Error(error.response?.data?.detail || "Failed to delete the school.");
+  }
+};
+
+
+/*-------------------------------- EMAIL FUNCTIONS -------------------------------- */
+
+export const sendContactEmail = async (emailRequest: ContactEmailRequest): Promise<void> => {
+  try {
+    const response = await axiosInstance.post("/contact", emailRequest);
+    console.log("Email sent successfully:", response.data);
+  } catch (error: any) {
+    console.error("Failed to send email:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.detail || "Failed to send email. Please try again.");
   }
 };

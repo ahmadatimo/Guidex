@@ -1,3 +1,5 @@
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel, EmailStr
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 import os
 from dotenv import load_dotenv
@@ -29,3 +31,37 @@ async def send_email(subject: str, recipients: list, body: str):
 
     fast_mail = FastMail(MAIL_CONFIG)
     await fast_mail.send_message(message)
+
+
+
+# FastAPI router for email functionality
+router = APIRouter()
+
+# Request body schema for the email endpoint
+class EmailRequest(BaseModel):
+    sender_name: str
+    sender_email: EmailStr
+    message: str
+
+
+@router.post("/contact")
+async def send_contact_email(email_request: EmailRequest):
+    """
+    Endpoint to send contact emails to a fixed recipient.
+    """
+    try:
+        # Construct the email subject and body
+        subject = f"New Contact Form Message from {email_request.sender_name}"
+        body = (
+            f"<p><strong>From:</strong> {email_request.sender_name} ({email_request.sender_email})</p>"
+            f"<p><strong>Message:</strong></p>"
+            f"<p>{email_request.message}</p>"
+        )
+
+        # Send the email to the fixed recipient
+        await send_email(subject, ["bilinfo@bilkent.edu.tr"], body)
+
+        return {"message": "Email sent successfully."}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
