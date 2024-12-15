@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { fetchAppointmentsForUser, updateAppointmentStatus, Appointment } from "../../utils/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const MyAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadAppointments = async () => {
@@ -120,6 +122,17 @@ const MyAppointments: React.FC = () => {
                 >
                   Cancel Appointment
                 </button>
+
+                {appointment.status === "approved" || appointment.status === "accepted"
+                  // ? new Date(appointment.date) < new Date() Compare appointment date with current date/time
+                    ? <button
+                        onClick={() => navigate(`/visitor/feedback/${appointment.id}`)}
+                        className="text-sm text-blue-600 dark:text-blue-400 px-4 py-2 border border-blue-600 dark:border-blue-400 rounded-lg hover:bg-blue-600 hover:dark:bg-blue-400 hover:text-white transition-all duration-300"
+                        aria-label={`Leave a feedback for an appointment with ID ${appointment.id}`}
+                      >
+                        Leave Feedback
+                      </button>
+                    : null}
               </div>
             </div>
           ))
