@@ -108,7 +108,7 @@ async def create_appointment(
     await notify_user(
         recipient_id=user_id,
         appointment_id=db_appointment.id,
-        message=f"Your appointment has been Has been created for {db_appointment.date}, {db_appointment.time}. Waiting for confirmation.",
+        message=f"Your appointment has been created for {db_appointment.date}, {db_appointment.time}. Waiting for confirmation.",
         notification_type="Appointment Created",
         db=db,
     )

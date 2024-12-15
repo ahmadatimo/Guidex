@@ -5,6 +5,9 @@ import {
   fetchAdminsAppointments,
   fetchAssignedAppointmentsForGuide,
   fetchAvailableAppointmentsForGuides,
+  Notification,
+  fetchNotifications,
+  markNotificationAsRead
 } from "../../utils/api";
 import PendingApprovals from "./PendingApprovals";
 
@@ -18,6 +21,12 @@ const StaffHomepage: React.FC = () => {
   const navigate = useNavigate();
   const [approvals, setApprovals] = useState<Appointment[]>([]);
   const [myApprovals, setMyApprovals] = useState<Appointment[]>([]);
+  const [adminNotifications, setAdminNotifications] = useState<Notification[]>(
+    []
+  );
+  const [guideNotifications, setGuideNotifications] = useState<Notification[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [pendingTours, setPendingTours] = useState<number>(0);
   const [unassignedTours, setUnassignedTours] = useState<number>(0);
@@ -63,6 +72,27 @@ const StaffHomepage: React.FC = () => {
 
         setApprovals(appointments);
         setMyApprovals(myAppointments);
+
+        // Fetch notifications
+        const fetchedNotifications = await fetchNotifications();
+        const unreadNotifications = fetchedNotifications.filter(
+          (notification) => !notification.is_read
+        );
+
+        if (role === "admin") {
+          try {
+            setAdminNotifications(unreadNotifications);
+          } catch (e) {
+            console.log(e);
+          }
+        } else if (role === "guide") {
+          try {
+            setGuideNotifications(unreadNotifications);
+          } catch (e) {
+            console.log(e);
+          }
+        }
+
         // Filter counts for statuses
         const pendingCount = appointments.filter(
           (app) => app.status === "created"
@@ -203,21 +233,34 @@ const StaffHomepage: React.FC = () => {
           </button>
         </div>
 
-        {/* Notifications */}
+        {/* Notifications Section */}
         <div className="bg-white p-6 border rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
           <h2 className="text-xl font-bold mb-4 dark:text-gray-300">
             Notifications
           </h2>
           <ul className="space-y-2 text-gray-700 dark:text-gray-400">
-            <li>New high-priority request from Admissions Office.</li>
-            <li>Reminder: Feedback on recent tour due tomorrow.</li>
+            {userRole === "admin" && adminNotifications.length > 0 ? (
+              adminNotifications.map((notification) => (
+                <li key={notification.id}>
+                  <strong>{notification.type}:</strong> {notification.message}
+                </li>
+              ))
+            ) : userRole === "guide" && guideNotifications.length > 0 ? (
+              guideNotifications.map((notification) => (
+                <li key={notification.id}>
+                  <strong>{notification.type}:</strong> {notification.message}
+                </li>
+              ))
+            ) : (
+              <li>No notifications available.</li>
+            )}
           </ul>
           <button
             className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 
-            dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+    dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             onClick={goToNotifications}
           >
-            See All Notifications
+            View All Notifications
           </button>
         </div>
       </div>

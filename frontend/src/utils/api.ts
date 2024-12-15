@@ -411,6 +411,31 @@ export const custom_notification = async (
   });
 };
 
+export const notifyAdmins = async (
+  appointmentId: number,
+  message: string,
+  notificationType: string
+): Promise<void> => {
+  await axiosInstance.post("/notifications/notify-admins", {
+    appointment_id: appointmentId,
+    message,
+    notification_type: notificationType,
+  });
+};
+
+export const notifyguides = async (
+  appointmentId: number,
+  message: string,
+  notificationType: string
+): Promise<void> => {
+  await axiosInstance.post("/notifications/notify-guides", {
+    appointment_id: appointmentId,
+    message,
+    notification_type: notificationType,
+  });
+};
+
+
 /*-------------------------------- SCHOOLS FUNCTIONS -------------------------------- */
 
 // Fetch all schools
