@@ -44,7 +44,7 @@ class CreateUserRequest(BaseModel):
     user_email: EmailStr
     role: str
     name: str
-    school_name: Optional[str] = None
+    school_id: Optional[int] = None
     password: str
 
 
@@ -92,7 +92,7 @@ async def create_user(db: db_dependency, create_user: CreateUserRequest):
         user_email= create_user.user_email,
         name= create_user.name,
         role= create_user.role,
-        school_name= create_user.school_name,
+        school_id= create_user.school_id,
         hashed_password= bcrypt_context.hash(create_user.password)
     )
 
@@ -267,7 +267,7 @@ async def update_user(
             "name": user.name,
             "user_email": user.user_email,
             "role": user.role,
-            "school_name": user.school_name
+            "school_id": user.school_id
         }
     )
 
@@ -287,7 +287,7 @@ def create_admin_user(db: Session):
             user_email="admin@example.com",
             role="admin",
             hashed_password=bcrypt_context.hash("abcd1234"),
-            school_name=None,
+            school_id=None,
         )
         db.add(admin_user)
         db.commit()
@@ -308,7 +308,7 @@ def create_mock_users(db: Session):
             user_email = "visitor@example.com",
             role = "visitor",
             hashed_password=bcrypt_context.hash("abcd1234"),
-            school_name = "High School A"
+            school_id = 1
         )
 
         guide = User(
@@ -316,7 +316,7 @@ def create_mock_users(db: Session):
             user_email = "guide@example.com",
             role = "guide",
             hashed_password=bcrypt_context.hash("abcd1234"),
-            school_name = None
+            school_id = None
         )
 
         db.add(visitor)

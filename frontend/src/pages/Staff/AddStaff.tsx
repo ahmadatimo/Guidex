@@ -3,7 +3,7 @@ import Select from "react-select";
 import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { registerUser } from "../../utils/api";
+import { registerUser, fetchAllSchools } from "../../utils/api"; // Use fetchAllSchools from API utils
 
 const AddStaff: React.FC = () => {
   const [newAccount, setNewAccount] = useState({
@@ -11,12 +11,12 @@ const AddStaff: React.FC = () => {
     email: "",
     password: "",
     role: "",
-    school_name: ""
+    school_id: 0,
   });
 
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [schoolOptions, setSchoolOptions] = useState<{ value: string; label: string }[]>([]);
+  const [schoolOptions, setSchoolOptions] = useState<{ value: number; label: string }[]>([]);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -37,13 +37,12 @@ const AddStaff: React.FC = () => {
 
     fetchRole();
 
-    const fetchSchools = async () => {
+    const loadSchools = async () => {
       try {
-        const response = await fetch("../../../public/json/schools.json");
-        const data = await response.json();
-        const options = data.highschools.map((school: { name: string; city: string }) => ({
-          value: school.name,
-          label: `${school.name} (${school.city})`
+        const schools = await fetchAllSchools(); // Fetch schools from backend
+        const options = schools.map((school) => ({
+          value: school.id,
+          label: `${school.name} (${school.city})`,
         }));
         setSchoolOptions(options);
       } catch (error) {
@@ -52,7 +51,7 @@ const AddStaff: React.FC = () => {
       }
     };
 
-    fetchSchools();
+    loadSchools();
   }, []);
 
   const handleChange = (
@@ -63,7 +62,7 @@ const AddStaff: React.FC = () => {
   };
 
   const handleSchoolChange = (selectedOption: any) => {
-    setNewAccount((prev) => ({ ...prev, school_name: selectedOption?.value || "" }));
+    setNewAccount((prev) => ({ ...prev, school_id: selectedOption?.value || 0 }));
   };
 
   const handleCreateAccount = async () => {
@@ -75,7 +74,7 @@ const AddStaff: React.FC = () => {
       return;
     }
 
-    if (newAccount.role === "visitor" && !newAccount.school_name) {
+    if (newAccount.role === "visitor" && newAccount.school_id === 0) {
       toast.error("Please select a school for Visitor accounts.", {
         position: "top-right",
         autoClose: 5000,
@@ -89,13 +88,13 @@ const AddStaff: React.FC = () => {
         newAccount.role,
         newAccount.name,
         newAccount.password,
-        newAccount.role === "visitor" ? newAccount.school_name : undefined
+        newAccount.role === "visitor" ? newAccount.school_id : undefined // Pass school_id
       );
       toast.success(`Account for "${newAccount.name}" created successfully as a "${newAccount.role}".`, {
         position: "top-right",
         autoClose: 5000,
       });
-      setNewAccount({ name: "", email: "", password: "", role: "", school_name: "" });
+      setNewAccount({ name: "", email: "", password: "", role: "", school_id: 0 });
     } catch (error) {
       console.error("Error creating user account:", error);
       toast.error("Failed to create the account. Please try again later.", {
@@ -129,7 +128,7 @@ const AddStaff: React.FC = () => {
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">New Staff Account</h2>
         {newAccount.role === "visitor" && (
           <div className="mb-6">
-            <label htmlFor="school_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="school_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               School
             </label>
             <Select

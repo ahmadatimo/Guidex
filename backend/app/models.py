@@ -90,7 +90,7 @@ class UserBase(BaseModel):
     name: str
     user_email: str
     role: str
-    school_name: Optional[str] = None
+    school_id: Optional[int] = None
     
 class AppointmentBase(BaseModel):
     id: int
